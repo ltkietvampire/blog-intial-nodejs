@@ -1,0 +1,27 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "init project",
+  "main": "index.js",
+  "scripts": {
+    "test": "blog kiet"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ltkietvampire/blog-intial-nodejs.git"
+  },
+  "keywords": [
+    "vampire",
+    "kiet",
+    "blog"
+  ],
+  "author": "letuankiet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ltkietvampire/blog-intial-nodejs/issues"
+  },
+  "homepage": "https://github.com/ltkietvampire/blog-intial-nodejs#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
