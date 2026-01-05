@@ -2,9 +2,11 @@
   "name": "blog",
   "version": "1.0.0",
   "description": "init project",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "blog kiet"
+    "start": "nodemon --inspect src/index.js",
+    "test": "blog kiet",
+    "watch": "node-sass -w src/resources/scss -o src/public/css"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,12 @@
   },
   "homepage": "https://github.com/ltkietvampire/blog-intial-nodejs#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "express-handlebars": "^7.1.3"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.1",
+    "node-sass": "^9.0.0",
+    "nodemon": "^3.1.11"
   }
 }
