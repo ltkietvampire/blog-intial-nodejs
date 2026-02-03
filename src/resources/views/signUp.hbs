@@ -1,0 +1,23 @@
+<form method="post" action="/store" class="row g-3 m-3">
+  <div class="col-md-4">
+    <label for="name" class="form-label">Họ và tên</label>  
+    <input type="text" class="form-control" id="name" name="name" required>
+  </div>
+  <div class="col-md-4">
+    <label for="position" class="form-label">Chức vụ</label>
+    <input type="text" class="form-control" id="position" name="position"  required>
+  </div>
+  <div class="col-md-4">
+    <label for="maxtime" class="form-label">Thời gian làm tối đa</label>
+    <div class="input-group">
+      <input type="number" class="form-control" id="maxtime" name="maxtime" aria-describedby="inputGroupPrepend2" required>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <label for="trangthai" class="form-label">Trạng thái</label>
+    <input type="text" class="form-control" id="trangthai" name="trangthai" required>
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary" type="submit">Submit form</button>
+  </div>
+</form>

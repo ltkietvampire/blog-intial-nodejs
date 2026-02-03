@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Lịch phân công</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 250px;
+      border-right: 1px solid #ddd;
+      overflow-y: auto;
+    }
+
+    .employee-item {
+      cursor: pointer;
+    }
+
+    .employee-item:hover {
+      background: #f1f1f1;
+    }
+
+    .calendar {
+      overflow: auto;
+      height: 100vh;
+      position: relative;
+    }
+
+    .time-col {
+      width: 70px;
+      border-right: 1px solid #ddd;
+      font-size: 12px;
+      text-align: right;
+      padding-right: 5px;
+    }
+
+    .day-col {
+      min-width: 180px;
+      border-right: 1px solid #ddd;
+      position: relative;
+    }
+
+    .time-row {
+      height: 60px; /* 1 giờ = 60px */
+      border-bottom: 1px solid #eee;
+    }
+
+    .task {
+      position: absolute;
+      left: 5px;
+      right: 5px;
+      background: #1e5aa8;
+      color: white;
+      padding: 6px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="d-flex h-100">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar p-3">
+    <h6>Nhân viên</h6>
+    <div class="employee-item p-2" onclick="loadEmployee('NV001')">Nguyễn Văn A</div>
+    <div class="employee-item p-2" onclick="loadEmployee('NV002')">Trần Thị B</div>
+    <div class="employee-item p-2" onclick="loadEmployee('NV003')">Lê Văn C</div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="calendar flex-grow-1">
+
+    <!-- Header ngày -->
+    <div class="d-flex border-bottom">
+      <div class="time-col"></div>
+      <div class="day-col text-center py-2">Thứ 2</div>
+      <div class="day-col text-center py-2">Thứ 3</div>
+      <div class="day-col text-center py-2">Thứ 4</div>
+      <div class="day-col text-center py-2">Thứ 5</div>
+      <div class="day-col text-center py-2">Thứ 6</div>
+      <div class="day-col text-center py-2">Thứ 7</div>
+      <div class="day-col text-center py-2">CN</div>
+    </div>
+
+    <!-- Body -->
+    <div class="d-flex">
+      <!-- Cột giờ -->
+      <div class="time-col">
+        {{!-- từ 8h đến 20h --}}
+        <div class="time-row">08:00</div>
+        <div class="time-row">09:00</div>
+        <div class="time-row">10:00</div>
+        <div class="time-row">11:00</div>
+        <div class="time-row">12:00</div>
+        <div class="time-row">13:00</div>
+        <div class="time-row">14:00</div>
+        <div class="time-row">15:00</div>
+        <div class="time-row">16:00</div>
+        <div class="time-row">17:00</div>
+        <div class="time-row">18:00</div>
+        <div class="time-row">19:00</div>
+        <div class="time-row">20:00</div>
+      </div>
+
+      <!-- 7 ngày -->
+      <div class="day-col" id="day-2"></div>
+      <div class="day-col" id="day-3"></div>
+      <div class="day-col" id="day-4"></div>
+      <div class="day-col" id="day-5"></div>
+      <div class="day-col" id="day-6"></div>
+      <div class="day-col" id="day-7"></div>
+      <div class="day-col" id="day-8"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // DATA GIẢ
+  const data = {
+    NV001: [
+      { day: 'day-2', start: 13.5, end: 16.1, title: 'Văn bản & lưu trữ' },
+      { day: 'day-4', start: 16.1, end: 17, title: 'Cố vấn học tập' }
+    ],
+    NV002: [
+      { day: 'day-3', start: 9, end: 12, title: 'Kiểm kê kho' }
+    ]
+  };
+
+  function clearTasks() {
+    document.querySelectorAll('.task').forEach(e => e.remove());
+  }
+
+  function loadEmployee(nvId) {
+    clearTasks();
+    if (!data[nvId]) return;
+
+    data[nvId].forEach(task => {
+      const el = document.createElement('div');
+      el.className = 'task';
+
+      const top = (task.start - 8) * 60;
+      const height = (task.end - task.start) * 60;
+
+      el.style.top = top + 'px';
+      el.style.height = height + 'px';
+      el.innerHTML = `<b>${task.title}</b><br>${task.start} - ${task.end}`;
+
+      document.getElementById(task.day).appendChild(el);
+    });
+  }
+</script>
+
+</body>
+</html>

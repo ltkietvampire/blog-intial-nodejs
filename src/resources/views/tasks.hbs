@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tasks — Calm Board</title>
+  <style>
+    :root{
+      --bg: #f3f4f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #6366f1; /* indigo */
+      --accent: #eef2ff;
+    }
+
+    body{
+      background: linear-gradient(180deg, #f5f6fb, #eef1f7);
+      color: var(--text);
+    }
+
+    .page-wrap{ max-width:1200px; margin:28px auto; }
+
+    h3, h5{ font-weight:700; letter-spacing:.2px; }
+
+    .card{
+      border:0;
+      border-radius:16px;
+      background: var(--card);
+      box-shadow: 0 10px 28px rgba(31,41,55,.08);
+    }
+
+    .toolbar input{
+      background:#fff;
+      border-radius:10px;
+    }
+
+    /* task card */
+    .task-card{
+      border-radius:14px;
+      transition: all .15s ease;
+    }
+    .task-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(31,41,55,.12);
+    }
+
+    .priority-accent{
+      height:6px;
+      border-radius:14px 14px 0 0;
+    }
+
+    /* calm priority palette */
+    .p-1{ background:#fca5a5; } /* soft red */
+    .p-2{ background:#fdba74; } /* soft orange */
+    .p-3{ background:#fde68a; } /* soft amber */
+    .p-4{ background:#86efac; } /* soft green */
+    .p-5{ background:#bfdbfe; } /* soft blue */
+
+    .priority-dot{
+      width:10px; height:10px; border-radius:50%; display:inline-block;
+    }
+
+    .task-meta{ font-size:13px; color:var(--muted); }
+
+    .section-box{
+      background: #fafbff;
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .badge-assigned{
+      background: var(--accent);
+      color: var(--primary);
+      font-weight:500;
+    }
+
+    .btn-primary{
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-primary:hover{ background:#4f46e5; }
+
+    .btn-outline-secondary{
+      border-radius:10px;
+    }
+
+    .list-group-item{ background:transparent; }
+
+    @media (max-width:991px){
+      .page-wrap{ padding:16px; }
+    }
+    {{!-- trượt card task --}}
+/* ===== TASK DESCRIPTION ===== */
+.task-desc {
+  max-height: 0;
+  overflow: hidden;
+  color: #555;
+  font-size: 14px;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.task-card.open .task-desc {
+  max-height: 200px;
+  opacity: 1;
+}
+
+/* ===== RIGHT AREA ===== */
+.task-right {
+  position: relative;
+}
+
+/* ===== TASK TIME ===== */
+.task-time {
+  transition: transform 0.2s ease;
+}
+
+/* ===== TASK ACTIONS ===== */
+.task-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;   /* 👈 xếp dọc */
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(6px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* Hover card → hiện nút */
+.task-card:hover .task-actions {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+
+/* Hover card → time dịch sang trái */
+.task-card:hover .task-time {
+  transform: translateX(-44px);
+}
+
+/* ===== ACTION BUTTON ===== */
+.task-action-btn {
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: #6b7280;
+}
+
+.task-action-btn:hover {
+  background: #f1f5f9;
+  color: #111827;
+}
+/* delete button calm style */
+.btn-delete {
+  color: #9ca3af; /* xám nhạt */
+}
+
+.btn-delete:hover {
+  background: #fee2e2; /* đỏ rất nhẹ */
+  color: #b91c1c;
+}
+
+
+
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+
+    <!-- header -->
+    <div class="d-flex align-items-center justify-content-between mb-3 toolbar">
+      <h3 class="mb-0">Tasks</h3>
+      <div class="d-flex gap-2 align-items-center">
+        <input id="searchInput" class="form-control form-control-sm" style="max-width:260px;" placeholder="Search tasks…">
+        <button id="btn-clear" class="btn btn-outline-secondary btn-sm">Clear</button>
+        <button id="btn-add" class="btn btn-primary btn-sm">＋ New Task</button>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Unassigned -->
+      <div class="col-lg-6">
+        <div class="section-box">
+          <div class="d-flex align-items-center mb-3">
+            <div>
+              <h5 class="mb-0">Chưa được giao</h5>
+              <div class="text-muted small">Ưu tiên tăng dần · Task mới hơn sẽ lên trước</div>
+            </div>
+            <div class="ms-auto">
+              <select id="filterPriority" class="form-select form-select-sm" style="width:160px">
+                <option value="all">All priorities</option>
+                <option value="1">Priority 1</option>
+                <option value="2">Priority 2</option>
+                <option value="3">Priority 3</option>
+                <option value="4">Priority 4</option>
+                <option value="5">Priority 5</option>
+              </select>
+            </div>
+          </div>
+          {{!--  --}}
+          <div id="unassignedList" class="list-group list-group-flush"></div>
+        </div>
+      </div>
+
+      <!-- Assigned -->
+      <div class="col-lg-6">
+        <div class="section-box">
+          <div class="d-flex align-items-center mb-3">
+            <div>
+              <h5 class="mb-0">Đã được giao</h5>
+              <div class="text-muted small">Theo người phụ trách · deadline</div>
+            </div>
+          </div>
+          <div id="assignedList" class="list-group list-group-flush"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+<div class="modal fade" id="taskModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <form id="taskForm" class="modal-content" method="POST" action="/tasks/store">
+
+      <!-- HEADER -->
+      <div class="modal-header">
+        <h5 class="modal-title">📝 Tạo Task mới</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body">
+
+        <!-- TITLE -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Tên công việc</label>
+          <input
+            name="name_task"
+            class="form-control"
+            placeholder="Ví dụ: Họp cố vấn"
+            required
+          >
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Mô tả</label>
+          <textarea
+            name="description_task"
+            class="form-control"
+            rows="2"
+            placeholder="Nội dung chi tiết (không bắt buộc)"
+          ></textarea>
+        </div>
+
+        <!-- TIME -->
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Giờ bắt đầu</label>
+            <input
+              type="time"
+              name="dateStart"
+              class="form-control"
+              required
+            >
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Giờ kết thúc</label>
+            <input
+              type="time"
+              name="dateEnd"
+              class="form-control"
+              required
+            >
+          </div>
+        </div>
+
+        <!-- DEADLINE + PRIORITY -->
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Deadline</label>
+            <input
+              type="date"
+              name="deadline"
+              class="form-control"
+              required
+            >
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Độ ưu tiên</label>
+            <select name="priority" class="form-select">
+              <option value="1">🔴 1 — Rất cao</option>
+              <option value="2">🟠 2 — Cao</option>
+              <option value="3" selected>🟡 3 — Trung bình</option>
+              <option value="4">🟢 4 — Thấp</option>
+              <option value="5">🔵 5 — Rất thấp</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >
+          Hủy
+        </button>
+        <button type="submit" class="btn btn-primary">
+          💾 Lưu Task
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+  <!-- Edit Task Modal -->
+<div class="modal fade" id="taskEditModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <form id="taskEditForm" class="modal-content" method="POST" >
+
+      <!-- HEADER -->
+      <div class="modal-header">
+        <h5 class="modal-title">📝 Sửa thông tin công việc</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body">
+
+        <!-- TITLE -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Tên công việc</label>
+          <input
+            id="name_task"
+            name="name_task"
+            class="form-control"
+            placeholder="Ví dụ: Họp cố vấn"
+            required
+          >
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Mô tả</label>
+          <textarea
+            id="description_task"
+            name="description_task"
+            class="form-control"
+            rows="2"
+            placeholder="Nội dung chi tiết (không bắt buộc)"
+          ></textarea>
+        </div>
+
+        <!-- TIME -->
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Giờ bắt đầu</label>
+            <input
+              type="time"
+              name="dateStart"
+              id="dateStart"
+              class="form-control"
+              required
+            >
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Giờ kết thúc</label>
+            <input
+              type="time"
+              id="dateEnd"
+              name="dateEnd"
+              class="form-control"
+              required
+            >
+          </div>
+        </div>
+
+        <!-- DEADLINE + PRIORITY -->
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Deadline</label>
+            <input
+              type="date"
+              id="deadline"
+              name="deadline"
+              class="form-control"
+              required
+            >
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Độ ưu tiên</label>
+            <select name="priority" id="priority" class="form-select">
+              <option value="1">🔴 1 — Rất cao</option>
+              <option value="2">🟠 2 — Cao</option>
+              <option value="3" selected>🟡 3 — Trung bình</option>
+              <option value="4">🟢 4 — Thấp</option>
+              <option value="5">🔵 5 — Rất thấp</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >
+          Hủy
+        </button>
+        <button type="submit" class="btn btn-primary">
+          Sửa task
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px">
+
+      <!-- HEADER -->
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-semibold">
+          🗑 Xóa công việc
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body pt-2">
+        <p class="mb-2">
+          Bạn có chắc chắn muốn xóa task:
+        </p>
+
+        <div class="p-3 rounded-3" style="background:#f8fafc">
+          <strong id="deleteTaskName">Tên task</strong>
+        </div>
+
+        <p class="text-muted small mt-2 mb-0">
+          Hành động này không thể hoàn tác.
+        </p>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer border-0">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >
+          Hủy
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger"
+          id="confirmDeleteBtn"
+        >
+          Xóa
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+{{!-- ASSIGN MODAL --}}
+<!-- ASSIGN TASK MODAL -->
+<div class="modal fade" id="assignTaskModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="border-radius:16px">
+
+      <!-- HEADER -->
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-semibold">
+          👤 Giao công việc
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body">
+
+        <!-- TASK INFO -->
+        <div class="mb-3 p-3 rounded-3" style="background:#f8fafc">
+          <div class="fw-semibold mb-1" id="assignTaskName">
+            Tên task
+          </div>
+          <div class="text-muted small" id="assignTaskTime">
+            08:00 – 10:00 · Deadline: 2026-02-05
+          </div>
+        </div>
+
+        <!-- FILTER ROLE -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Chức vụ</label>
+          <select
+            id="filterPosition"
+            class="form-select"
+          >
+            <option value="all">Tất cả</option>
+            {{#each position}}
+            <option value="{{this}}">{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+
+        <!-- EMPLOYEE SELECT -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Nhân viên</label>
+          <select
+            id="assignEmployeeSelect"
+            class="form-select"
+            size="6"
+          >
+          {{#each users}}
+            <option value="{{this._id}}">
+              {{this.name}} — {{this.position}}
+            </option>
+          {{/each}}
+          </select>
+        </div>
+
+        <div class="text-muted small">
+          💡 Chỉ chọn 1 người phụ trách cho mỗi task
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer border-0">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >
+          Hủy
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="confirmAssignBtn"
+        >
+          Giao task
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<form method= "POST" id="formSubmit"></form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+              
+        // ===== FIX: always query DOM elements explicitly =====
+        const searchInput = document.getElementById('searchInput');
+        const filterPriority = document.getElementById('filterPriority');
+        const unassignedList = document.getElementById('unassignedList');
+        const assignedList = document.getElementById('assignedList');
+        const btnAdd = document.getElementById('btn-add');
+        const btnClear = document.getElementById('btn-clear');
+        const taskForm = document.getElementById('taskForm');
+
+        const tasks = {{{json tasks}}}
+        const position = {{{json position}}}
+        console.log(position)
+        const priorityClass = p => 'p-' + p;
+        const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+
+        function render(){
+          unassignedList.innerHTML = '';
+          assignedList.innerHTML = '';
+
+          const q = searchInput.value.toLowerCase();
+          const fp = filterPriority.value;
+
+          let unassigned = tasks.filter(t => !t.assignee);
+          if(fp !== 'all') unassigned = unassigned.filter(t => String(t.priority) === fp);
+          if(q) unassigned = unassigned.filter(t => t.name_task.toLowerCase().includes(q));
+
+          unassigned.sort((a,b)=>
+            a.priority !== b.priority
+              ? a.priority - b.priority
+              : new Date(b.createdAt) - new Date(a.createdAt)
+          );
+
+          let assigned = tasks.filter(t => t.assignee);
+
+          for(const t of unassigned){
+            unassignedList.insertAdjacentHTML('beforeend',`
+              <div class="list-group-item mb-2 task-item">
+                <div class="card task-card" onclick="toggleDesc(this)">
+                  <div class="priority-accent ${priorityClass(t.priority)}"></div>
+
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <h6 class="mb-1">${t.name_task}</h6>
+                        <!-- EDIT -->
+                        <button 
+                        class="btn btn-sm btn-light task-action-btn mt-1 btn-edit" 
+                        data-id="${t._id}"
+                        data-name_task ="${t.name_task}"
+                        data-description_task="${t.description_task}"
+                        data-priority="${t.priority}"
+                        data-deadline="${t.deadline}"
+                        data-dateStart="${t.dateStart}"
+                        data-dateEnd="${t.dateEnd}"
+                        onclick="event.stopPropagation()" 
+                        title="Sửa task">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                      </div>
+
+                      <div class="task-right text-end d-flex align-items-center gap-2">
+
+                        <div class="task-time">
+                          <div class="fw-semibold">${t.dateStart} – ${t.dateEnd}</div>
+                          <div class="text-muted small">
+                            ${t.estimated_total_hours} giờ
+                          </div>
+                        </div>
+
+                       <div class="task-actions" onclick="event.stopPropagation()">
+                          <!-- DELETE -->
+                          <button class="btn btn-sm btn-light task-action-btn btn-delete" title="Xóa task"
+                          data-id = "${t._id}"
+                          data-name = "${t.name_task}"
+                          >
+                            <i class="bi bi-trash"></i>
+                          </button>
+                          <!-- ASSIGN -->
+                          <button class="btn btn-sm btn-light task-action-btn btn-assign" title="Giao task"
+                          data-id="${t._id}"
+                          data-name_task ="${t.name_task}"
+                          data-deadline="${t.deadline}"
+                          data-dateStart="${t.dateStart}"
+                          data-dateEnd="${t.dateEnd}"
+                          >
+                            <i class="bi bi-person-plus"></i>
+                          </button>
+                        </div>
+
+
+                      </div>
+                    </div>
+                    <!-- DESCRIPTION -->
+                    <div class="task-desc mt-2">
+                      ${t.description_task || 'Không có mô tả'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+            `);
+          }
+
+          for(const t of assigned){
+            assignedList.insertAdjacentHTML('beforeend',`
+              <div class="list-group-item mb-2 task-item">
+                <div class="card task-card" onclick="toggleDesc(this)">
+                  <div class="priority-accent ${priorityClass(t.priority)}"></div>
+
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <h6 class="mb-1">${t.name_task}</h6>
+                      </div>
+
+                      <div class="task-right text-end d-flex align-items-center gap-2">
+
+                        <div class="task-time">
+                          <div class="fw-semibold">${t.dateStart} – ${t.dateEnd}</div>
+                          <div class="text-muted small">
+                            ${t.estimated_total_hours} giờ
+                          </div>
+                        </div>
+
+                        <div class="task-actions" onclick="event.stopPropagation()">
+                          <button class="btn btn-sm btn-light task-action-btn btn-edit" title="Sửa task"
+                            data-id="${t._id}"
+                            data-name_task ="${t.name_task}"
+                            data-description_task="${t.description_task}"
+                            data-priority="${t.priority}"
+                            data-deadline="${t.deadline}"
+                            data-dateStart="${t.dateStart}"
+                            data-dateEnd="${t.dateEnd}">
+                            <i class="bi bi-pencil"></i>
+                          </button>
+
+                          <button class="btn btn-sm btn-light task-action-btn" title="Giao task">
+                            <i class="bi bi-person-plus"></i>
+                          </button>
+                        </div>
+
+                      </div>
+                    </div>
+                    <!-- DESCRIPTION -->
+                    <div class="task-desc mt-2">
+                      ${t.description_task || 'Không có mô tả'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+            `);
+          }
+        }
+      btnAdd.onclick = () => taskModal.show();
+      filterPriority.onchange = render;
+        // events
+        /*
+        btnClear.onclick = () => { searchInput.value=''; filterPriority.value='all'; render(); };
+        searchInput.oninput = render;
+        // initial render*/
+        render();
+    })
+      function toggleDesc(card) {
+          card.classList.toggle('open');
+        }
+
+      // phần handel của sửa thông tin
+      document.addEventListener('DOMContentLoaded', function () {
+      const modalEl = document.getElementById('taskEditModal')
+      const editModal = new bootstrap.Modal(modalEl)
+      var idDel 
+      document.querySelectorAll('.btn-edit').forEach(btn =>{
+        btn.addEventListener('click', function(){
+          const id = this.dataset.id
+          const des = this.dataset.description_task
+          const name = this.dataset.name_task
+          const deadline = this.dataset.deadline
+          const date = deadline.slice(0, 10);
+          const start = this.dataset.datestart
+          const end = this.dataset.dateend
+          const priority = this.dataset.priority
+
+          document.getElementById('name_task').value = name
+          document.getElementById('description_task').value = des
+          document.getElementById('deadline').value = date
+          document.getElementById('dateStart').value = start
+          document.getElementById('dateEnd').value = end
+          document.getElementById('priority').value = priority
+
+          const form = document.getElementById('taskEditForm')
+          form.action = `/tasks/${id}?_method=PUT`
+          editModal.show()
+        })
+      })
+      //Phần xóa task
+      const modalDel = document.getElementById('deleteConfirmModal')
+      const delModal = new bootstrap.Modal(modalDel)
+
+      document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.dataset.id
+          const name = this.dataset.name
+          document.getElementById('deleteTaskName').innerHTML = name
+          const form = document.getElementById('formSubmit')
+          form.action = `/tasks/${id}?_method=DELETE`
+          delModal.show()
+        })
+      })
+      var buttionDel = document.getElementById('confirmDeleteBtn');
+      buttionDel.onclick = function(event){
+          const formDel = document.getElementById('formSubmit')
+          formDel.submit()  
+      }
+      //Phần giao việc cho nhân viên
+      const users = {{{json users}}}
+      const modalAss = document.getElementById('assignTaskModal')
+      const assModal = new bootstrap.Modal(modalAss)
+      const employee = document.getElementById('assignEmployeeSelect')
+
+      const selectPosition = document.getElementById('filterPosition')
+      console.log(selectPosition)
+      selectPosition.onchange = () => {
+        employee.innerHTML = ''
+        if (selectPosition.value === 'all'){
+            for(const e of users){
+              employee.insertAdjacentHTML('beforeend',`
+              <option value="${e._id}">
+                ${e.name} — ${e.position.toUpperCase()}
+              </option>
+              `
+            )}
+        }
+        else {
+          const usesFil = users.filter(  user => user.position === selectPosition.value)
+            for(const e of usesFil){
+              employee.insertAdjacentHTML('beforeend',`
+              <option value="${e._id}">
+                ${e.name} — ${e.position.toUpperCase()}
+              </option>
+              `
+            )}
+        }
+      }
+
+      document.querySelectorAll('.btn-assign').forEach(btn =>{
+        btn.addEventListener('click', function(){
+          const id = this.dataset.id
+          const name = this.dataset.name_task
+          const deadline = this.dataset.deadline
+          const date = deadline.slice(0, 10);
+          const start = this.dataset.datestart
+          const end = this.dataset.dateend
+
+          document.getElementById('assignTaskName').innerText = name;
+          document.getElementById('assignTaskTime').innerText =
+            `${start} – ${end} · Deadline: ${date}`;
+          assModal.show()
+        })
+      })
+      })
+    
+  </script>
+</body>
+</html>

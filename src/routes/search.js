@@ -4,8 +4,8 @@ const router = express.Router()
 const SearchController = require ('../app/controllers/SearchController')
 
 
-router.use('/:slug', SearchController.show);
-router.use('/', SearchController.index);
+router.get('/:slug', SearchController.show);
+router.get('/', SearchController.index);
 
 
 module.exports = router;

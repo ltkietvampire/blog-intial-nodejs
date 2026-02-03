@@ -1,1 +1,208 @@
-<h1>he he boy Home</h1>
+<head>
+<style>
+body {
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  background: #f7f8fc;
+  font-family: system-ui, sans-serif;
+}
+
+.sidebar {
+  width: 240px;
+  border-right: 1px solid #ddd;
+  background: white;
+}
+
+.employee-item {
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.employee-item:hover {
+  background: #eef3ff;
+}
+
+.calendar {
+  flex: 1;
+  overflow: auto;
+}
+
+/* GRID CHUNG */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 70px repeat(7, 1fr);
+}
+
+/* HEADER */
+.calendar-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  border-bottom: 1px solid #ddd;
+}
+
+.calendar-header div {
+  text-align: center;
+  padding: 10px 0;
+  font-weight: 600;
+  border-right: 1px solid #eee;
+}
+
+/* BODY */
+.calendar-body {
+  position: relative;
+}
+
+.time-col {
+  font-size: 12px;
+  text-align: right;
+  padding-right: 6px;
+}
+
+.time-row {
+  height: 60px;
+  border-bottom: 1px solid #eee;
+}
+
+/* CỘT NGÀY */
+.day-col {
+  position: relative;
+  border-right: 1px solid #eee;
+  background: repeating-linear-gradient(
+    to bottom,
+    #fafafa,
+    #fafafa 59px,
+    #eee 60px
+  );
+}
+
+/* TASK */
+.task {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  background: linear-gradient(135deg, #1e5aa8, #3b82f6);
+  color: white;
+  padding: 6px;
+  font-size: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  cursor: pointer;
+}
+
+.task:hover {
+  opacity: 0.9;
+}
+
+  </style>
+</head>
+<body>
+
+<div class="d-flex h-100">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar p-3">
+    <h6>Nhân viên</h6>
+    {{#each users}}
+      <div class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
+    {{/each}}
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="calendar flex-grow-1">
+
+    <!-- Header ngày -->
+<div class="calendar-header calendar-grid">
+  <div>Time</div>
+  <div>Thứ 2</div>
+  <div>Thứ 3</div>
+  <div>Thứ 4</div>
+  <div>Thứ 5</div>
+  <div>Thứ 6</div>
+  <div>Thứ 7</div>
+  <div>CN</div>
+</div>
+
+
+    <!-- Body -->
+ <div class="calendar-body calendar-grid">
+
+  <!-- CỘT GIỜ -->
+  <div class="time-col">
+    <div class="time-row">08:00</div>
+    <div class="time-row">09:00</div>
+    <div class="time-row">10:00</div>
+    <div class="time-row">11:00</div>
+    <div class="time-row">12:00</div>
+    <div class="time-row">13:00</div>
+    <div class="time-row">14:00</div>
+    <div class="time-row">15:00</div>
+    <div class="time-row">16:00</div>
+    <div class="time-row">17:00</div>
+    <div class="time-row">18:00</div>
+    <div class="time-row">19:00</div>
+    <div class="time-row">20:00</div>
+  </div>
+
+  <!-- 7 NGÀY -->
+  <div class="day-col" id="day-2"></div>
+  <div class="day-col" id="day-3"></div>
+  <div class="day-col" id="day-4"></div>
+  <div class="day-col" id="day-5"></div>
+  <div class="day-col" id="day-6"></div>
+  <div class="day-col" id="day-7"></div>
+  <div class="day-col" id="day-8"></div>
+
+</div>
+
+
+  </div>
+</div>
+
+<script>
+  const days = [
+  "day-8",
+  "day-2",
+  "day-3",
+  "day-4",
+  "day-5",
+  "day-6",
+  "day-7"
+];
+  const data = {{{json data}}};
+  
+  function clearTasks() {
+    document.querySelectorAll('.task').forEach(e => e.remove());
+  }
+  
+  function toMinutes(time) {
+    const [h, m] = time.split(':').map(Number);
+    return h * 60 + m;
+  } 
+
+  function loadEmployee(nvId) {
+    clearTasks();
+    if (!data.find(item => item.employeeID._id == nvId)) return;
+    
+    const dataFil = data.filter(item => item.employeeID._id == nvId)
+    dataFil.forEach(task => {
+      const el = document.createElement('div');
+      el.className = 'task';
+
+      const top = toMinutes(task.taskID.dateStart) - 8*60;
+      const height = toMinutes(task.taskID.dateEnd) - toMinutes(task.taskID.dateStart);
+
+      el.style.top = top + 'px';
+      el.style.height = height + 'px';
+      el.innerHTML = `<b>${task.taskID.name_task}</b><br>${task.taskID.dateStart} - ${task.taskID.dateEnd}`;
+      const date = new Date(task.taskID.deadline);
+      const thu = days[date.getDay()];
+      document.getElementById(thu).appendChild(el);
+    }); 
+  }
+</script>
+
+
+</body>
