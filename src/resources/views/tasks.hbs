@@ -163,6 +163,9 @@
   background: #fee2e2; /* đỏ rất nhẹ */
   color: #b91c1c;
 }
+.btn-unassign:hover {
+  color: #dc3545; /* đỏ bootstrap */
+}
 
 
 
@@ -532,6 +535,7 @@
             id="assignEmployeeSelect"
             class="form-select"
             size="6"
+            required
           >
           {{#each users}}
             <option value="{{this._id}}">
@@ -539,6 +543,9 @@
             </option>
           {{/each}}
           </select>
+          <div class="invalid-feedback">
+            Vui lòng chọn nhân viên phụ trách
+          </div>
         </div>
 
         <div class="text-muted small">
@@ -569,6 +576,42 @@
     </div>
   </div>
 </div>
+{{!-- UNASSIGN TASK MODAL --}}
+<div class="modal fade" id="unassignModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-semibold text-danger">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          Thu hồi phân công
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-2">
+          Bạn có chắc muốn <strong>thu hồi task</strong> đã giao cho:
+        </p>
+
+        <div class="alert alert-light border mb-0">
+          👤 <strong id="unassignUserName">Nguyễn Văn A</strong>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Hủy
+        </button>
+        <button class="btn btn-danger" id="confirmUnassignBtn">
+          Thu hồi
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 <form method= "POST" id="formSubmit"></form>
 
@@ -583,10 +626,13 @@
         const btnAdd = document.getElementById('btn-add');
         const btnClear = document.getElementById('btn-clear');
         const taskForm = document.getElementById('taskForm');
+        var   idTask
+        var   idDis
 
         const tasks = {{{json tasks}}}
-        const position = {{{json position}}}
-        console.log(position)
+        const data = {{{json data}}}
+
+
         const priorityClass = p => 'p-' + p;
         const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
 
@@ -607,7 +653,13 @@
               : new Date(b.createdAt) - new Date(a.createdAt)
           );
 
-          let assigned = tasks.filter(t => t.assignee);
+          let assigned = data.filter(t => t.taskID.assignee);
+
+          assigned.sort((a,b)=>
+            a.taskID.priority !== b.taskID.priority
+              ? a.taskID.priority - b.taskID.priority
+              : new Date(b.taskID.createdAt) - new Date(a.taskID.createdAt)
+          );
 
           for(const t of unassigned){
             unassignedList.insertAdjacentHTML('beforeend',`
@@ -682,37 +734,47 @@
             assignedList.insertAdjacentHTML('beforeend',`
               <div class="list-group-item mb-2 task-item">
                 <div class="card task-card" onclick="toggleDesc(this)">
-                  <div class="priority-accent ${priorityClass(t.priority)}"></div>
+                  <div class="priority-accent ${priorityClass(t.taskID.priority)}"></div>
 
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                       <div>
-                        <h6 class="mb-1">${t.name_task}</h6>
+                        <h6 class="mb-1">${t.taskID.name_task}</h6>
+                        <div class="d-flex align-items-center gap-2 text-muted small mt-1">
+                          <img src="${t.employeeID.avatar || '/img/default-avatar.webp'}"
+                              class="rounded-circle"
+                              width="22" height="22">
+                          <span>${t.employeeID.name}</span>
+                        </div>
                       </div>
 
                       <div class="task-right text-end d-flex align-items-center gap-2">
 
                         <div class="task-time">
-                          <div class="fw-semibold">${t.dateStart} – ${t.dateEnd}</div>
+                          <div class="fw-semibold">${t.taskID.dateStart} – ${t.taskID.dateEnd}</div>
                           <div class="text-muted small">
-                            ${t.estimated_total_hours} giờ
+                            ${t.taskID.estimated_total_hours} giờ
                           </div>
                         </div>
 
                         <div class="task-actions" onclick="event.stopPropagation()">
                           <button class="btn btn-sm btn-light task-action-btn btn-edit" title="Sửa task"
-                            data-id="${t._id}"
-                            data-name_task ="${t.name_task}"
-                            data-description_task="${t.description_task}"
-                            data-priority="${t.priority}"
-                            data-deadline="${t.deadline}"
-                            data-dateStart="${t.dateStart}"
-                            data-dateEnd="${t.dateEnd}">
+                            data-id="${t.taskID._id}"
+                            data-name_task ="${t.taskID.name_task}"
+                            data-description_task="${t.taskID.description_task}"
+                            data-priority="${t.taskID.priority}"
+                            data-deadline="${t.taskID.deadline}"
+                            data-dateStart="${t.taskID.dateStart}"
+                            data-dateEnd="${t.taskID.dateEnd}">
                             <i class="bi bi-pencil"></i>
                           </button>
 
-                          <button class="btn btn-sm btn-light task-action-btn" title="Giao task">
-                            <i class="bi bi-person-plus"></i>
+                          <button class="btn btn-sm btn-light task-action-btn btn-unassign" title="Thu hồi task"
+                          data-idDis = "${t._id}"
+                          data-idTask = "${t.taskID._id}"
+                          data-name = "${t.employeeID.name}"
+                          >
+                            <i class="bi bi-person-dash"></i>
                           </button>
                         </div>
 
@@ -720,7 +782,7 @@
                     </div>
                     <!-- DESCRIPTION -->
                     <div class="task-desc mt-2">
-                      ${t.description_task || 'Không có mô tả'}
+                      ${t.taskID.description_task || 'Không có mô tả'}
                     </div>
                   </div>
                 </div>
@@ -728,22 +790,11 @@
               </div>
             `);
           }
-        }
-      btnAdd.onclick = () => taskModal.show();
-      filterPriority.onchange = render;
-        // events
-        /*
-        btnClear.onclick = () => { searchInput.value=''; filterPriority.value='all'; render(); };
-        searchInput.oninput = render;
-        // initial render*/
-        render();
-    })
-      function toggleDesc(card) {
+                function toggleDesc(card) {
           card.classList.toggle('open');
         }
 
       // phần handel của sửa thông tin
-      document.addEventListener('DOMContentLoaded', function () {
       const modalEl = document.getElementById('taskEditModal')
       const editModal = new bootstrap.Modal(modalEl)
       var idDel 
@@ -794,9 +845,9 @@
       const modalAss = document.getElementById('assignTaskModal')
       const assModal = new bootstrap.Modal(modalAss)
       const employee = document.getElementById('assignEmployeeSelect')
+      
 
       const selectPosition = document.getElementById('filterPosition')
-      console.log(selectPosition)
       selectPosition.onchange = () => {
         employee.innerHTML = ''
         if (selectPosition.value === 'all'){
@@ -819,10 +870,9 @@
             )}
         }
       }
-
       document.querySelectorAll('.btn-assign').forEach(btn =>{
         btn.addEventListener('click', function(){
-          const id = this.dataset.id
+          idTask = this.dataset.id
           const name = this.dataset.name_task
           const deadline = this.dataset.deadline
           const date = deadline.slice(0, 10);
@@ -835,8 +885,57 @@
           assModal.show()
         })
       })
+
+      // nút giao task
+      const btnComfirm = document.getElementById('confirmAssignBtn')
+      const assignSelect = document.getElementById('assignEmployeeSelect')
+
+      btnComfirm.onclick = function (){
+          if (!assignSelect.value) {
+            assignSelect.classList.add('is-invalid');
+            assignSelect.focus();
+            return;
+          }
+          else {        
+            const form = document.getElementById('formSubmit')
+            form.action = `/tasks/${idTask}/${assignSelect.value}`
+            form.submit()
+        }
+      }
+      // Show modal thu hồi task
+      const modalUnAss = document.getElementById('unassignModal')
+      const unassModal = new bootstrap.Modal(modalUnAss)
+      document.querySelectorAll('.btn-unassign').forEach(btn => {
+        btn.addEventListener('click', function(){
+          idDis = this.dataset.iddis
+          idTask = this.dataset.idtask
+          const name = this.dataset.name
+
+          document.getElementById('unassignUserName').innerHTML = name
+
+          unassModal.show()
+        })
       })
-    
+
+      const btnUnassign = document.getElementById('confirmUnassignBtn')
+      btnUnassign.onclick = function (){
+            const form = document.getElementById('formSubmit')
+            form.action = `/tasks/${idTask}/${idDis}?_method=DELETE`
+            form.submit()
+      }
+
+        }
+      btnAdd.onclick = () => taskModal.show();
+      filterPriority.onchange = render;
+        // events
+        /*
+        btnClear.onclick = () => { searchInput.value=''; filterPriority.value='all'; render(); };
+        searchInput.oninput = render;
+        // initial render*/
+        render();
+
+
+    })
   </script>
 </body>
 </html>

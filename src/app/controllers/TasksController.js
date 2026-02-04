@@ -3,6 +3,7 @@ const Tasks = require('../model/task')
 const Distributions = require('../model/distribution')
 const {multipleMongooseToObject} = require('../../until/mongoose')
 const {calcHours} = require('../../until/calhours')
+const task = require('../model/task')
 
 class TasksController {
     async index(req, res, next) {
@@ -39,8 +40,30 @@ class TasksController {
             .then(() => res.redirect('/tasks'))
             .catch(() => res.send('error'))
     }
+    sendTask(req,res){
+        const formData = {
+            employeeID : req.params.idEmp,
+            taskID     : req.params.idTask
+        }
+        const distributions = new Distributions(formData);
+        distributions.save()
+        Tasks.updateOne({_id: req.params.idTask}, {assignee: true})
+            .then(() => res.redirect('/tasks'))
+            .catch(() => res.send('lỗi'))
+        
+    }
+    deleteDis(req,res){
+        Distributions.deleteOne({_id: req.params.idDis})
+        .then(function (){
+            Tasks.updateOne({_id: req.params.idTask}, {assignee: false})
+                .then(() => res.redirect('/tasks'))
+                .catch(() => res.send('lỗi'))    
+        
+        })
+        .catch(()=> res.send('error'))
+        
 
-
+    }
 }
 
 module.exports = new TasksController;
