@@ -13,6 +13,9 @@ const Distribution = new Schema({
     required: true
   },
   status: { type: String, default: 'working'},
+  assignedAt: { type: Date, default: Date.now },
+  checkInAt: { type: Date },
+  completedAt: { type: Date },
 });
 
 module.exports = mongoose.model('Distributions', Distribution);

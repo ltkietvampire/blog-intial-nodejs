@@ -1,0 +1,107 @@
+<style>
+  .approval-manager-wrap {
+    max-width: 1200px;
+  }
+  .card-soft {
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+  .small-muted {
+    color: #64748b;
+    font-size: 13px;
+  }
+</style>
+
+<div class="container py-4 approval-manager-wrap">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div>
+      <h3 class="mb-1">Approval Center</h3>
+      <div class="small-muted">Review and process employee requests.</div>
+    </div>
+    <span class="badge text-bg-warning">Pending: {{pendingRequests.length}}</span>
+  </div>
+
+  <div class="card card-soft mb-4">
+    <div class="card-body">
+      <h5 class="mb-3">Pending Requests</h5>
+      {{#if pendingRequests.length}}
+        <div class="d-grid gap-3">
+          {{#each pendingRequests}}
+            <div class="border rounded p-3">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                <div>
+                  <div class="fw-semibold">{{this.requesterName}} - {{this.requestTypeLabel}}</div>
+                  <div class="small-muted">Created: {{this.createdAtText}} | Email: {{this.requesterEmail}}</div>
+                </div>
+                <span class="badge {{this.statusClass}}">{{this.statusLabel}}</span>
+              </div>
+
+              <div class="mb-2"><strong>Reason:</strong> {{this.reason}}</div>
+              {{#if this.taskName}}<div class="mb-1"><strong>Task:</strong> {{this.taskName}} (deadline: {{this.taskDeadlineText}})</div>{{/if}}
+              {{#if this.requestedFromDate}}<div class="mb-1"><strong>Leave:</strong> {{this.requestedFromDateText}} - {{this.requestedToDateText}}</div>{{/if}}
+              {{#if this.requestedDate}}<div class="mb-1"><strong>Shift change:</strong> {{this.requestedDateText}} ({{this.currentTimeStart}}-{{this.currentTimeEnd}} -> {{this.requestedTimeStart}}-{{this.requestedTimeEnd}})</div>{{/if}}
+              {{#if this.requestedDeadline}}<div class="mb-1"><strong>New deadline:</strong> {{this.requestedDeadlineText}}</div>{{/if}}
+
+              <div class="row g-2 mt-1">
+                <div class="col-lg-6">
+                  <form method="POST" action="/approvals/{{this._id}}/approve" class="d-flex gap-2">
+                    <input class="form-control form-control-sm" name="managerNote" placeholder="Approval note (optional)">
+                    <button class="btn btn-success btn-sm" type="submit">Approve</button>
+                  </form>
+                </div>
+                <div class="col-lg-6">
+                  <form method="POST" action="/approvals/{{this._id}}/reject" class="d-flex gap-2">
+                    <input class="form-control form-control-sm" name="managerNote" required minlength="3" placeholder="Rejection reason (required)">
+                    <button class="btn btn-danger btn-sm" type="submit">Reject</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="alert alert-light border mb-0">No pending requests.</div>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="card card-soft">
+    <div class="card-body">
+      <h5 class="mb-3">Recent Decisions</h5>
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Reviewed</th>
+              <th>Employee</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Manager Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#if historyRequests.length}}
+              {{#each historyRequests}}
+                <tr>
+                  <td>{{this.reviewedAtText}}</td>
+                  <td>{{this.requesterName}}</td>
+                  <td>{{this.requestTypeLabel}}</td>
+                  <td><span class="badge {{this.statusClass}}">{{this.statusLabel}}</span></td>
+                  <td>
+                    <div>{{this.managerNote}}</div>
+                    <small class="small-muted">By: {{this.reviewedByName}}</small>
+                  </td>
+                </tr>
+              {{/each}}
+            {{else}}
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">No approval history yet.</td>
+              </tr>
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

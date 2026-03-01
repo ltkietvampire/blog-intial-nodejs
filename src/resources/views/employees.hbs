@@ -1,9 +1,4 @@
-
-<head>
-  <meta charset="UTF-8" />
-  <title>People</title>
-
-  <style>
+<style>
     body {
       background: #f6f7fb;
     }
@@ -86,7 +81,7 @@
     font-weight: 500;
     }
 
-    /* Dấu chấm */
+    /* Dot */
     .status::before {
     content: "";
     width: 8px;
@@ -95,7 +90,7 @@
     display: inline-block;
     }
 
-    /* Hoạt động – Xanh lá */
+    /* Active - Green */
     .status-active {
     color: #16a34a;
     }
@@ -103,7 +98,7 @@
     background: #16a34a;
     }
 
-    /* Bận – Cam */
+    /* Busy - Orange */
     .status-busy {
     color: #f97316;
     }
@@ -111,7 +106,7 @@
     background: #f97316;
     }
 
-    /* Nghỉ – Đỏ */
+    /* Off - Red */
     .status-off {
     color: #dc2626;
     }
@@ -120,8 +115,6 @@
     }
 
   </style>
-</head>
-<body>
 
 <div class="container-fluid p-4">
 
@@ -131,14 +124,19 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h4 class="mb-0">People</h4>
 
-     <button 
-        type="button"
-        class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#addPeopleModal"
-        >
-        ➕ Add People
-    </button>
+     <div class="d-flex gap-2">
+        <a href="/employee/statistics" class="btn btn-outline-secondary">
+          Employee statistics
+        </a>
+        <button 
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#addPeopleModal"
+          >
+          Add People
+        </button>
+      </div>
 
     </div>
 
@@ -202,7 +200,7 @@
             <td>
               <div class="d-flex align-items-center gap-2">
                 <div class="avatar">
-                  <img src="https://i.pravatar.cc/40?img=3">
+                  <img src="{{#if this.avatar}}{{this.avatar}}{{else}}https://i.pravatar.cc/40?img=3{{/if}}">
                 </div>
                 <div>
                   <a href="#" class="name-link">{{this.name}}</a>
@@ -244,8 +242,11 @@
                       class="dropdown-item btn-edit"
                       data-id="{{this._id}}"
                       data-name="{{this.name}}"
+                      data-email="{{this.email}}"
+                      data-sdt="{{this.SDT}}"
                       data-position="{{this.position}}"
                       data-maxtime="{{this.maxtime}}"
+                      data-trangthai="{{this.trangthai}}"
                     >
                       ✏ Edit employee
                     </button>
@@ -298,6 +299,39 @@
                     required
                     >
                 </div>
+                <!-- Email -->
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input 
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    placeholder="Enter full email"
+                    required
+                    >
+                </div>
+                <!-- Phone -->
+                <div class="mb-3">
+                    <label class="form-label">Phone (SDT)</label>
+                    <input
+                    type="text"
+                    class="form-control"
+                    name="SDT"
+                    placeholder="Enter phone number"
+                    required
+                    >
+                </div>
+                <!-- Password -->
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input 
+                    type="password"
+                    class="form-control"
+                    name="password"
+                    placeholder="Enter password"
+                    required
+                    >
+                </div>
 
                 <!-- Position -->
                 <div class="mb-3">
@@ -318,11 +352,22 @@
                     type="number"
                     class="form-control"
                     name="maxtime"
-                    min="1"
-                    max="24"
+                    min="0"
+                    max="8"
+                    value="8"
                     placeholder="Ex: 8"
                     required    
                     >
+                </div>
+
+                <!-- Status -->
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="trangthai" required>
+                      <option value="status-active" selected>Active</option>
+                      <option value="status-busy">Busy</option>
+                      <option value="status-off">Off</option>
+                    </select>
                 </div>
 
                 </div>
@@ -356,16 +401,31 @@
             </div>
 
             <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" id="editEmail" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Phone (SDT)</label>
+              <input type="text" class="form-control" name="SDT" id="editSDT" required>
+            </div>
+
+            <div class="mb-3">
               <label class="form-label">Position</label>
               <input type="text" class="form-control" name="position" id="editPosition" required>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Max-time working</label>
-              <select class="form-select" name="max_time_working" id="editMaxTime" required>
-                <option value="4">4 hours</option>
-                <option value="6">6 hours</option>
-                <option value="8">8 hours</option>
+              <input type="number" class="form-control" name="maxtime" id="editMaxTime" min="0" max="8" step="1" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="trangthai" id="editTrangThai" required>
+                <option value="status-active">Active</option>
+                <option value="status-busy">Busy</option>
+                <option value="status-off">Off</option>
               </select>
             </div>
           </div>
@@ -392,7 +452,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Bạn có chắc muốn xóa tài khoản này không?</p>
+          <p>Are you sure you want to delete this account?</p>
         </div>
         <div class="modal-footer">
           <button id="btn-delete-comfirm" type="button" class="btn btn-danger">Delete</button>
@@ -414,12 +474,18 @@
         btn.addEventListener('click', function () {
           const id = this.dataset.id
           const name = this.dataset.name
+          const email = this.dataset.email
+          const sdt = this.dataset.sdt
           const position = this.dataset.position
           const maxTime = this.dataset.maxtime
+          const trangthai = this.dataset.trangthai
 
           document.getElementById('editName').value = name
+          document.getElementById('editEmail').value = email
+          document.getElementById('editSDT').value = sdt
           document.getElementById('editPosition').value = position
           document.getElementById('editMaxTime').value = maxTime
+          document.getElementById('editTrangThai').value = trangthai || 'status-active'
 
           const form = document.getElementById('editEmployeeForm')
           form.action = `/employee/${id}?_method=PUT`
@@ -443,9 +509,6 @@
    
     
   </script>
-
-
-</body>
 
 
 

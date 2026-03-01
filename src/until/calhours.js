@@ -8,7 +8,7 @@ module.exports = {
           const endMin   = eh * 60 + em;
 
           const diffMin = endMin - startMin;
-          return (diffMin / 60).toFixed(1); // 1 chữ số thập phân
+          return (diffMin / 60).toFixed(1); // keep 1 decimal place
         },
         sortPriority: ((a,b) =>
             a.priority !== b.priority

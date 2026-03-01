@@ -1,4 +1,4 @@
-  <style>
+﻿  <style>
     body {
       background-color: #f7f6f2;
     }
@@ -23,7 +23,58 @@
     .btn-primary:hover {
       background-color: #1598f5;
     }
+    .dropdown-toggle::after {
+      display: none;
+    }
 
+    .dropdown-menu {
+      border-radius: 12px;
+    }
+
+    .notification-btn {
+      border: none;
+      background: transparent;
+      line-height: 1;
+    }
+
+    .notification-badge {
+      font-size: 11px;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      top: -6px !important;
+      right: -9px !important;
+    }
+
+    .notification-menu {
+      width: 360px;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+
+    .notification-item {
+      white-space: normal;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .notification-item:last-child {
+      border-bottom: 0;
+    }
+
+    .bell-alert {
+      animation: bellPulse 1.2s infinite;
+      color: #dc3545;
+    }
+
+    @keyframes bellPulse {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-14deg); }
+      50% { transform: rotate(14deg); }
+      75% { transform: rotate(-8deg); }
+    }
   </style>
 </head>
 <body>
@@ -46,45 +97,142 @@
 
       <!-- Center menu -->
       <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="/employee" data-bs-toggle="dropdown">
-            Employees
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Email Marketing</a></li>
-            <li><a class="dropdown-item" href="#">Automation</a></li>
-          </ul>
-        </li>
-
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-            Use Cases
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Creators</a></li>
-            <li><a class="dropdown-item" href="#">Businesses</a></li>
-          </ul>
-        </li>
-
-
-        <li class="nav-item">
-          <a class="nav-link" href="/tasks">Tasks</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="/employee">Employees</a>
-        </li>
+        {{#if currentUser}}
+          {{#if isManager}}
+            <li class="nav-item">
+              <a class="nav-link" href="/">Schedule</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/tasks">Tasks</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/employee">Employees</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/employee/statistics">Employee Statistics</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/approvals">Approval Center</a>
+            </li>
+          {{else}}
+            <li class="nav-item">
+              <a class="nav-link" href="/dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/my-task">My Tasks</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/my-task/schedule">My Schedule</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth">My Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/approvals/my">My Requests</a>
+            </li>
+          {{/if}}
+        {{/if}}
       </ul>
 
       <!-- Right buttons -->
-      <div class="d-flex align-items-center gap-3">
-        <a href="#" class="text-decoration-none fw-semibold text-dark">
-          Log in
-        </a>
-        <a href="#" class="btn btn-primary">
-          Start free trial
-        </a>
-      </div>
+<div class="d-flex align-items-center gap-3">
+
+  {{#if currentUser}}
+    <!-- Logged in -->
+    <div class="dropdown">
+      <button
+        class="notification-btn position-relative text-dark"
+        type="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <i class="bi bi-bell-fill fs-5 {{#if taskNotifications.urgentCount}}bell-alert{{/if}}"></i>
+        {{#if taskNotifications.totalCount}}
+          <span class="badge bg-danger position-absolute notification-badge">
+            {{taskNotifications.totalCount}}
+          </span>
+        {{/if}}
+      </button>
+
+      <ul class="dropdown-menu dropdown-menu-end shadow notification-menu p-0">
+        <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+          <strong>Task Notifications</strong>
+          <span class="badge bg-light text-dark">{{taskNotifications.totalCount}}</span>
+        </li>
+
+        {{#if taskNotifications.items.length}}
+          {{#each taskNotifications.items}}
+            <li>
+              <a class="dropdown-item notification-item py-2 px-3" href="{{this.link}}">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                  <div>
+                    <div class="fw-semibold">{{this.title}}</div>
+                    <div class="small text-muted">{{this.taskName}}</div>
+                    <div class="small text-secondary">{{this.detail}}</div>
+                  </div>
+                  <span class="badge {{this.tagClass}} text-uppercase">{{this.type}}</span>
+                </div>
+              </a>
+            </li>
+          {{/each}}
+        {{else}}
+          <li class="px-3 py-3 text-muted small">No notifications at the moment.</li>
+        {{/if}}
+
+        <li class="border-top">
+          <a class="dropdown-item text-center py-2" href="{{#if isEmployee}}/my-task{{else}}/tasks{{/if}}">View all tasks</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="dropdown">
+      <a class="d-flex align-items-center gap-2 text-decoration-none dropdown-toggle"
+         href="#"
+         data-bs-toggle="dropdown">
+
+        <img
+          src="{{#if currentUser.avatar}}{{currentUser.avatar}}{{else}}/images/default-avatar.png{{/if}}"
+          class="rounded-circle"
+          width="36"
+          height="36"
+        />
+
+        <span class="fw-semibold text-dark">
+          {{currentUser.name}}
+        </span>
+      </a>
+
+      <ul class="dropdown-menu dropdown-menu-end shadow">
+        {{#if isEmployee}}
+          <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
+        {{/if}}
+        <li><a class="dropdown-item" href="/auth">Profile</a></li>
+        <li><a class="dropdown-item" href="/my-task">My Tasks</a></li>
+        {{#if isEmployee}}
+          <li><a class="dropdown-item" href="/my-task/schedule">My Schedule</a></li>
+          <li><a class="dropdown-item" href="/approvals/my">My Requests</a></li>
+        {{/if}}
+        {{#if isManager}}
+          <li><a class="dropdown-item" href="/employee">Employees</a></li>
+          <li><a class="dropdown-item" href="/tasks">Tasks</a></li>
+          <li><a class="dropdown-item" href="/approvals">Approval Center</a></li>
+        {{/if}}
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+      </ul>
+    </div>
+
+  {{else}}
+    <!-- Guest -->
+    <a href="/login" class="text-decoration-none fw-semibold text-dark">
+      Log in
+    </a>
+    <a href="#" class="btn btn-primary">
+      Start free trial
+    </a>
+  {{/if}}
+
+</div>
 
     </div>
   </div>

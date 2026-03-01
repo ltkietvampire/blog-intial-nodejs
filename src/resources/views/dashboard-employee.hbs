@@ -1,0 +1,120 @@
+<style>
+  .employee-dashboard {
+    max-width: 1100px;
+  }
+
+  .summary-card {
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  }
+
+  .summary-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .summary-label {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .task-table th {
+    font-size: 13px;
+    color: #64748b;
+  }
+</style>
+
+<div class="container py-4 employee-dashboard">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+      <h3 class="mb-1">Employee Dashboard</h3>
+      <div class="text-muted">Hello {{user.name}} ({{user.position}})</div>
+    </div>
+    <div class="text-muted small">Updated: {{nowText}}</div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4 col-lg-2">
+      <div class="card summary-card p-3">
+        <div class="summary-value">{{stats.assigned}}</div>
+        <div class="summary-label">Assigned</div>
+      </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+      <div class="card summary-card p-3">
+        <div class="summary-value text-primary">{{stats.today}}</div>
+        <div class="summary-label">Due today</div>
+      </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+      <div class="card summary-card p-3">
+        <div class="summary-value text-info">{{stats.upcoming}}</div>
+        <div class="summary-label">Upcoming</div>
+      </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+      <div class="card summary-card p-3">
+        <div class="summary-value text-danger">{{stats.overdue}}</div>
+        <div class="summary-label">Overdue</div>
+      </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+      <div class="card summary-card p-3">
+        <div class="summary-value text-warning">{{stats.late}}</div>
+        <div class="summary-label">Late</div>
+      </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+      <div class="card summary-card p-3">
+        <div class="summary-value text-success">{{stats.weeklyHours}}h</div>
+        <div class="summary-label">Week hours</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card summary-card mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Urgent Tasks</h5>
+        <a href="/my-task" class="btn btn-sm btn-outline-primary">Go to My Tasks</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table task-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Deadline</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#if urgentTasks.length}}
+              {{#each urgentTasks}}
+                <tr>
+                  <td class="fw-semibold">{{this.taskName}}</td>
+                  <td>{{this.deadlineText}}</td>
+                  <td>{{this.timeText}}</td>
+                  <td><span class="badge {{this.badgeClass}}">{{this.statusText}}</span></td>
+                </tr>
+              {{/each}}
+            {{else}}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-4">No urgent task right now.</td>
+              </tr>
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <a href="/my-task" class="btn btn-primary">My Tasks</a>
+    <a href="/my-task/schedule" class="btn btn-outline-primary">My Schedule</a>
+    <a href="/approvals/my" class="btn btn-outline-warning">My Requests</a>
+    <a href="/auth" class="btn btn-outline-secondary">My Profile</a>
+  </div>
+</div>

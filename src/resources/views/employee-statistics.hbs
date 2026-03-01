@@ -1,0 +1,268 @@
+<style>
+  .stats-wrap {
+    max-width: 1180px;
+  }
+
+  .stats-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .stats-subtitle {
+    color: #6b7280;
+    font-size: 14px;
+  }
+
+  .stats-card {
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  }
+
+  .metric-label {
+    color: #6b7280;
+    font-size: 13px;
+  }
+
+  .metric-value {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .stats-table th {
+    font-size: 13px;
+    color: #374151;
+    white-space: nowrap;
+  }
+
+  .stats-table td {
+    vertical-align: middle;
+  }
+
+  .employee-name {
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .employee-role {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .badge-soft {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #eef2ff;
+    color: #3730a3;
+  }
+
+  .chart-card {
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    background: #fff;
+  }
+
+  .chart-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+  }
+
+  .chart-wrap {
+    height: 320px;
+  }
+</style>
+
+<div class="container py-4 stats-wrap">
+  <div class="d-flex flex-wrap gap-3 justify-content-between align-items-start mb-3">
+    <div>
+      <h3 class="stats-title">Employee Statistics</h3>
+      <div class="stats-subtitle">Updated at: {{generatedAt}}</div>
+      <div class="stats-subtitle">Filter: {{periodLabel}}</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <form method="GET" action="/employee/statistics" class="d-flex gap-2">
+        <select name="period" class="form-select form-select-sm" style="min-width: 140px">
+          {{#each periodOptions}}
+            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+          {{/each}}
+        </select>
+        <button type="submit" class="btn btn-outline-secondary btn-sm">Apply</button>
+      </form>
+      <a href="/employee/statistics/export?period={{selectedPeriod}}" class="btn btn-outline-success btn-sm">
+        Export CSV
+      </a>
+      <a href="/employee" class="btn btn-outline-secondary btn-sm">Employee List</a>
+      <a href="/tasks" class="btn btn-primary btn-sm">Task Management</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+      <div class="card stats-card p-3">
+        <div class="metric-label">Employees</div>
+        <div class="metric-value">{{report.length}}</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="card stats-card p-3">
+        <div class="metric-label">Total Work Hours</div>
+        <div class="metric-value">{{totals.workHours}}h</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="card stats-card p-3">
+        <div class="metric-label">Total Late Count</div>
+        <div class="metric-value">{{totals.lateCount}}</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="card stats-card p-3">
+        <div class="metric-label">Total Skipped Tasks</div>
+        <div class="metric-value">{{totals.skippedCount}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-lg-8">
+      <div class="chart-card p-3">
+        <div class="chart-title">Work Hours by Employee</div>
+        <div class="chart-wrap">
+          <canvas id="workHoursChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="chart-card p-3">
+        <div class="chart-title">Assignment Status Ratio</div>
+        <div class="chart-wrap">
+          <canvas id="assignmentStatusChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card stats-card p-3">
+    <div class="table-responsive">
+      <table class="table table-hover stats-table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Position</th>
+            <th>Assigned Tasks</th>
+            <th>Total Work Hours</th>
+            <th>Late Time</th>
+            <th>Late Count</th>
+            <th>Skipped Tasks</th>
+            <th>Max Work Hours/Day</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{#if report.length}}
+            {{#each report}}
+              <tr>
+                <td>
+                  <div class="employee-name">{{this.name}}</div>
+                  <div class="employee-role">{{this.email}}</div>
+                </td>
+                <td>{{this.position}}</td>
+                <td><span class="badge-soft">{{this.assignedTasks}}</span></td>
+                <td>{{this.workHours}}h</td>
+                <td>{{this.lateText}}</td>
+                <td>{{this.lateCount}}</td>
+                <td>{{this.skippedCount}}</td>
+                <td>{{this.maxtime}}h</td>
+              </tr>
+            {{/each}}
+          {{else}}
+            <tr>
+              <td colspan="8" class="text-center py-4 text-muted">
+                No employee statistics available.
+              </td>
+            </tr>
+          {{/if}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof Chart === 'undefined') return;
+
+    const report = {{#if report}}{{{json report}}}{{else}}[]{{/if}};
+    const totals = {{#if totals}}{{{json totals}}}{{else}}{"assignedTasks":0,"lateCount":0,"skippedCount":0}{{/if}};
+
+    const labels = report.map((item) => item.name || 'N/A');
+    const hours = report.map((item) => Number(item.workHours) || 0);
+
+    const workHoursCtx = document.getElementById('workHoursChart');
+    if (workHoursCtx) {
+      new Chart(workHoursCtx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Work hours',
+            data: hours,
+            borderRadius: 8,
+            backgroundColor: '#3b82f6',
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) { return `${value}h`; },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    const assignedTasks = Number(totals.assignedTasks) || 0;
+    const lateCount = Number(totals.lateCount) || 0;
+    const skippedCount = Number(totals.skippedCount) || 0;
+    const onTimeCount = Math.max(assignedTasks - lateCount - skippedCount, 0);
+
+    const statusCtx = document.getElementById('assignmentStatusChart');
+    if (statusCtx) {
+      new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['On time', 'Late', 'Skipped'],
+          datasets: [{
+            data: [onTimeCount, lateCount, skippedCount],
+            backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
+            borderWidth: 0,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' },
+          },
+        },
+      });
+    }
+  });
+</script>

@@ -1,0 +1,244 @@
+<style>
+  .mytask-wrap {
+    max-width: 1180px;
+  }
+
+  .mytask-header {
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f8fafc, #eef2ff);
+    padding: 18px 20px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .mytask-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .mytask-sub {
+    color: #6b7280;
+    font-size: 14px;
+  }
+
+  .section-title {
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .section-sub {
+    color: #6b7280;
+    font-size: 13px;
+  }
+
+  .task-card {
+    border-radius: 14px;
+    border: 0;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    height: 100%;
+  }
+
+  .task-time {
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+
+  .task-desc {
+    color: #4b5563;
+    font-size: 14px;
+    min-height: 40px;
+  }
+
+  .meta-text {
+    color: #6b7280;
+    font-size: 13px;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .status-working {
+    background: #ecfeff;
+    color: #0e7490;
+  }
+
+  .status-checkin {
+    background: #f0fdf4;
+    color: #166534;
+  }
+
+  .status-late {
+    background: #fff7ed;
+    color: #c2410c;
+  }
+
+  .status-completed {
+    background: #eef2ff;
+    color: #3730a3;
+  }
+</style>
+
+<div class="container py-4 mytask-wrap">
+  <div class="mytask-header mb-4">
+    <div class="d-flex flex-wrap justify-content-between gap-3 align-items-start">
+      <div>
+        <h3 class="mytask-title">My Task</h3>
+        <div class="mytask-sub">Cap nhat luc: {{nowText}}</div>
+      </div>
+
+      <div class="text-end">
+        <div class="mytask-sub">Employee</div>
+        <div class="fw-semibold">{{user.name}} - {{user.position}}</div>
+        <div class="mytask-sub">Total worked time: {{user.totalWorkingHours}}h</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+      <div>
+        <h5 class="section-title">Today's Tasks</h5>
+        <div class="section-sub">Tasks with deadline today</div>
+      </div>
+      <div class="section-sub">Total: {{todayTasks.length}}</div>
+    </div>
+
+    <div class="row g-3">
+      {{#if todayTasks.length}}
+        {{#each todayTasks}}
+          <div class="col-lg-4 col-md-6">
+            <div class="card task-card p-3">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                <div class="fw-semibold">{{this.name}}</div>
+                <span class="status-pill {{this.statusClass}}">{{this.statusLabel}}</span>
+              </div>
+
+              <div class="task-time">{{this.dateStart}} - {{this.dateEnd}}</div>
+              <div class="task-desc">{{this.description}}</div>
+
+              <div class="meta-text mt-2">Deadline: {{this.deadlineText}}</div>
+              <div class="meta-text">Estimated hours: {{this.estimatedHours}}h</div>
+              {{#if this.checkInAtText}}
+                <div class="meta-text">Check-in: {{this.checkInAtText}}</div>
+              {{/if}}
+              {{#if this.completedAtText}}
+                <div class="meta-text">Completed: {{this.completedAtText}}</div>
+              {{/if}}
+
+              <div class="d-flex gap-2 mt-3">
+                {{#if this.canCheckIn}}
+                  <form method="POST" action="/my-task/{{this.distributionId}}/check-in">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Check in</button>
+                  </form>
+                {{/if}}
+
+                {{#if this.canComplete}}
+                  <form method="POST" action="/my-task/{{this.distributionId}}/complete">
+                    <button type="submit" class="btn btn-success btn-sm">Complete</button>
+                  </form>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <div class="col-12">
+          <div class="alert alert-light border mb-0">No tasks for today.</div>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+      <div>
+        <h5 class="section-title">Upcoming Tasks</h5>
+        <div class="section-sub">Tasks with upcoming deadlines</div>
+      </div>
+      <div class="section-sub">Total: {{upcomingTasks.length}}</div>
+    </div>
+
+    <div class="row g-3">
+      {{#if upcomingTasks.length}}
+        {{#each upcomingTasks}}
+          <div class="col-lg-4 col-md-6">
+            <div class="card task-card p-3">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                <div class="fw-semibold">{{this.name}}</div>
+                <span class="status-pill {{this.statusClass}}">{{this.statusLabel}}</span>
+              </div>
+
+              <div class="task-time">{{this.dateStart}} - {{this.dateEnd}}</div>
+              <div class="task-desc">{{this.description}}</div>
+
+              <div class="meta-text mt-2">Deadline: {{this.deadlineText}}</div>
+              <div class="meta-text">Estimated hours: {{this.estimatedHours}}h</div>
+              {{#if this.checkInAtText}}
+                <div class="meta-text">Check-in: {{this.checkInAtText}}</div>
+              {{/if}}
+              {{#if this.completedAtText}}
+                <div class="meta-text">Completed: {{this.completedAtText}}</div>
+              {{/if}}
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <div class="col-12">
+          <div class="alert alert-light border mb-0">No upcoming tasks.</div>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="mb-2">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+      <div>
+        <h5 class="section-title text-danger">Overdue Incomplete Tasks</h5>
+        <div class="section-sub">Tasks past deadline and not marked as completed</div>
+      </div>
+      <div class="section-sub">Total: {{overdueTasks.length}}</div>
+    </div>
+
+    <div class="row g-3">
+      {{#if overdueTasks.length}}
+        {{#each overdueTasks}}
+          <div class="col-lg-4 col-md-6">
+            <div class="card task-card p-3 border border-danger-subtle">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                <div class="fw-semibold">{{this.name}}</div>
+                <span class="status-pill {{this.statusClass}}">{{this.statusLabel}}</span>
+              </div>
+
+              <div class="task-time">{{this.dateStart}} - {{this.dateEnd}}</div>
+              <div class="task-desc">{{this.description}}</div>
+
+              <div class="meta-text mt-2">Deadline: {{this.deadlineText}}</div>
+              <div class="meta-text">Estimated hours: {{this.estimatedHours}}h</div>
+              {{#if this.checkInAtText}}
+                <div class="meta-text">Check-in: {{this.checkInAtText}}</div>
+              {{/if}}
+
+              <div class="d-flex gap-2 mt-3">
+                {{#if this.canComplete}}
+                  <form method="POST" action="/my-task/{{this.distributionId}}/complete">
+                    <button type="submit" class="btn btn-success btn-sm">Complete</button>
+                  </form>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <div class="col-12">
+          <div class="alert alert-light border mb-0">No overdue tasks.</div>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</div>

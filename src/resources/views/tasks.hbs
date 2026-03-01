@@ -1,941 +1,854 @@
-<!doctype html>
-<html lang="vi">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tasks — Calm Board</title>
-  <style>
-    :root{
-      --bg: #f3f4f8;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --primary: #6366f1; /* indigo */
-      --accent: #eef2ff;
-    }
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --primary: #2563eb;
+  }
 
-    body{
-      background: linear-gradient(180deg, #f5f6fb, #eef1f7);
-      color: var(--text);
-    }
+  .task-page {
+    max-width: 1200px;
+    margin: 28px auto;
+  }
 
-    .page-wrap{ max-width:1200px; margin:28px auto; }
+  .panel {
+    background: #f8faff;
+    border-radius: 16px;
+    padding: 16px;
+  }
 
-    h3, h5{ font-weight:700; letter-spacing:.2px; }
+  .task-card {
+    border: 0;
+    border-radius: 14px;
+    background: var(--card);
+    box-shadow: 0 8px 24px rgba(31, 41, 55, 0.08);
+  }
 
-    .card{
-      border:0;
-      border-radius:16px;
-      background: var(--card);
-      box-shadow: 0 10px 28px rgba(31,41,55,.08);
-    }
+  .priority-1 { border-left: 5px solid #ef4444; }
+  .priority-2 { border-left: 5px solid #f97316; }
+  .priority-3 { border-left: 5px solid #f59e0b; }
+  .priority-4 { border-left: 5px solid #22c55e; }
+  .priority-5 { border-left: 5px solid #3b82f6; }
 
-    .toolbar input{
-      background:#fff;
-      border-radius:10px;
-    }
+  .small-muted {
+    color: var(--muted);
+    font-size: 13px;
+  }
 
-    /* task card */
-    .task-card{
-      border-radius:14px;
-      transition: all .15s ease;
-    }
-    .task-card:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 12px 26px rgba(31,41,55,.12);
-    }
+  .badge-soft {
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e0ebff;
+    color: #1d4ed8;
+  }
 
-    .priority-accent{
-      height:6px;
-      border-radius:14px 14px 0 0;
-    }
+  .btn-ghost {
+    border: 0;
+    background: transparent;
+    color: #6b7280;
+    border-radius: 8px;
+    padding: 4px 8px;
+  }
 
-    /* calm priority palette */
-    .p-1{ background:#fca5a5; } /* soft red */
-    .p-2{ background:#fdba74; } /* soft orange */
-    .p-3{ background:#fde68a; } /* soft amber */
-    .p-4{ background:#86efac; } /* soft green */
-    .p-5{ background:#bfdbfe; } /* soft blue */
+  .btn-ghost:hover {
+    background: #f1f5f9;
+    color: #111827;
+  }
+</style>
 
-    .priority-dot{
-      width:10px; height:10px; border-radius:50%; display:inline-block;
-    }
-
-    .task-meta{ font-size:13px; color:var(--muted); }
-
-    .section-box{
-      background: #fafbff;
-      border-radius:18px;
-      padding:18px;
-    }
-
-    .badge-assigned{
-      background: var(--accent);
-      color: var(--primary);
-      font-weight:500;
-    }
-
-    .btn-primary{
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-    .btn-primary:hover{ background:#4f46e5; }
-
-    .btn-outline-secondary{
-      border-radius:10px;
-    }
-
-    .list-group-item{ background:transparent; }
-
-    @media (max-width:991px){
-      .page-wrap{ padding:16px; }
-    }
-    {{!-- trượt card task --}}
-/* ===== TASK DESCRIPTION ===== */
-.task-desc {
-  max-height: 0;
-  overflow: hidden;
-  color: #555;
-  font-size: 14px;
-  opacity: 0;
-  transition: max-height 0.3s ease, opacity 0.2s ease;
-}
-
-.task-card.open .task-desc {
-  max-height: 200px;
-  opacity: 1;
-}
-
-/* ===== RIGHT AREA ===== */
-.task-right {
-  position: relative;
-}
-
-/* ===== TASK TIME ===== */
-.task-time {
-  transition: transform 0.2s ease;
-}
-
-/* ===== TASK ACTIONS ===== */
-.task-actions {
-  position: absolute;
-  right: 0;
-  top: 0;
-  display: flex;
-  flex-direction: column;   /* 👈 xếp dọc */
-  gap: 4px;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(6px);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-/* Hover card → hiện nút */
-.task-card:hover .task-actions {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(0);
-}
-
-
-/* Hover card → time dịch sang trái */
-.task-card:hover .task-time {
-  transform: translateX(-44px);
-}
-
-/* ===== ACTION BUTTON ===== */
-.task-action-btn {
-  padding: 2px 6px;
-  border-radius: 6px;
-  color: #6b7280;
-}
-
-.task-action-btn:hover {
-  background: #f1f5f9;
-  color: #111827;
-}
-/* delete button calm style */
-.btn-delete {
-  color: #9ca3af; /* xám nhạt */
-}
-
-.btn-delete:hover {
-  background: #fee2e2; /* đỏ rất nhẹ */
-  color: #b91c1c;
-}
-.btn-unassign:hover {
-  color: #dc3545; /* đỏ bootstrap */
-}
-
-
-
-  </style>
-</head>
-<body>
-  <div class="page-wrap">
-
-    <!-- header -->
-    <div class="d-flex align-items-center justify-content-between mb-3 toolbar">
-      <h3 class="mb-0">Tasks</h3>
-      <div class="d-flex gap-2 align-items-center">
-        <input id="searchInput" class="form-control form-control-sm" style="max-width:260px;" placeholder="Search tasks…">
-        <button id="btn-clear" class="btn btn-outline-secondary btn-sm">Clear</button>
-        <button id="btn-add" class="btn btn-primary btn-sm">＋ New Task</button>
-      </div>
-    </div>
-
-    <div class="row g-4">
-
-      <!-- Unassigned -->
-      <div class="col-lg-6">
-        <div class="section-box">
-          <div class="d-flex align-items-center mb-3">
-            <div>
-              <h5 class="mb-0">Chưa được giao</h5>
-              <div class="text-muted small">Ưu tiên tăng dần · Task mới hơn sẽ lên trước</div>
-            </div>
-            <div class="ms-auto">
-              <select id="filterPriority" class="form-select form-select-sm" style="width:160px">
-                <option value="all">All priorities</option>
-                <option value="1">Priority 1</option>
-                <option value="2">Priority 2</option>
-                <option value="3">Priority 3</option>
-                <option value="4">Priority 4</option>
-                <option value="5">Priority 5</option>
-              </select>
-            </div>
-          </div>
-          {{!--  --}}
-          <div id="unassignedList" class="list-group list-group-flush"></div>
-        </div>
-      </div>
-
-      <!-- Assigned -->
-      <div class="col-lg-6">
-        <div class="section-box">
-          <div class="d-flex align-items-center mb-3">
-            <div>
-              <h5 class="mb-0">Đã được giao</h5>
-              <div class="text-muted small">Theo người phụ trách · deadline</div>
-            </div>
-          </div>
-          <div id="assignedList" class="list-group list-group-flush"></div>
-        </div>
-      </div>
-
+<div class="task-page">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <h3 class="mb-0">Tasks</h3>
+    <div class="d-flex gap-2 align-items-center">
+      <input id="searchInput" class="form-control form-control-sm" style="max-width: 260px" placeholder="Search task name">
+      <select id="filterPriority" class="form-select form-select-sm" style="width: 150px">
+        <option value="all">All priorities</option>
+        <option value="1">Priority 1</option>
+        <option value="2">Priority 2</option>
+        <option value="3">Priority 3</option>
+        <option value="4">Priority 4</option>
+        <option value="5">Priority 5</option>
+      </select>
+      <button id="btn-clear" class="btn btn-outline-secondary btn-sm">Clear</button>
+      <button
+        type="button"
+        class="btn btn-outline-dark btn-sm"
+        data-bs-toggle="modal"
+        data-bs-target="#archivedTasksModal"
+      >
+        Archive/Completed ({{archivedTasks.length}})
+      </button>
+      <button id="btn-add" class="btn btn-primary btn-sm">New Task</button>
     </div>
   </div>
 
-  <!-- Add Task Modal -->
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="panel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="mb-0">Needs assignees</h5>
+            <div class="small-muted">Tasks that still need assignees</div>
+          </div>
+          <span id="needCount" class="badge-soft">0</span>
+        </div>
+        <div id="needAssignList" class="d-grid gap-3"></div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="panel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="mb-0">Assigned</h5>
+            <div class="small-muted">List of already assigned employees</div>
+          </div>
+          <span id="assignedCount" class="badge-soft">0</span>
+        </div>
+        <div id="assignedList" class="d-grid gap-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="archivedTasksModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Archive/Completed Tasks</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Recurrence</th>
+                <th>Deadline</th>
+                <th>People</th>
+                <th>Completed At</th>
+                <th>Archived At</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#if archivedTasks.length}}
+                {{#each archivedTasks}}
+                  <tr>
+                    <td>
+                      <div class="fw-semibold">{{this.name_task}}</div>
+                      <div class="small-muted">{{this.description_task}}</div>
+                    </td>
+                    <td>{{this.recurrence_label}}</td>
+                    <td>{{this.deadlineText}}</td>
+                    <td>{{this.assigned_people_count}} / {{this.required_people}}</td>
+                    <td>{{this.completedAtText}}</td>
+                    <td>{{this.archivedAtText}}</td>
+                  </tr>
+                {{/each}}
+              {{else}}
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    Chua co task archived.
+                  </td>
+                </tr>
+              {{/if}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="taskModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <form id="taskForm" class="modal-content" method="POST" action="/tasks/store">
-
-      <!-- HEADER -->
       <div class="modal-header">
-        <h5 class="modal-title">📝 Tạo Task mới</h5>
+        <h5 class="modal-title">Create new task</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-
-      <!-- BODY -->
       <div class="modal-body">
-
-        <!-- TITLE -->
         <div class="mb-3">
-          <label class="form-label fw-semibold">Tên công việc</label>
-          <input
-            name="name_task"
-            class="form-control"
-            placeholder="Ví dụ: Họp cố vấn"
-            required
-          >
+          <label class="form-label fw-semibold">Task name</label>
+          <input name="name_task" class="form-control" required>
         </div>
-
-        <!-- DESCRIPTION -->
         <div class="mb-3">
-          <label class="form-label fw-semibold">Mô tả</label>
-          <textarea
-            name="description_task"
-            class="form-control"
-            rows="2"
-            placeholder="Nội dung chi tiết (không bắt buộc)"
-          ></textarea>
+          <label class="form-label fw-semibold">Description</label>
+          <textarea name="description_task" class="form-control" rows="2"></textarea>
         </div>
-
-        <!-- TIME -->
         <div class="row g-2 mb-3">
           <div class="col-md-6">
-            <label class="form-label fw-semibold">Giờ bắt đầu</label>
+            <label class="form-label fw-semibold">Start time</label>
             <input
               type="time"
+              id="createDateStart"
               name="dateStart"
               class="form-control"
-              required
-            >
+              min="08:00"
+              max="19:00"
+              step="60"
+              value="08:00"
+              required>
           </div>
-
           <div class="col-md-6">
-            <label class="form-label fw-semibold">Giờ kết thúc</label>
+            <label class="form-label fw-semibold">End time</label>
             <input
               type="time"
+              id="createDateEnd"
               name="dateEnd"
               class="form-control"
-              required
-            >
+              min="09:00"
+              max="20:00"
+              step="60"
+              value="09:00"
+              required>
           </div>
         </div>
-
-        <!-- DEADLINE + PRIORITY -->
-        <div class="row g-2">
+        <div class="row g-2 mb-3">
           <div class="col-md-6">
             <label class="form-label fw-semibold">Deadline</label>
-            <input
-              type="date"
-              name="deadline"
-              class="form-control"
-              required
-            >
+            <input type="date" id="createDeadline" name="deadline" class="form-control" required>
           </div>
-
           <div class="col-md-6">
-            <label class="form-label fw-semibold">Độ ưu tiên</label>
+            <label class="form-label fw-semibold">Priority</label>
             <select name="priority" class="form-select">
-              <option value="1">🔴 1 — Rất cao</option>
-              <option value="2">🟠 2 — Cao</option>
-              <option value="3" selected>🟡 3 — Trung bình</option>
-              <option value="4">🟢 4 — Thấp</option>
-              <option value="5">🔵 5 — Rất thấp</option>
+              <option value="1">1 - Rat cao</option>
+              <option value="2">2 - Cao</option>
+              <option value="3" selected>3 - Trung binh</option>
+              <option value="4">4 - Thap</option>
+              <option value="5">5 - Rat thap</option>
             </select>
           </div>
         </div>
-
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Recurrence</label>
+            <select name="recurrence_type" class="form-select">
+              <option value="none" selected>No recurrence</option>
+              <option value="daily">Hang ngay</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Required people</label>
+            <input type="number" name="required_people" min="1" value="1" class="form-control" required>
+          </div>
+        </div>
       </div>
-
-      <!-- FOOTER -->
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-outline-secondary"
-          data-bs-dismiss="modal"
-        >
-          Hủy
-        </button>
-        <button type="submit" class="btn btn-primary">
-          💾 Lưu Task
-        </button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save task</button>
       </div>
-
     </form>
   </div>
 </div>
 
-  <!-- Edit Task Modal -->
 <div class="modal fade" id="taskEditModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <form id="taskEditForm" class="modal-content" method="POST" >
-
-      <!-- HEADER -->
+    <form id="taskEditForm" class="modal-content" method="POST">
       <div class="modal-header">
-        <h5 class="modal-title">📝 Sửa thông tin công việc</h5>
+        <h5 class="modal-title">Edit task</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-
-      <!-- BODY -->
       <div class="modal-body">
-
-        <!-- TITLE -->
         <div class="mb-3">
-          <label class="form-label fw-semibold">Tên công việc</label>
-          <input
-            id="name_task"
-            name="name_task"
-            class="form-control"
-            placeholder="Ví dụ: Họp cố vấn"
-            required
-          >
+          <label class="form-label fw-semibold">Task name</label>
+          <input id="editNameTask" name="name_task" class="form-control" required>
         </div>
-
-        <!-- DESCRIPTION -->
         <div class="mb-3">
-          <label class="form-label fw-semibold">Mô tả</label>
-          <textarea
-            id="description_task"
-            name="description_task"
-            class="form-control"
-            rows="2"
-            placeholder="Nội dung chi tiết (không bắt buộc)"
-          ></textarea>
+          <label class="form-label fw-semibold">Description</label>
+          <textarea id="editDescriptionTask" name="description_task" class="form-control" rows="2"></textarea>
         </div>
-
-        <!-- TIME -->
         <div class="row g-2 mb-3">
           <div class="col-md-6">
-            <label class="form-label fw-semibold">Giờ bắt đầu</label>
-            <input
-              type="time"
-              name="dateStart"
-              id="dateStart"
-              class="form-control"
-              required
-            >
+            <label class="form-label fw-semibold">Start time</label>
+            <input type="time" id="editDateStart" name="dateStart" class="form-control" required>
           </div>
-
           <div class="col-md-6">
-            <label class="form-label fw-semibold">Giờ kết thúc</label>
-            <input
-              type="time"
-              id="dateEnd"
-              name="dateEnd"
-              class="form-control"
-              required
-            >
+            <label class="form-label fw-semibold">End time</label>
+            <input type="time" id="editDateEnd" name="dateEnd" class="form-control" required>
           </div>
         </div>
-
-        <!-- DEADLINE + PRIORITY -->
-        <div class="row g-2">
+        <div class="row g-2 mb-3">
           <div class="col-md-6">
             <label class="form-label fw-semibold">Deadline</label>
-            <input
-              type="date"
-              id="deadline"
-              name="deadline"
-              class="form-control"
-              required
-            >
+            <input type="date" id="editDeadline" name="deadline" class="form-control" required>
           </div>
-
           <div class="col-md-6">
-            <label class="form-label fw-semibold">Độ ưu tiên</label>
-            <select name="priority" id="priority" class="form-select">
-              <option value="1">🔴 1 — Rất cao</option>
-              <option value="2">🟠 2 — Cao</option>
-              <option value="3" selected>🟡 3 — Trung bình</option>
-              <option value="4">🟢 4 — Thấp</option>
-              <option value="5">🔵 5 — Rất thấp</option>
+            <label class="form-label fw-semibold">Priority</label>
+            <select id="editPriority" name="priority" class="form-select">
+              <option value="1">1 - Rat cao</option>
+              <option value="2">2 - Cao</option>
+              <option value="3">3 - Trung binh</option>
+              <option value="4">4 - Thap</option>
+              <option value="5">5 - Rat thap</option>
             </select>
           </div>
         </div>
-
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Recurrence</label>
+            <select id="editRecurrenceType" name="recurrence_type" class="form-select">
+              <option value="none">No recurrence</option>
+              <option value="daily">Hang ngay</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Required people</label>
+            <input type="number" id="editRequiredPeople" name="required_people" min="1" class="form-control" required>
+          </div>
+        </div>
       </div>
-
-      <!-- FOOTER -->
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-outline-secondary"
-          data-bs-dismiss="modal"
-        >
-          Hủy
-        </button>
-        <button type="submit" class="btn btn-primary">
-          Sửa task
-        </button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
       </div>
-
     </form>
   </div>
 </div>
 
-<!-- DELETE CONFIRM MODAL -->
 <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="border-radius:16px">
-
-      <!-- HEADER -->
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-semibold">
-          🗑 Xóa công việc
-        </h5>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete task</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-
-      <!-- BODY -->
-      <div class="modal-body pt-2">
-        <p class="mb-2">
-          Bạn có chắc chắn muốn xóa task:
-        </p>
-
-        <div class="p-3 rounded-3" style="background:#f8fafc">
-          <strong id="deleteTaskName">Tên task</strong>
-        </div>
-
-        <p class="text-muted small mt-2 mb-0">
-          Hành động này không thể hoàn tác.
-        </p>
+      <div class="modal-body">
+        Are you sure you want to delete task: <strong id="deleteTaskName"></strong>?
       </div>
-
-      <!-- FOOTER -->
-      <div class="modal-footer border-0">
-        <button
-          type="button"
-          class="btn btn-outline-secondary"
-          data-bs-dismiss="modal"
-        >
-          Hủy
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-danger"
-          id="confirmDeleteBtn"
-        >
-          Xóa
-        </button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
       </div>
-
     </div>
   </div>
 </div>
-{{!-- ASSIGN MODAL --}}
-<!-- ASSIGN TASK MODAL -->
+
 <div class="modal fade" id="assignTaskModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" style="border-radius:16px">
-
-      <!-- HEADER -->
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-semibold">
-          👤 Giao công việc
-        </h5>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Assign task</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-
-      <!-- BODY -->
       <div class="modal-body">
-
-        <!-- TASK INFO -->
-        <div class="mb-3 p-3 rounded-3" style="background:#f8fafc">
-          <div class="fw-semibold mb-1" id="assignTaskName">
-            Tên task
-          </div>
-          <div class="text-muted small" id="assignTaskTime">
-            08:00 – 10:00 · Deadline: 2026-02-05
-          </div>
+        <div class="p-3 rounded-3 mb-3" style="background:#f8fafc">
+          <div class="fw-semibold mb-1" id="assignTaskName">Ten task</div>
+          <div class="small-muted" id="assignTaskInfo">00:00 - 00:00</div>
+          <div class="small-muted mt-1" id="assignTaskSlots">Con trong: 0</div>
         </div>
-
-        <!-- FILTER ROLE -->
         <div class="mb-3">
-          <label class="form-label fw-semibold">Chức vụ</label>
-          <select
-            id="filterPosition"
-            class="form-select"
-          >
-            <option value="all">Tất cả</option>
+          <label class="form-label fw-semibold">Loc theo chuc vu</label>
+          <select id="filterPosition" class="form-select">
+            <option value="all">Tat ca</option>
             {{#each position}}
-            <option value="{{this}}">{{this}}</option>
+              <option value="{{this}}">{{this}}</option>
             {{/each}}
           </select>
         </div>
-
-        <!-- EMPLOYEE SELECT -->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Nhân viên</label>
-          <select
-            id="assignEmployeeSelect"
-            class="form-select"
-            size="6"
-            required
-          >
-          {{#each users}}
-            <option value="{{this._id}}">
-              {{this.name}} — {{this.position}}
-            </option>
-          {{/each}}
-          </select>
-          <div class="invalid-feedback">
-            Vui lòng chọn nhân viên phụ trách
-          </div>
+        <div class="mb-2">
+          <label class="form-label fw-semibold">Employee</label>
+          <select id="assignEmployeeSelect" class="form-select" size="6" required></select>
+          <div class="invalid-feedback">Please select an employee.</div>
         </div>
-
-        <div class="text-muted small">
-          💡 Chỉ chọn 1 người phụ trách cho mỗi task
-        </div>
-
       </div>
-
-      <!-- FOOTER -->
-      <div class="modal-footer border-0">
-        <button
-          type="button"
-          class="btn btn-outline-secondary"
-          data-bs-dismiss="modal"
-        >
-          Hủy
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-primary"
-          id="confirmAssignBtn"
-        >
-          Giao task
-        </button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmAssignBtn">Assign task</button>
       </div>
-
     </div>
   </div>
 </div>
-{{!-- UNASSIGN TASK MODAL --}}
+
 <div class="modal fade" id="unassignModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4">
-
-      <div class="modal-header border-0">
-        <h5 class="modal-title fw-semibold text-danger">
-          <i class="bi bi-exclamation-triangle me-2"></i>
-          Thu hồi phân công
-        </h5>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Unassign phan cong</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-
       <div class="modal-body">
-        <p class="mb-2">
-          Bạn có chắc muốn <strong>thu hồi task</strong> đã giao cho:
-        </p>
-
-        <div class="alert alert-light border mb-0">
-          👤 <strong id="unassignUserName">Nguyễn Văn A</strong>
-        </div>
+        Unassign task cua <strong id="unassignUserName"></strong>?
       </div>
-
-      <div class="modal-footer border-0">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">
-          Hủy
-        </button>
-        <button class="btn btn-danger" id="confirmUnassignBtn">
-          Thu hồi
-        </button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmUnassignBtn">Unassign</button>
       </div>
-
     </div>
   </div>
 </div>
 
+<form method="POST" id="actionForm"></form>
 
-<form method= "POST" id="formSubmit"></form>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchInput');
+    const filterPriority = document.getElementById('filterPriority');
+    const needAssignList = document.getElementById('needAssignList');
+    const assignedList = document.getElementById('assignedList');
+    const needCount = document.getElementById('needCount');
+    const assignedCount = document.getElementById('assignedCount');
+    const btnAdd = document.getElementById('btn-add');
+    const btnClear = document.getElementById('btn-clear');
+    const taskForm = document.getElementById('taskForm');
+    const createDateStart = document.getElementById('createDateStart');
+    const createDateEnd = document.getElementById('createDateEnd');
+    const createDeadline = document.getElementById('createDeadline');
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-              
-        // ===== FIX: always query DOM elements explicitly =====
-        const searchInput = document.getElementById('searchInput');
-        const filterPriority = document.getElementById('filterPriority');
-        const unassignedList = document.getElementById('unassignedList');
-        const assignedList = document.getElementById('assignedList');
-        const btnAdd = document.getElementById('btn-add');
-        const btnClear = document.getElementById('btn-clear');
-        const taskForm = document.getElementById('taskForm');
-        var   idTask
-        var   idDis
+    const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+    const editModal = new bootstrap.Modal(document.getElementById('taskEditModal'));
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+    const assignModal = new bootstrap.Modal(document.getElementById('assignTaskModal'));
+    const unassignModal = new bootstrap.Modal(document.getElementById('unassignModal'));
 
-        const tasks = {{{json tasks}}}
-        const data = {{{json data}}}
+    const actionForm = document.getElementById('actionForm');
+    const users = {{{json users}}} || [];
+    const recurrenceLabel = {
+      none: 'No recurrence',
+      daily: 'Hang ngay',
+      weekly: 'Weekly',
+      monthly: 'Monthly',
+    };
 
+    const escapeHtml = (value) => String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
 
-        const priorityClass = p => 'p-' + p;
-        const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+    const escapeAttr = (value) => escapeHtml(value);
 
-        function render(){
-          unassignedList.innerHTML = '';
-          assignedList.innerHTML = '';
+    const safePriority = (value) => {
+      const parsed = Number.parseInt(value, 10);
+      return parsed >= 1 && parsed <= 5 ? parsed : 3;
+    };
 
-          const q = searchInput.value.toLowerCase();
-          const fp = filterPriority.value;
+    const toMinuteOfDay = (timeValue) => {
+      const [h, m] = String(timeValue || '').split(':').map(Number);
+      if (!Number.isFinite(h) || !Number.isFinite(m)) return NaN;
+      return h * 60 + m;
+    };
 
-          let unassigned = tasks.filter(t => !t.assignee);
-          if(fp !== 'all') unassigned = unassigned.filter(t => String(t.priority) === fp);
-          if(q) unassigned = unassigned.filter(t => t.name_task.toLowerCase().includes(q));
+    const rawTasks = {{{json tasks}}} || [];
+    const rawData = {{{json data}}} || [];
 
-          unassigned.sort((a,b)=>
-            a.priority !== b.priority
-              ? a.priority - b.priority
-              : new Date(b.createdAt) - new Date(a.createdAt)
-          );
+    let currentAssignTaskId = '';
+    let currentUnassignTaskId = '';
+    let currentUnassignDistributionId = '';
+    let currentAssignedEmployeeIds = [];
+    let currentRemainingSlots = 0;
 
-          let assigned = data.filter(t => t.taskID.assignee);
+    const normalizeTask = (task) => {
+      const required = Number.parseInt(task.required_people, 10);
+      const assigned = Number.parseInt(task.assigned_people_count, 10);
+      const recurrence = String(task.recurrence_type || 'none').toLowerCase();
 
-          assigned.sort((a,b)=>
-            a.taskID.priority !== b.taskID.priority
-              ? a.taskID.priority - b.taskID.priority
-              : new Date(b.taskID.createdAt) - new Date(a.taskID.createdAt)
-          );
+      return {
+        ...task,
+        required_people: Number.isFinite(required) && required > 0 ? required : 1,
+        assigned_people_count: Number.isFinite(assigned) && assigned >= 0 ? assigned : 0,
+        recurrence_type: recurrenceLabel[recurrence] ? recurrence : 'none',
+      };
+    };
 
-          for(const t of unassigned){
-            unassignedList.insertAdjacentHTML('beforeend',`
-              <div class="list-group-item mb-2 task-item">
-                <div class="card task-card" onclick="toggleDesc(this)">
-                  <div class="priority-accent ${priorityClass(t.priority)}"></div>
+    let tasks = rawTasks.map(normalizeTask);
 
-                  <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                      <div>
-                        <h6 class="mb-1">${t.name_task}</h6>
-                        <!-- EDIT -->
-                        <button 
-                        class="btn btn-sm btn-light task-action-btn mt-1 btn-edit" 
-                        data-id="${t._id}"
-                        data-name_task ="${t.name_task}"
-                        data-description_task="${t.description_task}"
-                        data-priority="${t.priority}"
-                        data-deadline="${t.deadline}"
-                        data-dateStart="${t.dateStart}"
-                        data-dateEnd="${t.dateEnd}"
-                        onclick="event.stopPropagation()" 
-                        title="Sửa task">
-                          <i class="bi bi-pencil"></i>
-                        </button>
-                      </div>
+    const assignmentRows = rawData
+      .filter((row) => row && row.taskID && row.employeeID)
+      .map((row) => ({
+        distributionId: String(row._id),
+        taskId: String(row.taskID._id),
+        employeeId: String(row.employeeID._id),
+        employeeName: row.employeeID.name || 'No name',
+        employeeAvatar: row.employeeID.avatar || '/img/default-avatar.webp',
+        taskName: row.taskID.name_task || 'No name',
+        dateStart: row.taskID.dateStart || '--:--',
+        dateEnd: row.taskID.dateEnd || '--:--',
+        deadline: row.taskID.deadline ? String(row.taskID.deadline).slice(0, 10) : '--',
+        priority: Number.parseInt(row.taskID.priority, 10) || 3,
+      }));
 
-                      <div class="task-right text-end d-flex align-items-center gap-2">
+    const countByTask = {};
+    for (const row of assignmentRows) {
+      countByTask[row.taskId] = (countByTask[row.taskId] || 0) + 1;
+    }
 
-                        <div class="task-time">
-                          <div class="fw-semibold">${t.dateStart} – ${t.dateEnd}</div>
-                          <div class="text-muted small">
-                            ${t.estimated_total_hours} giờ
-                          </div>
-                        </div>
+    tasks = tasks.map((task) => {
+      const taskId = String(task._id);
+      const actualAssigned = countByTask[taskId] || 0;
+      return {
+        ...task,
+        assigned_people_count: actualAssigned,
+      };
+    });
 
-                       <div class="task-actions" onclick="event.stopPropagation()">
-                          <!-- DELETE -->
-                          <button class="btn btn-sm btn-light task-action-btn btn-delete" title="Xóa task"
-                          data-id = "${t._id}"
-                          data-name = "${t.name_task}"
-                          >
-                            <i class="bi bi-trash"></i>
-                          </button>
-                          <!-- ASSIGN -->
-                          <button class="btn btn-sm btn-light task-action-btn btn-assign" title="Giao task"
-                          data-id="${t._id}"
-                          data-name_task ="${t.name_task}"
-                          data-deadline="${t.deadline}"
-                          data-dateStart="${t.dateStart}"
-                          data-dateEnd="${t.dateEnd}"
-                          >
-                            <i class="bi bi-person-plus"></i>
-                          </button>
-                        </div>
+    const refreshedTaskMap = new Map(tasks.map((task) => [String(task._id), task]));
 
+    function fillAssignEmployeeSelect() {
+      const select = document.getElementById('assignEmployeeSelect');
+      const filterPosition = document.getElementById('filterPosition').value;
+      select.innerHTML = '';
+      select.classList.remove('is-invalid');
 
-                      </div>
-                    </div>
-                    <!-- DESCRIPTION -->
-                    <div class="task-desc mt-2">
-                      ${t.description_task || 'Không có mô tả'}
-                    </div>
-                  </div>
+      const availableUsers = users.filter((user) => {
+        if (filterPosition !== 'all' && user.position !== filterPosition) {
+          return false;
+        }
+        return !currentAssignedEmployeeIds.includes(String(user._id));
+      });
+
+      for (const user of availableUsers) {
+        const option = document.createElement('option');
+        option.value = String(user._id);
+        option.textContent = `${user.name} - ${user.position}`;
+        select.appendChild(option);
+      }
+    }
+
+    function renderNeedAssignTask(task) {
+      const taskId = String(task._id);
+      const remain = Math.max(task.required_people - task.assigned_people_count, 0);
+      const deadlineText = task.deadline ? String(task.deadline).slice(0, 10) : '--';
+      const recurrenceText = recurrenceLabel[task.recurrence_type] || recurrenceLabel.none;
+      const priorityClass = safePriority(task.priority);
+
+      const safeTaskId = escapeAttr(taskId);
+      const safeTaskName = escapeHtml(task.name_task || 'No name');
+      const safeTaskDescription = escapeHtml(task.description_task || 'No description');
+      const safeDateStart = escapeHtml(task.dateStart || '--:--');
+      const safeDateEnd = escapeHtml(task.dateEnd || '--:--');
+      const safeDeadline = escapeHtml(deadlineText);
+      const safeRecurrence = escapeHtml(recurrenceText);
+      const safeEstimatedHours = escapeHtml(task.estimated_total_hours || 0);
+      const safeAssigned = escapeHtml(task.assigned_people_count || 0);
+      const safeRequired = escapeHtml(task.required_people || 1);
+      const safeRemain = escapeHtml(remain);
+
+      return `
+        <div class="card task-card priority-${priorityClass}">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <div>
+                <h6 class="mb-1">${safeTaskName}</h6>
+                <div class="small-muted">${safeDateStart} - ${safeDateEnd} | ${safeEstimatedHours}h</div>
+                <div class="small-muted">Deadline: ${safeDeadline}</div>
+                <div class="small-muted">Chu ky: ${safeRecurrence}</div>
+                <div class="small-muted">Da giao: ${safeAssigned}/${safeRequired} nguoi</div>
+                <div class="small-muted">Con thieu: ${safeRemain} nguoi</div>
+              </div>
+              <div class="d-flex flex-column align-items-end gap-1">
+                <button class="btn-ghost btn-edit-task"
+                  data-id="${safeTaskId}"
+                  data-name="${escapeAttr(task.name_task || '')}"
+                  data-description="${escapeAttr(task.description_task || '')}"
+                  data-priority="${priorityClass}"
+                  data-deadline="${escapeAttr(deadlineText)}"
+                  data-start="${escapeAttr(task.dateStart || '')}"
+                  data-end="${escapeAttr(task.dateEnd || '')}"
+                  data-recurrence="${escapeAttr(task.recurrence_type || 'none')}"
+                  data-required="${escapeAttr(task.required_people || 1)}"
+                  title="Edit task">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn-ghost btn-delete-task" data-id="${safeTaskId}" data-name="${escapeAttr(task.name_task || '')}" title="Delete task">
+                  <i class="bi bi-trash"></i>
+                </button>
+                ${remain > 0 ? `
+                  <button class="btn-ghost btn-assign-task"
+                    data-id="${safeTaskId}"
+                    data-name="${escapeAttr(task.name_task || '')}"
+                    data-start="${escapeAttr(task.dateStart || '')}"
+                    data-end="${escapeAttr(task.dateEnd || '')}"
+                    data-deadline="${escapeAttr(deadlineText)}"
+                    data-required="${escapeAttr(task.required_people || 1)}"
+                    data-assigned="${escapeAttr(task.assigned_people_count || 0)}"
+                    title="Assign task">
+                    <i class="bi bi-person-plus"></i>
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+            <p class="mb-0 mt-2 small-muted">${safeTaskDescription}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAssignedRow(row) {
+      const task = refreshedTaskMap.get(row.taskId);
+      const assigned = task ? task.assigned_people_count : 0;
+      const required = task ? task.required_people : 1;
+      const recurrence = task ? (recurrenceLabel[task.recurrence_type] || recurrenceLabel.none) : recurrenceLabel.none;
+      const deadlineText = task && task.deadline ? String(task.deadline).slice(0, 10) : row.deadline;
+      const priorityClass = safePriority(row.priority);
+
+      const safeTaskId = escapeAttr(row.taskId);
+      const safeDistributionId = escapeAttr(row.distributionId);
+      const safeTaskName = escapeHtml(row.taskName || 'No name');
+      const safeDateStart = escapeHtml(row.dateStart || '--:--');
+      const safeDateEnd = escapeHtml(row.dateEnd || '--:--');
+      const safeDeadline = escapeHtml(deadlineText || '--');
+      const safeRecurrence = escapeHtml(recurrence);
+      const safeAssigned = escapeHtml(assigned);
+      const safeRequired = escapeHtml(required);
+      const safeEmployeeName = escapeHtml(row.employeeName || 'No name');
+      const safeEmployeeAvatar = escapeAttr(row.employeeAvatar || '/img/default-avatar.webp');
+
+      return `
+        <div class="card task-card priority-${priorityClass}">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <div>
+                <h6 class="mb-1">${safeTaskName}</h6>
+                <div class="small-muted">${safeDateStart} - ${safeDateEnd} | Deadline: ${safeDeadline}</div>
+                <div class="small-muted">Chu ky: ${safeRecurrence}</div>
+                <div class="small-muted">Tien do giao: ${safeAssigned}/${safeRequired} nguoi</div>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                  <img src="${safeEmployeeAvatar}" class="rounded-circle" width="24" height="24">
+                  <span class="small-muted">${safeEmployeeName}</span>
                 </div>
               </div>
+              <div class="d-flex flex-column align-items-end gap-1">
+                <button class="btn-ghost btn-edit-task"
+                  data-id="${safeTaskId}"
+                  data-name="${escapeAttr(task ? (task.name_task || '') : (row.taskName || ''))}"
+                  data-description="${escapeAttr(task ? (task.description_task || '') : '')}"
+                  data-priority="${escapeAttr(task ? (task.priority || 3) : priorityClass)}"
+                  data-deadline="${escapeAttr(deadlineText || '')}"
+                  data-start="${escapeAttr(task ? (task.dateStart || '') : (row.dateStart || ''))}"
+                  data-end="${escapeAttr(task ? (task.dateEnd || '') : (row.dateEnd || ''))}"
+                  data-recurrence="${escapeAttr(task ? (task.recurrence_type || 'none') : 'none')}"
+                  data-required="${escapeAttr(task ? (task.required_people || 1) : 1)}"
+                  title="Edit task">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn-ghost btn-delete-task" data-id="${safeTaskId}" data-name="${escapeAttr(row.taskName || '')}" title="Delete task">
+                  <i class="bi bi-trash"></i>
+                </button>
+                <button class="btn-ghost btn-unassign-task"
+                  data-task-id="${safeTaskId}"
+                  data-distribution-id="${safeDistributionId}"
+                  data-user-name="${escapeAttr(row.employeeName || '')}"
+                  title="Unassign">
+                  <i class="bi bi-person-dash"></i>
+                </button>
               </div>
-            `);
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function bindDynamicActions() {
+      document.querySelectorAll('.btn-edit-task').forEach((btn) => {
+        btn.addEventListener('click', function () {
+          document.getElementById('editNameTask').value = this.dataset.name || '';
+          document.getElementById('editDescriptionTask').value = this.dataset.description || '';
+          document.getElementById('editPriority').value = this.dataset.priority || '3';
+          document.getElementById('editDeadline').value = this.dataset.deadline || '';
+          document.getElementById('editDateStart').value = this.dataset.start || '';
+          document.getElementById('editDateEnd').value = this.dataset.end || '';
+          document.getElementById('editRecurrenceType').value = this.dataset.recurrence || 'none';
+          document.getElementById('editRequiredPeople').value = this.dataset.required || '1';
+          document.getElementById('taskEditForm').action = `/tasks/${this.dataset.id}?_method=PUT`;
+          editModal.show();
+        });
+      });
+
+      document.querySelectorAll('.btn-delete-task').forEach((btn) => {
+        btn.addEventListener('click', function () {
+          document.getElementById('deleteTaskName').textContent = this.dataset.name || '';
+          actionForm.action = `/tasks/${this.dataset.id}?_method=DELETE`;
+          deleteModal.show();
+        });
+      });
+
+      document.querySelectorAll('.btn-assign-task').forEach((btn) => {
+        btn.addEventListener('click', function () {
+          currentAssignTaskId = this.dataset.id;
+          const required = Number.parseInt(this.dataset.required, 10) || 1;
+          const assigned = Number.parseInt(this.dataset.assigned, 10) || 0;
+          currentRemainingSlots = Math.max(required - assigned, 0);
+
+          currentAssignedEmployeeIds = assignmentRows
+            .filter((row) => row.taskId === currentAssignTaskId)
+            .map((row) => row.employeeId);
+
+          document.getElementById('assignTaskName').textContent = this.dataset.name || '';
+          document.getElementById('assignTaskInfo').textContent =
+            `${this.dataset.start || '--:--'} - ${this.dataset.end || '--:--'} | Deadline: ${this.dataset.deadline || '--'}`;
+          document.getElementById('assignTaskSlots').textContent =
+            `Can ${required} nguoi, da giao ${assigned}, con trong ${currentRemainingSlots}`;
+
+          fillAssignEmployeeSelect();
+          assignModal.show();
+        });
+      });
+
+      document.querySelectorAll('.btn-unassign-task').forEach((btn) => {
+        btn.addEventListener('click', function () {
+          currentUnassignTaskId = this.dataset.taskId;
+          currentUnassignDistributionId = this.dataset.distributionId;
+          document.getElementById('unassignUserName').textContent = this.dataset.userName || '';
+          unassignModal.show();
+        });
+      });
+    }
+
+    function render() {
+      needAssignList.innerHTML = '';
+      assignedList.innerHTML = '';
+
+      const keyword = String(searchInput.value || '').trim().toLowerCase();
+      const priorityFilter = filterPriority.value;
+
+      const needTasks = tasks
+        .filter((task) => task.assigned_people_count < task.required_people)
+        .filter((task) => {
+          if (priorityFilter !== 'all' && String(task.priority) !== priorityFilter) {
+            return false;
           }
-
-          for(const t of assigned){
-            assignedList.insertAdjacentHTML('beforeend',`
-              <div class="list-group-item mb-2 task-item">
-                <div class="card task-card" onclick="toggleDesc(this)">
-                  <div class="priority-accent ${priorityClass(t.taskID.priority)}"></div>
-
-                  <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                      <div>
-                        <h6 class="mb-1">${t.taskID.name_task}</h6>
-                        <div class="d-flex align-items-center gap-2 text-muted small mt-1">
-                          <img src="${t.employeeID.avatar || '/img/default-avatar.webp'}"
-                              class="rounded-circle"
-                              width="22" height="22">
-                          <span>${t.employeeID.name}</span>
-                        </div>
-                      </div>
-
-                      <div class="task-right text-end d-flex align-items-center gap-2">
-
-                        <div class="task-time">
-                          <div class="fw-semibold">${t.taskID.dateStart} – ${t.taskID.dateEnd}</div>
-                          <div class="text-muted small">
-                            ${t.taskID.estimated_total_hours} giờ
-                          </div>
-                        </div>
-
-                        <div class="task-actions" onclick="event.stopPropagation()">
-                          <button class="btn btn-sm btn-light task-action-btn btn-edit" title="Sửa task"
-                            data-id="${t.taskID._id}"
-                            data-name_task ="${t.taskID.name_task}"
-                            data-description_task="${t.taskID.description_task}"
-                            data-priority="${t.taskID.priority}"
-                            data-deadline="${t.taskID.deadline}"
-                            data-dateStart="${t.taskID.dateStart}"
-                            data-dateEnd="${t.taskID.dateEnd}">
-                            <i class="bi bi-pencil"></i>
-                          </button>
-
-                          <button class="btn btn-sm btn-light task-action-btn btn-unassign" title="Thu hồi task"
-                          data-idDis = "${t._id}"
-                          data-idTask = "${t.taskID._id}"
-                          data-name = "${t.employeeID.name}"
-                          >
-                            <i class="bi bi-person-dash"></i>
-                          </button>
-                        </div>
-
-                      </div>
-                    </div>
-                    <!-- DESCRIPTION -->
-                    <div class="task-desc mt-2">
-                      ${t.taskID.description_task || 'Không có mô tả'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              </div>
-            `);
+          if (keyword && !String(task.name_task || '').toLowerCase().includes(keyword)) {
+            return false;
           }
-                function toggleDesc(card) {
-          card.classList.toggle('open');
-        }
-
-      // phần handel của sửa thông tin
-      const modalEl = document.getElementById('taskEditModal')
-      const editModal = new bootstrap.Modal(modalEl)
-      var idDel 
-      document.querySelectorAll('.btn-edit').forEach(btn =>{
-        btn.addEventListener('click', function(){
-          const id = this.dataset.id
-          const des = this.dataset.description_task
-          const name = this.dataset.name_task
-          const deadline = this.dataset.deadline
-          const date = deadline.slice(0, 10);
-          const start = this.dataset.datestart
-          const end = this.dataset.dateend
-          const priority = this.dataset.priority
-
-          document.getElementById('name_task').value = name
-          document.getElementById('description_task').value = des
-          document.getElementById('deadline').value = date
-          document.getElementById('dateStart').value = start
-          document.getElementById('dateEnd').value = end
-          document.getElementById('priority').value = priority
-
-          const form = document.getElementById('taskEditForm')
-          form.action = `/tasks/${id}?_method=PUT`
-          editModal.show()
+          return true;
         })
-      })
-      //Phần xóa task
-      const modalDel = document.getElementById('deleteConfirmModal')
-      const delModal = new bootstrap.Modal(modalDel)
-
-      document.querySelectorAll('.btn-delete').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const id = this.dataset.id
-          const name = this.dataset.name
-          document.getElementById('deleteTaskName').innerHTML = name
-          const form = document.getElementById('formSubmit')
-          form.action = `/tasks/${id}?_method=DELETE`
-          delModal.show()
-        })
-      })
-      var buttionDel = document.getElementById('confirmDeleteBtn');
-      buttionDel.onclick = function(event){
-          const formDel = document.getElementById('formSubmit')
-          formDel.submit()  
-      }
-      //Phần giao việc cho nhân viên
-      const users = {{{json users}}}
-      const modalAss = document.getElementById('assignTaskModal')
-      const assModal = new bootstrap.Modal(modalAss)
-      const employee = document.getElementById('assignEmployeeSelect')
-      
-
-      const selectPosition = document.getElementById('filterPosition')
-      selectPosition.onchange = () => {
-        employee.innerHTML = ''
-        if (selectPosition.value === 'all'){
-            for(const e of users){
-              employee.insertAdjacentHTML('beforeend',`
-              <option value="${e._id}">
-                ${e.name} — ${e.position.toUpperCase()}
-              </option>
-              `
-            )}
-        }
-        else {
-          const usesFil = users.filter(  user => user.position === selectPosition.value)
-            for(const e of usesFil){
-              employee.insertAdjacentHTML('beforeend',`
-              <option value="${e._id}">
-                ${e.name} — ${e.position.toUpperCase()}
-              </option>
-              `
-            )}
-        }
-      }
-      document.querySelectorAll('.btn-assign').forEach(btn =>{
-        btn.addEventListener('click', function(){
-          idTask = this.dataset.id
-          const name = this.dataset.name_task
-          const deadline = this.dataset.deadline
-          const date = deadline.slice(0, 10);
-          const start = this.dataset.datestart
-          const end = this.dataset.dateend
-
-          document.getElementById('assignTaskName').innerText = name;
-          document.getElementById('assignTaskTime').innerText =
-            `${start} – ${end} · Deadline: ${date}`;
-          assModal.show()
-        })
-      })
-
-      // nút giao task
-      const btnComfirm = document.getElementById('confirmAssignBtn')
-      const assignSelect = document.getElementById('assignEmployeeSelect')
-
-      btnComfirm.onclick = function (){
-          if (!assignSelect.value) {
-            assignSelect.classList.add('is-invalid');
-            assignSelect.focus();
-            return;
+        .sort((a, b) => {
+          if (a.priority !== b.priority) {
+            return a.priority - b.priority;
           }
-          else {        
-            const form = document.getElementById('formSubmit')
-            form.action = `/tasks/${idTask}/${assignSelect.value}`
-            form.submit()
-        }
-      }
-      // Show modal thu hồi task
-      const modalUnAss = document.getElementById('unassignModal')
-      const unassModal = new bootstrap.Modal(modalUnAss)
-      document.querySelectorAll('.btn-unassign').forEach(btn => {
-        btn.addEventListener('click', function(){
-          idDis = this.dataset.iddis
-          idTask = this.dataset.idtask
-          const name = this.dataset.name
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
 
-          document.getElementById('unassignUserName').innerHTML = name
-
-          unassModal.show()
+      const assignedRows = assignmentRows
+        .filter((row) => {
+          if (priorityFilter !== 'all' && String(row.priority) !== priorityFilter) {
+            return false;
+          }
+          if (keyword && !String(row.taskName || '').toLowerCase().includes(keyword)) {
+            return false;
+          }
+          return true;
         })
-      })
+        .sort((a, b) => {
+          if (a.priority !== b.priority) {
+            return a.priority - b.priority;
+          }
+          return String(a.taskName).localeCompare(String(b.taskName));
+        });
 
-      const btnUnassign = document.getElementById('confirmUnassignBtn')
-      btnUnassign.onclick = function (){
-            const form = document.getElementById('formSubmit')
-            form.action = `/tasks/${idTask}/${idDis}?_method=DELETE`
-            form.submit()
+      needCount.textContent = String(needTasks.length);
+      assignedCount.textContent = String(assignedRows.length);
+
+      if (needTasks.length === 0) {
+        needAssignList.innerHTML = '<div class="alert alert-light border mb-0">No tasks require additional assignees.</div>';
+      } else {
+        for (const task of needTasks) {
+          needAssignList.insertAdjacentHTML('beforeend', renderNeedAssignTask(task));
+        }
       }
 
+      if (assignedRows.length === 0) {
+        assignedList.innerHTML = '<div class="alert alert-light border mb-0">Chua co phan cong task.</div>';
+      } else {
+        for (const row of assignedRows) {
+          assignedList.insertAdjacentHTML('beforeend', renderAssignedRow(row));
         }
-      btnAdd.onclick = () => taskModal.show();
-      filterPriority.onchange = render;
-        // events
-        /*
-        btnClear.onclick = () => { searchInput.value=''; filterPriority.value='all'; render(); };
-        searchInput.oninput = render;
-        // initial render*/
-        render();
+      }
 
+      bindDynamicActions();
+    }
 
-    })
-  </script>
-</body>
-</html>
+    document.getElementById('confirmDeleteBtn').onclick = function () {
+      actionForm.submit();
+    };
+
+    document.getElementById('confirmAssignBtn').onclick = function () {
+      const select = document.getElementById('assignEmployeeSelect');
+      if (!currentAssignTaskId || currentRemainingSlots <= 0) {
+        return;
+      }
+      if (!select.value) {
+        select.classList.add('is-invalid');
+        select.focus();
+        return;
+      }
+      actionForm.action = `/tasks/${currentAssignTaskId}/${select.value}`;
+      actionForm.submit();
+    };
+
+    document.getElementById('confirmUnassignBtn').onclick = function () {
+      if (!currentUnassignTaskId || !currentUnassignDistributionId) {
+        return;
+      }
+      actionForm.action = `/tasks/${currentUnassignTaskId}/${currentUnassignDistributionId}?_method=DELETE`;
+      actionForm.submit();
+    };
+
+    document.getElementById('filterPosition').onchange = fillAssignEmployeeSelect;
+    document.getElementById('assignEmployeeSelect').onchange = function () {
+      this.classList.remove('is-invalid');
+    };
+
+    if (createDeadline) {
+      const now = new Date();
+      const localToday = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 10);
+      createDeadline.min = localToday;
+      if (!createDeadline.value) {
+        createDeadline.value = localToday;
+      }
+    }
+
+    if (taskForm) {
+      taskForm.addEventListener('submit', function (e) {
+        const startValue = createDateStart ? createDateStart.value : '';
+        const endValue = createDateEnd ? createDateEnd.value : '';
+        const deadlineValue = createDeadline ? createDeadline.value : '';
+
+        if (!startValue || !endValue || !deadlineValue) {
+          return;
+        }
+
+        const startMinutes = toMinuteOfDay(startValue);
+        const endMinutes = toMinuteOfDay(endValue);
+
+        if (!Number.isFinite(startMinutes) || !Number.isFinite(endMinutes) || endMinutes <= startMinutes) {
+          e.preventDefault();
+          alert('End time phai lon hon gio bat dau.');
+          return;
+        }
+
+        if (createDeadline.min && deadlineValue < createDeadline.min) {
+          e.preventDefault();
+          alert('Deadline must be today or later.');
+        }
+      });
+    }
+
+    btnAdd.onclick = () => taskModal.show();
+    btnClear.onclick = () => {
+      searchInput.value = '';
+      filterPriority.value = 'all';
+      render();
+    };
+    filterPriority.onchange = render;
+    searchInput.oninput = render;
+
+    render();
+  });
+</script>
+

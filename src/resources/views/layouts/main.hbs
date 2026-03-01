@@ -8,9 +8,35 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
 </head>
-<body>
+<body class="mx-auto">
     <Div class="app">
         {{> header}}
+
+        {{#if flash.success.length}}
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:1080">
+            {{#each flash.success}}
+            <div class="toast align-items-center text-bg-success border-0 mb-2 js-auto-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2800">
+                <div class="d-flex">
+                    <div class="toast-body">{{this}}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+
+        {{#if flash.error.length}}
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:1080; margin-top: 70px;">
+            {{#each flash.error}}
+            <div class="toast align-items-center text-bg-danger border-0 mb-2 js-auto-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3600">
+                <div class="d-flex">
+                    <div class="toast-body">{{this}}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
 
          {{{body}}}
 
@@ -19,6 +45,12 @@
 </body>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.querySelectorAll('.js-auto-toast').forEach(function(el) {
+    var toast = new bootstrap.Toast(el);
+    toast.show();
+  });
+</script>
 
 
 </html>

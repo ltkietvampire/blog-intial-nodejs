@@ -6,6 +6,8 @@ const EmployeeController = require ('../app/controllers/EmployeesController')
 router.post('/store', EmployeeController.store);
 router.delete('/:id', EmployeeController.delete);
 router.put('/:id', EmployeeController.update);
+router.get('/statistics/export', EmployeeController.statisticsExport);
+router.get('/statistics', EmployeeController.statistics);
 router.get('/', EmployeeController.index);
 
 

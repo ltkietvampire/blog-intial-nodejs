@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 async function connect (){
     try {
         await mongoose.connect('mongodb://127.0.0.1:27017/database');
-        console.log('kết nối thành công !')
+        console.log('Database connected successfully!')
     }
     catch (error){
-        console.error('Lỗi kết nối:', error.message);
+        console.error('Database connection error:', error.message);
     }
 }
 
