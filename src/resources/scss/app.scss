@@ -1,3 +1,14 @@
-h1 {
-    color: blue;
-}
+﻿@import "pages/tasks";
+@import "pages/my-schedule";
+@import "pages/auth-profile";
+@import "pages/approvals-manager";
+@import "pages/employees";
+@import "pages/employee-statistics";
+@import "pages/approvals-employee";
+@import "pages/my-task";
+@import "pages/dashboard-employee";
+@import "pages/home";
+@import "pages/login";
+
+@import "components/header";
+@import "components/footer";

@@ -1,0 +1,86 @@
+﻿.app-header {
+  padding: 1rem 2rem;
+
+  .nav-link {
+    font-weight: 500;
+    color: #222 !important;
+  }
+
+  .btn-primary {
+    background-color: #2da9ff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    background-color: #1598f5;
+  }
+
+  .dropdown-toggle::after {
+    display: none;
+  }
+
+  .dropdown-menu {
+    border-radius: 12px;
+  }
+
+  .notification-btn {
+    border: none;
+    background: transparent;
+    line-height: 1;
+  }
+
+  .notification-badge {
+    font-size: 11px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    top: -6px !important;
+    right: -9px !important;
+  }
+
+  .notification-menu {
+    width: 360px;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+
+  .notification-item {
+    white-space: normal;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .notification-item:last-child {
+    border-bottom: 0;
+  }
+
+  .bell-alert {
+    animation: appHeaderBellPulse 1.2s infinite;
+    color: #dc3545;
+  }
+}
+
+@keyframes appHeaderBellPulse {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-14deg);
+  }
+
+  50% {
+    transform: rotate(14deg);
+  }
+
+  75% {
+    transform: rotate(-8deg);
+  }
+}
+

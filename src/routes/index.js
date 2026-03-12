@@ -9,6 +9,7 @@ const statisticRouter = require('./statistics')
 const myTaskRouter = require('./my-task')
 const dashboardRouter = require('./dashboard')
 const approvalsRouter = require('./approvals')
+const salaryRouter = require('./salary')
 const requireAuth = require('../app/middleware/requireAuth')
 const requireManager = require('../app/middleware/requireManager')
 const requireEmployee = require('../app/middleware/requireEmployee')
@@ -29,6 +30,7 @@ function route(app){
     app.use('/employee', requireAuth, requireManager, employeeRouter)
     app.use('/my-task', requireAuth, requireEmployee, myTaskRouter)
     app.use('/tasks', requireAuth, requireManager, tasksRouter)
+    app.use('/salary', requireAuth, requireManager, salaryRouter)
     app.use('/', siteRouter)
     app.get("/logout", (req, res) => {
         req.session.destroy(() => {

@@ -3,21 +3,15 @@ const customParseFormat = require('dayjs/plugin/customParseFormat');
 const ApprovalRequest = require('../model/approvalRequest');
 const Distribution = require('../model/distribution');
 const Task = require('../model/task');
+const { syncLeaveBusyStatuses } = require('../services/leaveStatusService');
+const {
+  toDateOnly,
+  toMinuteOfDay,
+  toDateText,
+  toDateTimeText,
+} = require('../../until/dateTime');
 
 dayjs.extend(customParseFormat);
-
-function toDateOnly(value) {
-  const parsed = dayjs(String(value || '').trim(), 'YYYY-MM-DD', true);
-  return parsed.isValid() ? parsed.startOf('day').toDate() : null;
-}
-
-function toMinuteOfDay(value) {
-  const parsed = dayjs(String(value || '').trim(), 'HH:mm', true);
-  if (!parsed.isValid()) {
-    return NaN;
-  }
-  return parsed.hour() * 60 + parsed.minute();
-}
 
 function getTypeLabel(type) {
   if (type === 'leave') return 'Leave request';
@@ -38,14 +32,8 @@ function getStatusClass(status) {
   return 'text-bg-warning';
 }
 
-function toDateText(value) {
-  const d = dayjs(value);
-  return d.isValid() ? d.format('DD/MM/YYYY') : '--';
-}
-
-function toDateTimeText(value) {
-  const d = dayjs(value);
-  return d.isValid() ? d.format('DD/MM/YYYY HH:mm') : '--';
+function toDateTimeTextLocal(value) {
+  return toDateTimeText(value, { format: 'DD/MM/YYYY HH:mm', fallback: '--' });
 }
 
 class ApprovalsController {
@@ -75,8 +63,8 @@ class ApprovalsController {
       requestedToDateText: toDateText(row.requestedToDate),
       requestedDateText: toDateText(row.requestedDate),
       requestedDeadlineText: toDateText(row.requestedDeadline),
-      createdAtText: toDateTimeText(row.createdAt),
-      reviewedAtText: toDateTimeText(row.reviewedAt),
+      createdAtText: toDateTimeTextLocal(row.createdAt),
+      reviewedAtText: toDateTimeTextLocal(row.reviewedAt),
       reviewedByName: reviewer.name || '--',
     };
   }
@@ -286,6 +274,9 @@ class ApprovalsController {
           reviewedAt: new Date(),
         }
       );
+
+      // Apply leave busy status immediately after approval.
+      await syncLeaveBusyStatuses({ force: true });
 
       req.flash('success', 'Request approved successfully.');
       return res.redirect('/approvals');

@@ -4,6 +4,8 @@ const router = express.Router()
 const EmployeeController = require ('../app/controllers/EmployeesController')
 
 router.post('/store', EmployeeController.store);
+router.post('/bulk-delete', EmployeeController.bulkDelete);
+router.post('/bulk-status', EmployeeController.bulkUpdateStatus);
 router.delete('/:id', EmployeeController.delete);
 router.put('/:id', EmployeeController.update);
 router.get('/statistics/export', EmployeeController.statisticsExport);

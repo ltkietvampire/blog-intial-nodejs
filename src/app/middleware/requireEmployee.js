@@ -6,7 +6,7 @@ function requireEmployee(req, res, next) {
     return res.redirect('/login');
   }
 
-  if (isEmployeePosition(user.position)) {
+  if (isEmployeePosition(user)) {
     return next();
   }
 

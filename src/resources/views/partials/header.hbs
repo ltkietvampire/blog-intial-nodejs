@@ -1,85 +1,4 @@
-﻿  <style>
-    body {
-      background-color: #f7f6f2;
-    }
-
-    .navbar {
-      padding: 1rem 2rem;
-    }
-
-    .nav-link {
-      font-weight: 500;
-      color: #222 !important;
-    }
-
-    .btn-primary {
-      background-color: #2da9ff;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-weight: 600;
-    }
-
-    .btn-primary:hover {
-      background-color: #1598f5;
-    }
-    .dropdown-toggle::after {
-      display: none;
-    }
-
-    .dropdown-menu {
-      border-radius: 12px;
-    }
-
-    .notification-btn {
-      border: none;
-      background: transparent;
-      line-height: 1;
-    }
-
-    .notification-badge {
-      font-size: 11px;
-      min-width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      top: -6px !important;
-      right: -9px !important;
-    }
-
-    .notification-menu {
-      width: 360px;
-      max-height: 420px;
-      overflow-y: auto;
-    }
-
-    .notification-item {
-      white-space: normal;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
-    .notification-item:last-child {
-      border-bottom: 0;
-    }
-
-    .bell-alert {
-      animation: bellPulse 1.2s infinite;
-      color: #dc3545;
-    }
-
-    @keyframes bellPulse {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(-14deg); }
-      50% { transform: rotate(14deg); }
-      75% { transform: rotate(-8deg); }
-    }
-  </style>
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg bg-transparent">
+<nav class="navbar navbar-expand-lg bg-transparent app-header">
   <div class="container-fluid">
 
     <!-- Logo -->
@@ -107,6 +26,9 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/employee">Employees</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/salary">Payroll</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/employee/statistics">Employee Statistics</a>
@@ -146,42 +68,83 @@
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
-        <i class="bi bi-bell-fill fs-5 {{#if taskNotifications.urgentCount}}bell-alert{{/if}}"></i>
-        {{#if taskNotifications.totalCount}}
-          <span class="badge bg-danger position-absolute notification-badge">
-            {{taskNotifications.totalCount}}
-          </span>
+        {{#if isManager}}
+          <i class="bi bi-bell-fill fs-5 {{#if approvalNotifications.totalCount}}bell-alert{{/if}}"></i>
+          {{#if approvalNotifications.totalCount}}
+            <span class="badge bg-danger position-absolute notification-badge">
+              {{approvalNotifications.totalCount}}
+            </span>
+          {{/if}}
+        {{else}}
+          <i class="bi bi-bell-fill fs-5 {{#if taskNotifications.urgentCount}}bell-alert{{/if}}"></i>
+          {{#if taskNotifications.totalCount}}
+            <span class="badge bg-danger position-absolute notification-badge">
+              {{taskNotifications.totalCount}}
+            </span>
+          {{/if}}
         {{/if}}
       </button>
 
       <ul class="dropdown-menu dropdown-menu-end shadow notification-menu p-0">
-        <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
-          <strong>Task Notifications</strong>
-          <span class="badge bg-light text-dark">{{taskNotifications.totalCount}}</span>
-        </li>
+        {{#if isManager}}
+          <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+            <strong>Pending Approvals</strong>
+            <span class="badge bg-light text-dark">{{approvalNotifications.totalCount}}</span>
+          </li>
 
-        {{#if taskNotifications.items.length}}
-          {{#each taskNotifications.items}}
-            <li>
-              <a class="dropdown-item notification-item py-2 px-3" href="{{this.link}}">
-                <div class="d-flex justify-content-between align-items-start gap-2">
-                  <div>
-                    <div class="fw-semibold">{{this.title}}</div>
-                    <div class="small text-muted">{{this.taskName}}</div>
-                    <div class="small text-secondary">{{this.detail}}</div>
+          {{#if approvalNotifications.items.length}}
+            {{#each approvalNotifications.items}}
+              <li>
+                <a class="dropdown-item notification-item py-2 px-3" href="{{this.link}}">
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                      <div class="fw-semibold">{{this.title}}</div>
+                      {{#if this.taskName}}
+                        <div class="small text-muted">{{this.taskName}}</div>
+                      {{/if}}
+                      <div class="small text-secondary">{{this.detail}}</div>
+                    </div>
+                    <span class="badge {{this.tagClass}} text-uppercase">{{this.type}}</span>
                   </div>
-                  <span class="badge {{this.tagClass}} text-uppercase">{{this.type}}</span>
-                </div>
-              </a>
-            </li>
-          {{/each}}
-        {{else}}
-          <li class="px-3 py-3 text-muted small">No notifications at the moment.</li>
-        {{/if}}
+                </a>
+              </li>
+            {{/each}}
+          {{else}}
+            <li class="px-3 py-3 text-muted small">No pending approvals.</li>
+          {{/if}}
 
-        <li class="border-top">
-          <a class="dropdown-item text-center py-2" href="{{#if isEmployee}}/my-task{{else}}/tasks{{/if}}">View all tasks</a>
-        </li>
+          <li class="border-top">
+            <a class="dropdown-item text-center py-2" href="/approvals">Open Approval Center</a>
+          </li>
+        {{else}}
+          <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+            <strong>Task Notifications</strong>
+            <span class="badge bg-light text-dark">{{taskNotifications.totalCount}}</span>
+          </li>
+
+          {{#if taskNotifications.items.length}}
+            {{#each taskNotifications.items}}
+              <li>
+                <a class="dropdown-item notification-item py-2 px-3" href="{{this.link}}">
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                      <div class="fw-semibold">{{this.title}}</div>
+                      <div class="small text-muted">{{this.taskName}}</div>
+                      <div class="small text-secondary">{{this.detail}}</div>
+                    </div>
+                    <span class="badge {{this.tagClass}} text-uppercase">{{this.type}}</span>
+                  </div>
+                </a>
+              </li>
+            {{/each}}
+          {{else}}
+            <li class="px-3 py-3 text-muted small">No notifications at the moment.</li>
+          {{/if}}
+
+          <li class="border-top">
+            <a class="dropdown-item text-center py-2" href="{{#if isEmployee}}/my-task{{else}}/tasks{{/if}}">View all tasks</a>
+          </li>
+        {{/if}}
       </ul>
     </div>
 
@@ -191,7 +154,7 @@
          data-bs-toggle="dropdown">
 
         <img
-          src="{{#if currentUser.avatar}}{{currentUser.avatar}}{{else}}/images/default-avatar.png{{/if}}"
+          src="{{#if currentUser.avatar}}{{assetPath currentUser.avatar}}{{else}}/img/default-avatar.webp{{/if}}"
           class="rounded-circle"
           width="36"
           height="36"
@@ -214,6 +177,7 @@
         {{/if}}
         {{#if isManager}}
           <li><a class="dropdown-item" href="/employee">Employees</a></li>
+          <li><a class="dropdown-item" href="/salary">Payroll</a></li>
           <li><a class="dropdown-item" href="/tasks">Tasks</a></li>
           <li><a class="dropdown-item" href="/approvals">Approval Center</a></li>
         {{/if}}

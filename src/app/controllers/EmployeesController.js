@@ -4,16 +4,23 @@ const Distribution = require('../model/distribution')
 const { Parser } = require('@json2csv/plainjs');
 const { z } = require('zod');
 const {multipleMongooseToObject} = require('../../until/mongoose')
+const dayjs = require('dayjs');
+const customParseFormat = require('dayjs/plugin/customParseFormat');
+const { isEmployeePosition, normalizeRole } = require('../middleware/roleUtils');
+const { isValidPhone } = require('../../until/validators');
+const { toTaskDateTime } = require('../../until/dateTime');
+const { getStartOfWeek, getStartOfMonth, getStartOfQuarter } = require('../../until/timePeriods');
+
+dayjs.extend(customParseFormat);
 
 const saltRound = 10
 const USER_STATUS_VALUES = ['status-active', 'status-busy', 'status-off'];
 const USER_STATUSES = new Set(USER_STATUS_VALUES);
+const USER_ROLE_VALUES = ['employee', 'manager'];
 const STAT_PERIODS = new Set(['all', 'week', 'month', 'quarter']);
-
-function isValidPhone(value) {
-    const digits = String(value || '').replace(/\D/g, '');
-    return digits.length >= 8 && digits.length <= 15;
-}
+const COMPLETE_STATUS = 'completed';
+const CHECKED_IN_STATUS = 'checked_in';
+const LATE_WINDOW_MINUTES = 15;
 
 function normalizeStatus(value) {
     const status = String(value || '').trim();
@@ -28,6 +35,14 @@ function clampMaxTime(value) {
     return Math.min(8, Math.max(0, parsed));
 }
 
+function clampHourlyRate(value) {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) {
+        return 0;
+    }
+    return Math.max(0, parsed);
+}
+
 function normalizeStatPeriod(value) {
     const period = String(value || 'all').toLowerCase();
     return STAT_PERIODS.has(period) ? period : 'all';
@@ -40,7 +55,12 @@ const phoneSchema = z.string().trim().refine(isValidPhone, {
 
 const employeeCreateSchema = z.object({
     name: z.string().trim().min(1),
+    role: z.preprocess(
+        (value) => String(value || '').trim().toLowerCase(),
+        z.enum(USER_ROLE_VALUES)
+    ),
     position: z.string().trim().min(1),
+    hourlyRate: z.coerce.number().min(0).optional(),
     email: emailSchema,
     password: z.string().min(6),
     SDT: phoneSchema,
@@ -53,7 +73,12 @@ const employeeCreateSchema = z.object({
 
 const employeeUpdateSchema = z.object({
     name: z.string().trim().min(1).optional(),
+    role: z.preprocess(
+        (value) => String(value || '').trim().toLowerCase(),
+        z.enum(USER_ROLE_VALUES).optional()
+    ),
     position: z.string().trim().min(1).optional(),
+    hourlyRate: z.coerce.number().min(0).optional(),
     email: emailSchema.optional(),
     SDT: phoneSchema.optional(),
     maxtime: z.coerce.number().optional(),
@@ -62,29 +87,6 @@ const employeeUpdateSchema = z.object({
         z.enum(USER_STATUS_VALUES).optional()
     ),
 });
-
-function getStartOfWeek(date) {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    const day = d.getDay() || 7;
-    d.setDate(d.getDate() - day + 1);
-    return d;
-}
-
-function getStartOfMonth(date) {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    d.setDate(1);
-    return d;
-}
-
-function getStartOfQuarter(date) {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    const quarterMonth = Math.floor(d.getMonth() / 3) * 3;
-    d.setMonth(quarterMonth, 1);
-    return d;
-}
 
 function getPeriodRange(period) {
     const now = new Date();
@@ -124,6 +126,8 @@ class EmployeeController {
         this.store = this.store.bind(this);
         this.update = this.update.bind(this);
         this.delete = this.delete.bind(this);
+        this.bulkDelete = this.bulkDelete.bind(this);
+        this.bulkUpdateStatus = this.bulkUpdateStatus.bind(this);
     }
 
     async buildStatistics(period) {
@@ -145,23 +149,21 @@ class EmployeeController {
                 .lean(),
         ]);
 
+        const employees = users.filter((user) => isEmployeePosition(user));
         const reportByUser = new Map();
         const skippedStatuses = new Set(['skipped', 'missed', 'ignored', 'abandoned']);
-        const lateStatuses = new Set(['late']);
+        const lateStatuses = new Set(['late', 'late_checkin']);
+        const now = dayjs();
+        const today = now.startOf('day');
 
-        for (const user of users) {
-            const lateMinutesValue = Number(user.lateMinutes ?? user.totalLateMinutes ?? 0);
-            const skippedValue = Number(user.skippedTaskCount ?? user.skippedTasks ?? 0);
-            const lateMinutes = Number.isFinite(lateMinutesValue) ? lateMinutesValue : 0;
-            const skippedFromUser = Number.isFinite(skippedValue) ? skippedValue : 0;
-
+        for (const user of employees) {
             reportByUser.set(String(user._id), {
                 ...user,
                 assignedTasks: 0,
                 workHours: 0,
                 lateCount: 0,
-                lateMinutes,
-                skippedCount: skippedFromUser,
+                lateMinutes: 0,
+                skippedCount: 0,
             });
         }
 
@@ -182,11 +184,53 @@ class EmployeeController {
             row.workHours += Number.isFinite(estimatedHours) ? estimatedHours : 0;
 
             const status = String(record.status || '').toLowerCase();
-            if (lateStatuses.has(status)) {
-                row.lateCount += 1;
-            }
-            if (skippedStatuses.has(status)) {
+            const isCompleted = status === COMPLETE_STATUS;
+
+            const baseDate = record.taskID.deadline || record.taskID.createdAt || record.assignedAt || now.toDate();
+            const deadline = dayjs(record.taskID.deadline).startOf('day');
+            const startAt = toTaskDateTime(baseDate, record.taskID.dateStart);
+            const endAt = toTaskDateTime(baseDate, record.taskID.dateEnd || record.taskID.dateStart);
+            const checkInAt = dayjs(record.checkInAt);
+            const hasCheckedIn = checkInAt.isValid();
+            const hasTaskWindow = Boolean(startAt && endAt);
+
+            const overdueByEndTime = !isCompleted && endAt && now.isAfter(endAt);
+            const overdueByDate = !isCompleted && deadline.isValid() && deadline.isBefore(today, 'day');
+            const checkInAfterEnd = hasCheckedIn && endAt && checkInAt.isAfter(endAt);
+            const isSkipped = skippedStatuses.has(status) || overdueByEndTime || overdueByDate || checkInAfterEnd;
+
+            if (isSkipped) {
                 row.skippedCount += 1;
+                continue;
+            }
+
+            let lateMinutesForTask = 0;
+
+            if (hasTaskWindow) {
+                if (hasCheckedIn && checkInAt.isAfter(startAt)) {
+                    lateMinutesForTask = checkInAt.diff(startAt, 'minute');
+                } else if (!hasCheckedIn && !isCompleted && now.isAfter(startAt)) {
+                    const lateEnd = now.isAfter(endAt) ? endAt : now;
+                    if (lateEnd.isAfter(startAt)) {
+                        lateMinutesForTask = lateEnd.diff(startAt, 'minute');
+                    }
+                }
+            }
+
+            const missedCheckIn = Boolean(
+                !isCompleted &&
+                startAt &&
+                status !== CHECKED_IN_STATUS &&
+                status !== COMPLETE_STATUS &&
+                !hasCheckedIn &&
+                now.isAfter(startAt.add(LATE_WINDOW_MINUTES, 'minute'))
+            );
+
+            const isLate = lateMinutesForTask > 0 || lateStatuses.has(status) || missedCheckIn;
+
+            if (isLate) {
+                row.lateCount += 1;
+                row.lateMinutes += lateMinutesForTask;
             }
         }
 
@@ -263,6 +307,7 @@ class EmployeeController {
             const fields = [
                 { label: 'Employee', value: 'name' },
                 { label: 'Email', value: 'email' },
+                { label: 'Role', value: 'role' },
                 { label: 'Position', value: 'position' },
                 { label: 'Assigned tasks', value: 'assignedTasks' },
                 { label: 'Total work hours', value: 'workHours' },
@@ -292,7 +337,9 @@ class EmployeeController {
 
             const users = parsed.data;
             users.maxtime = clampMaxTime(users.maxtime);
+            users.hourlyRate = clampHourlyRate(users.hourlyRate);
             users.trangthai = normalizeStatus(users.trangthai);
+            users.role = normalizeRole(users.role);
 
             const emailExists = await User.findOne({ email: users.email }).lean();
             if (emailExists) {
@@ -332,11 +379,28 @@ class EmployeeController {
             if (payload.trangthai !== undefined) {
                 payload.trangthai = normalizeStatus(payload.trangthai);
             }
+            if (payload.role !== undefined) {
+                payload.role = normalizeRole(payload.role);
+            }
+            if (payload.hourlyRate !== undefined) {
+                payload.hourlyRate = clampHourlyRate(payload.hourlyRate);
+            }
             if (payload.maxtime !== undefined) {
                 payload.maxtime = clampMaxTime(payload.maxtime);
             }
 
             await User.updateOne({_id: req.params.id}, payload);
+            if (req.session?.user?._id && String(req.session.user._id) === String(req.params.id)) {
+                if (payload.position !== undefined) {
+                    req.session.user.position = payload.position;
+                }
+                if (payload.role !== undefined) {
+                    req.session.user.role = payload.role;
+                }
+                if (payload.hourlyRate !== undefined) {
+                    req.session.user.hourlyRate = payload.hourlyRate;
+                }
+            }
             req.flash('success', 'Employee updated successfully.');
             res.redirect('/employee');
         } catch (error) {
@@ -352,6 +416,71 @@ class EmployeeController {
         } catch (error) {
             req.flash('error', 'Unable to delete employee.');
             res.redirect('/employee');
+        }
+    }
+
+    async bulkDelete(req, res) {
+        try {
+            const idsRaw = Array.isArray(req.body.ids) ? req.body.ids : [req.body.ids];
+            const ids = idsRaw
+                .map((id) => String(id || '').trim())
+                .filter(Boolean);
+
+            if (!ids.length) {
+                req.flash('error', 'Please select at least one employee to delete.');
+                return res.redirect('/employee');
+            }
+
+            const result = await User.deleteMany({ _id: { $in: ids } });
+            const deletedCount = Number(result.deletedCount) || 0;
+
+            if (!deletedCount) {
+                req.flash('error', 'No employees were deleted.');
+                return res.redirect('/employee');
+            }
+
+            req.flash('success', `Deleted ${deletedCount} employee(s) successfully.`);
+            return res.redirect('/employee');
+        } catch (error) {
+            req.flash('error', 'Unable to delete selected employees.');
+            return res.redirect('/employee');
+        }
+    }
+
+    async bulkUpdateStatus(req, res) {
+        try {
+            const idsRaw = Array.isArray(req.body.ids) ? req.body.ids : [req.body.ids];
+            const ids = idsRaw
+                .map((id) => String(id || '').trim())
+                .filter(Boolean);
+
+            const rawStatus = String(req.body.trangthai || '').trim();
+            if (!USER_STATUSES.has(rawStatus)) {
+                req.flash('error', 'Invalid status for bulk update.');
+                return res.redirect('/employee');
+            }
+            const targetStatus = rawStatus;
+            if (!ids.length) {
+                req.flash('error', 'Please select at least one employee to update.');
+                return res.redirect('/employee');
+            }
+
+            const result = await User.updateMany(
+                { _id: { $in: ids } },
+                { trangthai: targetStatus }
+            );
+            const modifiedCount = Number(result.modifiedCount) || Number(result.nModified) || 0;
+
+            if (!modifiedCount) {
+                req.flash('error', 'No employee status was changed.');
+                return res.redirect('/employee');
+            }
+
+            req.flash('success', `Updated status for ${modifiedCount} employee(s).`);
+            return res.redirect('/employee');
+        } catch (error) {
+            req.flash('error', 'Unable to update status for selected employees.');
+            return res.redirect('/employee');
         }
     }
 }

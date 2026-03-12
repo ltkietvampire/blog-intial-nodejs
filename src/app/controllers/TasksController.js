@@ -5,6 +5,7 @@ const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const { multipleMongooseToObject } = require('../../until/mongoose');
 const { calcHours } = require('../../until/calhours');
+const { toMinuteOfDay, toDateOnly } = require('../../until/dateTime');
 
 dayjs.extend(customParseFormat);
 
@@ -47,27 +48,8 @@ function getRecurrenceLabel(value) {
     return RECURRENCE_LABELS[recurrence] || RECURRENCE_LABELS.none;
 }
 
-function toMinuteOfDay(value) {
-    const parsed = dayjs(String(value || '').trim(), 'HH:mm', true);
-    if (!parsed.isValid()) {
-        return NaN;
-    }
-    const hour = parsed.hour();
-    const minute = parsed.minute();
-    return hour * 60 + minute;
-}
-
 function startOfToday() {
     return dayjs().startOf('day').toDate();
-}
-
-function toDateOnly(value) {
-    const raw = String(value || '').trim();
-    const parsed = dayjs(raw, 'YYYY-MM-DD', true);
-    if (!parsed.isValid()) {
-        return null;
-    }
-    return parsed.startOf('day').toDate();
 }
 
 function toPriority(value, fallback = 3) {

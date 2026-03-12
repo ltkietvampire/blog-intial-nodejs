@@ -2,7 +2,7 @@ const Users = require('../model/user')
 const {multipleMongooseToObject} = require('../../until/mongoose')
 const Distributions = require('../model/distribution')
 const Tasks = require('../model/task')
-const { isEmployeePosition } = require('../middleware/roleUtils');
+const { isEmployeePosition, isManagerPosition } = require('../middleware/roleUtils');
 
 class SiteController {
     async index(req, res, next) {
@@ -11,11 +11,11 @@ class SiteController {
             return res.redirect('/login');
         }
 
-        if (isEmployeePosition(currentUser.position)) {
+        if (isEmployeePosition(currentUser)) {
             return res.redirect('/dashboard');
         }
 
-        const users = await Users.find({})
+        const users = await Users.find({}).lean()
         const data = await Distributions.find()
             .populate('employeeID')
             .populate({
@@ -24,9 +24,13 @@ class SiteController {
             });
 
         const dataRows = multipleMongooseToObject(data).filter((row) => Boolean(row.taskID));
+        const employeeUsers = users.filter((user) => isEmployeePosition(user));
+        const managerUsers = users.filter((user) => isManagerPosition(user));
 
         res.render('home', {
-            users: multipleMongooseToObject(users),
+            users: users,
+            employeeUsers,
+            managerUsers,
             data: dataRows
         } )
     }

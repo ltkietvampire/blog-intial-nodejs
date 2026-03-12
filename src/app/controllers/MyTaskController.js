@@ -3,6 +3,8 @@ const User = require('../model/user');
 const Task = require('../model/task');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
+const { isEmployeePosition } = require('../middleware/roleUtils');
+const { combineDateTime, toDateText, toDateTimeText } = require('../../until/dateTime');
 
 dayjs.extend(customParseFormat);
 
@@ -11,21 +13,7 @@ const LATE_STATUS = 'late';
 const COMPLETE_STATUS = 'completed';
 const CHECK_IN_WINDOW_MINUTES = 15;
 const COMPLETE_WINDOW_MINUTES = 15;
-const TASK_STATUS_ACTIVE = 'active';
 const TASK_STATUS_ARCHIVED = 'archived';
-
-function normalizeText(value) {
-    return String(value || '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .trim();
-}
-
-function isEmployeePosition(position) {
-    const normalized = normalizeText(position);
-    return normalized.includes('nhan vien') || normalized.includes('employee');
-}
 
 function getDateKey(value) {
     const date = dayjs(value);
@@ -35,40 +23,8 @@ function getDateKey(value) {
     return date.format('YYYY-MM-DD');
 }
 
-function combineDateTime(dateKey, timeValue) {
-    if (!dateKey || !timeValue) {
-        return null;
-    }
-
-    const rawTime = String(timeValue).trim();
-    const parsed = dayjs(
-        `${dateKey} ${rawTime}`,
-        ['YYYY-MM-DD HH:mm', 'YYYY-MM-DD HH:mm:ss'],
-        true
-    );
-    if (!parsed.isValid()) {
-        return null;
-    }
-    return parsed;
-}
-
-function toDateText(value) {
-    const date = dayjs(value);
-    if (!date.isValid()) {
-        return '--';
-    }
-    return date.format('DD/MM/YYYY');
-}
-
-function toDateTimeText(value) {
-    if (!value) {
-        return '';
-    }
-    const date = dayjs(value);
-    if (!date.isValid()) {
-        return '';
-    }
-    return date.format('DD/MM/YYYY HH:mm:ss');
+function toDateTimeTextLocal(value) {
+    return toDateTimeText(value, { format: 'DD/MM/YYYY HH:mm:ss', fallback: '' });
 }
 
 function getStatusLabel(status) {
@@ -117,6 +73,7 @@ class MyTaskController {
         }
 
         user.totalWorkingHours = Number(user.totalWorkingHours || 0);
+        req.session.user.role = user.role;
         req.session.user.position = user.position;
         req.session.user.totalWorkingHours = user.totalWorkingHours;
 
@@ -191,8 +148,8 @@ class MyTaskController {
             statusClass: getStatusClass(status),
             canCheckIn,
             canComplete,
-            checkInAtText: toDateTimeText(distribution.checkInAt),
-            completedAtText: toDateTimeText(distribution.completedAt),
+            checkInAtText: toDateTimeTextLocal(distribution.checkInAt),
+            completedAtText: toDateTimeTextLocal(distribution.completedAt),
             section,
             sortTime: startAt ? startAt.valueOf() : 0,
         };
@@ -248,7 +205,7 @@ class MyTaskController {
             return res.redirect('/login');
         }
 
-        if (!isEmployeePosition(user.position)) {
+        if (!isEmployeePosition(user)) {
             return res.status(403).send('Only employee can access myTask');
         }
 
@@ -294,7 +251,7 @@ class MyTaskController {
             return res.redirect('/login');
         }
 
-        if (!isEmployeePosition(user.position)) {
+        if (!isEmployeePosition(user)) {
             return res.status(403).send('Only employee can access mySchedule');
         }
 
@@ -321,7 +278,7 @@ class MyTaskController {
             return res.redirect('/login');
         }
 
-        if (!isEmployeePosition(user.position)) {
+        if (!isEmployeePosition(user)) {
             return res.status(403).send('Only employee can access myTask');
         }
 
@@ -382,7 +339,7 @@ class MyTaskController {
             return res.redirect('/login');
         }
 
-        if (!isEmployeePosition(user.position)) {
+        if (!isEmployeePosition(user)) {
             return res.status(403).send('Only employee can access myTask');
         }
 

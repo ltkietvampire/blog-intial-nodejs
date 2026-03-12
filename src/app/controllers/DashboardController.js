@@ -3,26 +3,12 @@ const customParseFormat = require('dayjs/plugin/customParseFormat');
 const User = require('../model/user');
 const Distribution = require('../model/distribution');
 const { isEmployeePosition } = require('../middleware/roleUtils');
+const { toTaskDateTime } = require('../../until/dateTime');
 
 dayjs.extend(customParseFormat);
 
 const COMPLETE_STATUS = 'completed';
 const LATE_STATUS = 'late';
-
-function toTaskDateTime(dateValue, timeValue) {
-  const date = dayjs(dateValue).format('YYYY-MM-DD');
-  const rawTime = String(timeValue || '').trim();
-  if (!rawTime || !dayjs(date, 'YYYY-MM-DD', true).isValid()) {
-    return null;
-  }
-
-  const parsed = dayjs(
-    `${date} ${rawTime}`,
-    ['YYYY-MM-DD HH:mm', 'YYYY-MM-DD HH:mm:ss'],
-    true
-  );
-  return parsed.isValid() ? parsed : null;
-}
 
 class DashboardController {
   async index(req, res) {
@@ -37,7 +23,12 @@ class DashboardController {
         return res.redirect('/login');
       }
 
-      if (!isEmployeePosition(user.position)) {
+      if (req.session?.user) {
+        req.session.user.role = user.role;
+        req.session.user.position = user.position;
+      }
+
+      if (!isEmployeePosition(user)) {
         return res.redirect('/');
       }
 

@@ -1,0 +1,28 @@
+﻿.dashboard-employee-view {
+  .employee-dashboard {
+    max-width: 1100px;
+  }
+
+  .summary-card {
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  }
+
+  .summary-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .summary-label {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .task-table th {
+    font-size: 13px;
+    color: #64748b;
+  }
+}
+

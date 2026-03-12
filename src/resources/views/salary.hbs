@@ -1,0 +1,67 @@
+<section class="container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div>
+      <h3 class="mb-1">Weekly Payroll</h3>
+      <div class="text-muted">Period: {{periodLabel}}</div>
+    </div>
+    <form method="GET" action="/salary" class="d-flex flex-wrap align-items-end gap-2">
+      <div>
+        <label class="form-label mb-1">Week of</label>
+        <input type="date" class="form-control" name="date" value="{{dateInput}}">
+      </div>
+      <button type="submit" class="btn btn-outline-primary">Load week</button>
+    </form>
+  </div>
+
+  <div class="card shadow-sm mt-4">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Employee</th>
+            <th>Email</th>
+            <th class="text-end">Hours</th>
+            <th class="text-end">Hourly Rate</th>
+            <th class="text-end">Total Pay</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each rows}}
+            <tr>
+              <td>{{this.employee.name}}</td>
+              <td class="text-muted">{{this.employee.email}}</td>
+              <td class="text-end">{{this.totalHours}}</td>
+              <td class="text-end">{{this.hourlyRate}}</td>
+              <td class="text-end">{{this.totalPay}}</td>
+              <td>
+                {{#if this.hasRecord}}
+                  <span class="badge bg-warning text-dark text-uppercase">{{this.status}}</span>
+                {{else}}
+                  <span class="badge bg-light text-dark text-uppercase">not generated</span>
+                {{/if}}
+              </td>
+            </tr>
+          {{else}}
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">No employees found.</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
+    <div class="fw-semibold">
+      Total hours: {{totals.totalHours}} | Total pay: {{totals.totalPay}}
+    </div>
+    <form method="POST" action="/salary/generate">
+      <input type="hidden" name="periodStart" value="{{periodStartISO}}">
+      <input type="hidden" name="periodEnd" value="{{periodEndISO}}">
+      <button type="submit" class="btn btn-primary" {{#if hasRecords}}disabled{{/if}}>
+        Generate payroll
+      </button>
+    </form>
+  </div>
+</section>

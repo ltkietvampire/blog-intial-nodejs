@@ -6,7 +6,7 @@ function requireManager(req, res, next) {
     return res.redirect('/login');
   }
 
-  if (isManagerPosition(user.position)) {
+  if (isManagerPosition(user)) {
     return next();
   }
 

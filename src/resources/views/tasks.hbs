@@ -1,78 +1,8 @@
-<style>
-  :root {
-    --bg: #f4f6fb;
-    --card: #ffffff;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --primary: #2563eb;
-  }
-
-  .task-page {
-    max-width: 1200px;
-    margin: 28px auto;
-  }
-
-  .panel {
-    background: #f8faff;
-    border-radius: 16px;
-    padding: 16px;
-  }
-
-  .task-card {
-    border: 0;
-    border-radius: 14px;
-    background: var(--card);
-    box-shadow: 0 8px 24px rgba(31, 41, 55, 0.08);
-  }
-
-  .priority-1 { border-left: 5px solid #ef4444; }
-  .priority-2 { border-left: 5px solid #f97316; }
-  .priority-3 { border-left: 5px solid #f59e0b; }
-  .priority-4 { border-left: 5px solid #22c55e; }
-  .priority-5 { border-left: 5px solid #3b82f6; }
-
-  .small-muted {
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .badge-soft {
-    border-radius: 999px;
-    padding: 3px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    background: #e0ebff;
-    color: #1d4ed8;
-  }
-
-  .btn-ghost {
-    border: 0;
-    background: transparent;
-    color: #6b7280;
-    border-radius: 8px;
-    padding: 4px 8px;
-  }
-
-  .btn-ghost:hover {
-    background: #f1f5f9;
-    color: #111827;
-  }
-</style>
-
+<div class="tasks-view">
 <div class="task-page">
-  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+  <div class="d-flex align-items-center justify-content-between mb-3 toolbar gap-2 flex-wrap">
     <h3 class="mb-0">Tasks</h3>
-    <div class="d-flex gap-2 align-items-center">
-      <input id="searchInput" class="form-control form-control-sm" style="max-width: 260px" placeholder="Search task name">
-      <select id="filterPriority" class="form-select form-select-sm" style="width: 150px">
-        <option value="all">All priorities</option>
-        <option value="1">Priority 1</option>
-        <option value="2">Priority 2</option>
-        <option value="3">Priority 3</option>
-        <option value="4">Priority 4</option>
-        <option value="5">Priority 5</option>
-      </select>
-      <button id="btn-clear" class="btn btn-outline-secondary btn-sm">Clear</button>
+    <div class="d-flex gap-2 align-items-center flex-wrap">
       <button
         type="button"
         class="btn btn-outline-dark btn-sm"
@@ -81,34 +11,44 @@
       >
         Archive/Completed ({{archivedTasks.length}})
       </button>
-      <button id="btn-add" class="btn btn-primary btn-sm">New Task</button>
+      <button id="btn-add" class="btn btn-primary btn-sm">+ New Task</button>
     </div>
   </div>
 
   <div class="row g-4">
     <div class="col-lg-6">
-      <div class="panel">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="section-box">
+        <div class="d-flex align-items-center mb-3">
           <div>
-            <h5 class="mb-0">Needs assignees</h5>
-            <div class="small-muted">Tasks that still need assignees</div>
+            <h5 class="mb-0">Unassigned</h5>
+            <div class="small-muted">Ascending priority, newest tasks first</div>
           </div>
-          <span id="needCount" class="badge-soft">0</span>
+          <div class="ms-auto d-flex align-items-center gap-2">
+            <span id="unassignedCount" class="badge-soft">0</span>
+            <select id="filterPriority" class="form-select form-select-sm" style="width: 160px">
+              <option value="all">All priorities</option>
+              <option value="1">Priority 1</option>
+              <option value="2">Priority 2</option>
+              <option value="3">Priority 3</option>
+              <option value="4">Priority 4</option>
+              <option value="5">Priority 5</option>
+            </select>
+          </div>
         </div>
-        <div id="needAssignList" class="d-grid gap-3"></div>
+        <div id="unassignedList" class="list-group list-group-flush"></div>
       </div>
     </div>
 
     <div class="col-lg-6">
-      <div class="panel">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="section-box">
+        <div class="d-flex align-items-center mb-3">
           <div>
             <h5 class="mb-0">Assigned</h5>
-            <div class="small-muted">List of already assigned employees</div>
+            <div class="small-muted">Grouped by assignee and deadline</div>
           </div>
-          <span id="assignedCount" class="badge-soft">0</span>
+          <span id="assignedCount" class="badge-soft ms-auto">0</span>
         </div>
-        <div id="assignedList" class="d-grid gap-3"></div>
+        <div id="assignedList" class="list-group list-group-flush"></div>
       </div>
     </div>
   </div>
@@ -152,7 +92,7 @@
               {{else}}
                 <tr>
                   <td colspan="6" class="text-center text-muted py-4">
-                    Chua co task archived.
+                    No archived tasks yet.
                   </td>
                 </tr>
               {{/if}}
@@ -219,11 +159,11 @@
           <div class="col-md-6">
             <label class="form-label fw-semibold">Priority</label>
             <select name="priority" class="form-select">
-              <option value="1">1 - Rat cao</option>
-              <option value="2">2 - Cao</option>
-              <option value="3" selected>3 - Trung binh</option>
-              <option value="4">4 - Thap</option>
-              <option value="5">5 - Rat thap</option>
+              <option value="1">1 - Very high</option>
+              <option value="2">2 - High</option>
+              <option value="3" selected>3 - Medium</option>
+              <option value="4">4 - Low</option>
+              <option value="5">5 - Very low</option>
             </select>
           </div>
         </div>
@@ -232,7 +172,7 @@
             <label class="form-label fw-semibold">Recurrence</label>
             <select name="recurrence_type" class="form-select">
               <option value="none" selected>No recurrence</option>
-              <option value="daily">Hang ngay</option>
+              <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
               <option value="monthly">Monthly</option>
             </select>
@@ -285,11 +225,11 @@
           <div class="col-md-6">
             <label class="form-label fw-semibold">Priority</label>
             <select id="editPriority" name="priority" class="form-select">
-              <option value="1">1 - Rat cao</option>
-              <option value="2">2 - Cao</option>
-              <option value="3">3 - Trung binh</option>
-              <option value="4">4 - Thap</option>
-              <option value="5">5 - Rat thap</option>
+              <option value="1">1 - Very high</option>
+              <option value="2">2 - High</option>
+              <option value="3">3 - Medium</option>
+              <option value="4">4 - Low</option>
+              <option value="5">5 - Very low</option>
             </select>
           </div>
         </div>
@@ -298,7 +238,7 @@
             <label class="form-label fw-semibold">Recurrence</label>
             <select id="editRecurrenceType" name="recurrence_type" class="form-select">
               <option value="none">No recurrence</option>
-              <option value="daily">Hang ngay</option>
+              <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
               <option value="monthly">Monthly</option>
             </select>
@@ -344,14 +284,14 @@
       </div>
       <div class="modal-body">
         <div class="p-3 rounded-3 mb-3" style="background:#f8fafc">
-          <div class="fw-semibold mb-1" id="assignTaskName">Ten task</div>
+          <div class="fw-semibold mb-1" id="assignTaskName">Task name</div>
           <div class="small-muted" id="assignTaskInfo">00:00 - 00:00</div>
-          <div class="small-muted mt-1" id="assignTaskSlots">Con trong: 0</div>
+          <div class="small-muted mt-1" id="assignTaskSlots">Available slots: 0</div>
         </div>
         <div class="mb-3">
-          <label class="form-label fw-semibold">Loc theo chuc vu</label>
+          <label class="form-label fw-semibold">Filter by position</label>
           <select id="filterPosition" class="form-select">
-            <option value="all">Tat ca</option>
+            <option value="all">All</option>
             {{#each position}}
               <option value="{{this}}">{{this}}</option>
             {{/each}}
@@ -375,11 +315,11 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Unassign phan cong</h5>
+        <h5 class="modal-title">Remove assignment</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        Unassign task cua <strong id="unassignUserName"></strong>?
+        Remove task assignment for <strong id="unassignUserName"></strong>?
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -390,17 +330,16 @@
 </div>
 
 <form method="POST" id="actionForm"></form>
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('searchInput');
     const filterPriority = document.getElementById('filterPriority');
-    const needAssignList = document.getElementById('needAssignList');
+    const unassignedList = document.getElementById('unassignedList');
     const assignedList = document.getElementById('assignedList');
-    const needCount = document.getElementById('needCount');
+    const unassignedCount = document.getElementById('unassignedCount');
     const assignedCount = document.getElementById('assignedCount');
     const btnAdd = document.getElementById('btn-add');
-    const btnClear = document.getElementById('btn-clear');
     const taskForm = document.getElementById('taskForm');
     const createDateStart = document.getElementById('createDateStart');
     const createDateEnd = document.getElementById('createDateEnd');
@@ -416,7 +355,7 @@
     const users = {{{json users}}} || [];
     const recurrenceLabel = {
       none: 'No recurrence',
-      daily: 'Hang ngay',
+      daily: 'Daily',
       weekly: 'Weekly',
       monthly: 'Monthly',
     };
@@ -522,7 +461,7 @@
       const remain = Math.max(task.required_people - task.assigned_people_count, 0);
       const deadlineText = task.deadline ? String(task.deadline).slice(0, 10) : '--';
       const recurrenceText = recurrenceLabel[task.recurrence_type] || recurrenceLabel.none;
-      const priorityClass = safePriority(task.priority);
+      const priorityValue = safePriority(task.priority);
 
       const safeTaskId = escapeAttr(taskId);
       const safeTaskName = escapeHtml(task.name_task || 'No name');
@@ -537,50 +476,59 @@
       const safeRemain = escapeHtml(remain);
 
       return `
-        <div class="card task-card priority-${priorityClass}">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start gap-2">
-              <div>
-                <h6 class="mb-1">${safeTaskName}</h6>
-                <div class="small-muted">${safeDateStart} - ${safeDateEnd} | ${safeEstimatedHours}h</div>
-                <div class="small-muted">Deadline: ${safeDeadline}</div>
-                <div class="small-muted">Chu ky: ${safeRecurrence}</div>
-                <div class="small-muted">Da giao: ${safeAssigned}/${safeRequired} nguoi</div>
-                <div class="small-muted">Con thieu: ${safeRemain} nguoi</div>
+        <div class="list-group-item border-0 bg-transparent px-0 mb-2 task-item">
+          <div class="card task-card">
+            <div class="priority-accent p-${priorityValue}"></div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                  <h6 class="mb-1">${safeTaskName}</h6>
+                  <div class="small-muted">${safeDateStart} - ${safeDateEnd} | ${safeEstimatedHours}h</div>
+                  <div class="small-muted">Deadline: ${safeDeadline}</div>
+                  <div class="small-muted">Recurrence: ${safeRecurrence}</div>
+                  <div class="small-muted">Assigned: ${safeAssigned}/${safeRequired} people</div>
+                  <div class="small-muted">Remaining: ${safeRemain} people</div>
+                </div>
+                <div class="task-right text-end d-flex align-items-center gap-2">
+                  <div class="task-time">
+                    <div class="fw-semibold">${safeDateStart} - ${safeDateEnd}</div>
+                    <div class="small-muted">${safeEstimatedHours} hours</div>
+                  </div>
+                  <div class="task-actions">
+                    <button class="task-action-btn btn-edit-task"
+                      data-id="${safeTaskId}"
+                      data-name="${escapeAttr(task.name_task || '')}"
+                      data-description="${escapeAttr(task.description_task || '')}"
+                      data-priority="${priorityValue}"
+                      data-deadline="${escapeAttr(deadlineText)}"
+                      data-start="${escapeAttr(task.dateStart || '')}"
+                      data-end="${escapeAttr(task.dateEnd || '')}"
+                      data-recurrence="${escapeAttr(task.recurrence_type || 'none')}"
+                      data-required="${escapeAttr(task.required_people || 1)}"
+                      title="Edit task">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="task-action-btn btn-delete btn-delete-task" data-id="${safeTaskId}" data-name="${escapeAttr(task.name_task || '')}" title="Delete task">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                    ${remain > 0 ? `
+                      <button class="task-action-btn btn-assign-task"
+                        data-id="${safeTaskId}"
+                        data-name="${escapeAttr(task.name_task || '')}"
+                        data-start="${escapeAttr(task.dateStart || '')}"
+                        data-end="${escapeAttr(task.dateEnd || '')}"
+                        data-deadline="${escapeAttr(deadlineText)}"
+                        data-required="${escapeAttr(task.required_people || 1)}"
+                        data-assigned="${escapeAttr(task.assigned_people_count || 0)}"
+                        title="Assign task">
+                        <i class="bi bi-person-plus"></i>
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
               </div>
-              <div class="d-flex flex-column align-items-end gap-1">
-                <button class="btn-ghost btn-edit-task"
-                  data-id="${safeTaskId}"
-                  data-name="${escapeAttr(task.name_task || '')}"
-                  data-description="${escapeAttr(task.description_task || '')}"
-                  data-priority="${priorityClass}"
-                  data-deadline="${escapeAttr(deadlineText)}"
-                  data-start="${escapeAttr(task.dateStart || '')}"
-                  data-end="${escapeAttr(task.dateEnd || '')}"
-                  data-recurrence="${escapeAttr(task.recurrence_type || 'none')}"
-                  data-required="${escapeAttr(task.required_people || 1)}"
-                  title="Edit task">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn-ghost btn-delete-task" data-id="${safeTaskId}" data-name="${escapeAttr(task.name_task || '')}" title="Delete task">
-                  <i class="bi bi-trash"></i>
-                </button>
-                ${remain > 0 ? `
-                  <button class="btn-ghost btn-assign-task"
-                    data-id="${safeTaskId}"
-                    data-name="${escapeAttr(task.name_task || '')}"
-                    data-start="${escapeAttr(task.dateStart || '')}"
-                    data-end="${escapeAttr(task.dateEnd || '')}"
-                    data-deadline="${escapeAttr(deadlineText)}"
-                    data-required="${escapeAttr(task.required_people || 1)}"
-                    data-assigned="${escapeAttr(task.assigned_people_count || 0)}"
-                    title="Assign task">
-                    <i class="bi bi-person-plus"></i>
-                  </button>
-                ` : ''}
-              </div>
+              <div class="task-desc mt-2">${safeTaskDescription}</div>
             </div>
-            <p class="mb-0 mt-2 small-muted">${safeTaskDescription}</p>
           </div>
         </div>
       `;
@@ -592,7 +540,7 @@
       const required = task ? task.required_people : 1;
       const recurrence = task ? (recurrenceLabel[task.recurrence_type] || recurrenceLabel.none) : recurrenceLabel.none;
       const deadlineText = task && task.deadline ? String(task.deadline).slice(0, 10) : row.deadline;
-      const priorityClass = safePriority(row.priority);
+      const priorityValue = safePriority(row.priority);
 
       const safeTaskId = escapeAttr(row.taskId);
       const safeDistributionId = escapeAttr(row.distributionId);
@@ -607,44 +555,53 @@
       const safeEmployeeAvatar = escapeAttr(row.employeeAvatar || '/img/default-avatar.webp');
 
       return `
-        <div class="card task-card priority-${priorityClass}">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start gap-2">
-              <div>
-                <h6 class="mb-1">${safeTaskName}</h6>
-                <div class="small-muted">${safeDateStart} - ${safeDateEnd} | Deadline: ${safeDeadline}</div>
-                <div class="small-muted">Chu ky: ${safeRecurrence}</div>
-                <div class="small-muted">Tien do giao: ${safeAssigned}/${safeRequired} nguoi</div>
-                <div class="d-flex align-items-center gap-2 mt-1">
-                  <img src="${safeEmployeeAvatar}" class="rounded-circle" width="24" height="24">
-                  <span class="small-muted">${safeEmployeeName}</span>
+        <div class="list-group-item border-0 bg-transparent px-0 mb-2 task-item">
+          <div class="card task-card">
+            <div class="priority-accent p-${priorityValue}"></div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                  <h6 class="mb-1">${safeTaskName}</h6>
+                  <div class="small-muted">Deadline: ${safeDeadline}</div>
+                  <div class="small-muted">Recurrence: ${safeRecurrence}</div>
+                  <div class="small-muted">Assignment progress: ${safeAssigned}/${safeRequired} people</div>
+                  <div class="d-flex align-items-center gap-2 text-muted small mt-1">
+                    <img src="${safeEmployeeAvatar}" class="rounded-circle" width="22" height="22">
+                    <span>${safeEmployeeName}</span>
+                  </div>
+                </div>
+                <div class="task-right text-end d-flex align-items-center gap-2">
+                  <div class="task-time">
+                    <div class="fw-semibold">${safeDateStart} - ${safeDateEnd}</div>
+                  </div>
+                  <div class="task-actions">
+                    <button class="task-action-btn btn-edit-task"
+                      data-id="${safeTaskId}"
+                      data-name="${escapeAttr(task ? (task.name_task || '') : (row.taskName || ''))}"
+                      data-description="${escapeAttr(task ? (task.description_task || '') : '')}"
+                      data-priority="${escapeAttr(task ? (task.priority || 3) : priorityValue)}"
+                      data-deadline="${escapeAttr(deadlineText || '')}"
+                      data-start="${escapeAttr(task ? (task.dateStart || '') : (row.dateStart || ''))}"
+                      data-end="${escapeAttr(task ? (task.dateEnd || '') : (row.dateEnd || ''))}"
+                      data-recurrence="${escapeAttr(task ? (task.recurrence_type || 'none') : 'none')}"
+                      data-required="${escapeAttr(task ? (task.required_people || 1) : 1)}"
+                      title="Edit task">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="task-action-btn btn-delete btn-delete-task" data-id="${safeTaskId}" data-name="${escapeAttr(row.taskName || '')}" title="Delete task">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                    <button class="task-action-btn btn-unassign btn-unassign-task"
+                      data-task-id="${safeTaskId}"
+                      data-distribution-id="${safeDistributionId}"
+                      data-user-name="${escapeAttr(row.employeeName || '')}"
+                      title="Unassign">
+                      <i class="bi bi-person-dash"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div class="d-flex flex-column align-items-end gap-1">
-                <button class="btn-ghost btn-edit-task"
-                  data-id="${safeTaskId}"
-                  data-name="${escapeAttr(task ? (task.name_task || '') : (row.taskName || ''))}"
-                  data-description="${escapeAttr(task ? (task.description_task || '') : '')}"
-                  data-priority="${escapeAttr(task ? (task.priority || 3) : priorityClass)}"
-                  data-deadline="${escapeAttr(deadlineText || '')}"
-                  data-start="${escapeAttr(task ? (task.dateStart || '') : (row.dateStart || ''))}"
-                  data-end="${escapeAttr(task ? (task.dateEnd || '') : (row.dateEnd || ''))}"
-                  data-recurrence="${escapeAttr(task ? (task.recurrence_type || 'none') : 'none')}"
-                  data-required="${escapeAttr(task ? (task.required_people || 1) : 1)}"
-                  title="Edit task">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn-ghost btn-delete-task" data-id="${safeTaskId}" data-name="${escapeAttr(row.taskName || '')}" title="Delete task">
-                  <i class="bi bi-trash"></i>
-                </button>
-                <button class="btn-ghost btn-unassign-task"
-                  data-task-id="${safeTaskId}"
-                  data-distribution-id="${safeDistributionId}"
-                  data-user-name="${escapeAttr(row.employeeName || '')}"
-                  title="Unassign">
-                  <i class="bi bi-person-dash"></i>
-                </button>
-              </div>
+              <div class="task-desc mt-2">${escapeHtml(task ? (task.description_task || '') : '') || 'No description'}</div>
             </div>
           </div>
         </div>
@@ -652,8 +609,15 @@
     }
 
     function bindDynamicActions() {
+      document.querySelectorAll('.task-card').forEach((card) => {
+        card.addEventListener('click', function () {
+          this.classList.toggle('open');
+        });
+      });
+
       document.querySelectorAll('.btn-edit-task').forEach((btn) => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function (event) {
+          event.stopPropagation();
           document.getElementById('editNameTask').value = this.dataset.name || '';
           document.getElementById('editDescriptionTask').value = this.dataset.description || '';
           document.getElementById('editPriority').value = this.dataset.priority || '3';
@@ -668,7 +632,8 @@
       });
 
       document.querySelectorAll('.btn-delete-task').forEach((btn) => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function (event) {
+          event.stopPropagation();
           document.getElementById('deleteTaskName').textContent = this.dataset.name || '';
           actionForm.action = `/tasks/${this.dataset.id}?_method=DELETE`;
           deleteModal.show();
@@ -676,7 +641,8 @@
       });
 
       document.querySelectorAll('.btn-assign-task').forEach((btn) => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function (event) {
+          event.stopPropagation();
           currentAssignTaskId = this.dataset.id;
           const required = Number.parseInt(this.dataset.required, 10) || 1;
           const assigned = Number.parseInt(this.dataset.assigned, 10) || 0;
@@ -690,7 +656,7 @@
           document.getElementById('assignTaskInfo').textContent =
             `${this.dataset.start || '--:--'} - ${this.dataset.end || '--:--'} | Deadline: ${this.dataset.deadline || '--'}`;
           document.getElementById('assignTaskSlots').textContent =
-            `Can ${required} nguoi, da giao ${assigned}, con trong ${currentRemainingSlots}`;
+            `Required ${required} people, assigned ${assigned}, available ${currentRemainingSlots}`;
 
           fillAssignEmployeeSelect();
           assignModal.show();
@@ -698,7 +664,8 @@
       });
 
       document.querySelectorAll('.btn-unassign-task').forEach((btn) => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function (event) {
+          event.stopPropagation();
           currentUnassignTaskId = this.dataset.taskId;
           currentUnassignDistributionId = this.dataset.distributionId;
           document.getElementById('unassignUserName').textContent = this.dataset.userName || '';
@@ -708,19 +675,15 @@
     }
 
     function render() {
-      needAssignList.innerHTML = '';
+      unassignedList.innerHTML = '';
       assignedList.innerHTML = '';
 
-      const keyword = String(searchInput.value || '').trim().toLowerCase();
       const priorityFilter = filterPriority.value;
 
       const needTasks = tasks
         .filter((task) => task.assigned_people_count < task.required_people)
         .filter((task) => {
           if (priorityFilter !== 'all' && String(task.priority) !== priorityFilter) {
-            return false;
-          }
-          if (keyword && !String(task.name_task || '').toLowerCase().includes(keyword)) {
             return false;
           }
           return true;
@@ -737,9 +700,6 @@
           if (priorityFilter !== 'all' && String(row.priority) !== priorityFilter) {
             return false;
           }
-          if (keyword && !String(row.taskName || '').toLowerCase().includes(keyword)) {
-            return false;
-          }
           return true;
         })
         .sort((a, b) => {
@@ -749,19 +709,19 @@
           return String(a.taskName).localeCompare(String(b.taskName));
         });
 
-      needCount.textContent = String(needTasks.length);
+      unassignedCount.textContent = String(needTasks.length);
       assignedCount.textContent = String(assignedRows.length);
 
       if (needTasks.length === 0) {
-        needAssignList.innerHTML = '<div class="alert alert-light border mb-0">No tasks require additional assignees.</div>';
+        unassignedList.innerHTML = '<div class="alert alert-light border mb-0">No tasks in this column.</div>';
       } else {
         for (const task of needTasks) {
-          needAssignList.insertAdjacentHTML('beforeend', renderNeedAssignTask(task));
+          unassignedList.insertAdjacentHTML('beforeend', renderNeedAssignTask(task));
         }
       }
 
       if (assignedRows.length === 0) {
-        assignedList.innerHTML = '<div class="alert alert-light border mb-0">Chua co phan cong task.</div>';
+        assignedList.innerHTML = '<div class="alert alert-light border mb-0">No task assignments yet.</div>';
       } else {
         for (const row of assignedRows) {
           assignedList.insertAdjacentHTML('beforeend', renderAssignedRow(row));
@@ -828,7 +788,7 @@
 
         if (!Number.isFinite(startMinutes) || !Number.isFinite(endMinutes) || endMinutes <= startMinutes) {
           e.preventDefault();
-          alert('End time phai lon hon gio bat dau.');
+          alert('End time must be greater than start time.');
           return;
         }
 
@@ -840,13 +800,7 @@
     }
 
     btnAdd.onclick = () => taskModal.show();
-    btnClear.onclick = () => {
-      searchInput.value = '';
-      filterPriority.value = 'all';
-      render();
-    };
     filterPriority.onchange = render;
-    searchInput.oninput = render;
 
     render();
   });

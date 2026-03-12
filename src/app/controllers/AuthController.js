@@ -4,20 +4,12 @@ const sharp = require('sharp');
 const bcrypt = require('bcrypt');
 const fs = require('fs/promises');
 const { mongooseToObject, multipleMongooseToObject } = require('../../until/mongoose');
+const { normalizeEmail, isValidPhone } = require('../../until/validators');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
 const ALLOWED_MIME_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 let fileTypeFromBufferFn = null;
-
-function normalizeEmail(value) {
-    return String(value || '').trim().toLowerCase();
-}
-
-function isValidPhone(value) {
-    const digits = String(value || '').replace(/\D/g, '');
-    return digits.length >= 8 && digits.length <= 15;
-}
 
 async function detectFileType(buffer) {
     if (!fileTypeFromBufferFn) {

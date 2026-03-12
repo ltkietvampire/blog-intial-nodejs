@@ -1,341 +1,31 @@
-<style>
-html, body {
-  height: 100%;
-}
-
-body {
-  height: 100vh;
-  height: 100dvh;
-  margin: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  background: #f7f8fc;
-  font-family: system-ui, sans-serif;
-}
-
-.app-layout {
-  min-height: 0;
-  height: 100%;
-}
-
-.sidebar {
-  width: 240px;
-  border-right: 1px solid #ddd;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.employee-list {
-  flex: 1;
-  min-height: 0;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  scrollbar-gutter: stable;
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
-}
-
-.employee-item {
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.employee-item:hover {
-  background: #eef3ff;
-}
-
-.employee-item.active {
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-weight: 600;
-}
-
-.calendar {
-  flex: 1;
-  height: 100%;
-  min-height: 0;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  scrollbar-gutter: stable;
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
-}
-
-.employee-list::-webkit-scrollbar,
-.calendar::-webkit-scrollbar {
-  width: 10px;
-}
-
-.employee-list::-webkit-scrollbar-track,
-.calendar::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-.employee-list::-webkit-scrollbar-thumb,
-.calendar::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 999px;
-}
-
-/* GRID CHUNG */
-.calendar-grid {
-  display: grid;
-  grid-template-columns: 70px repeat(7, 1fr);
-}
-
-/* HEADER */
-.calendar-header {
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 10;
-  border-bottom: 1px solid #ddd;
-}
-
-.calendar-header div {
-  text-align: center;
-  padding: 10px 0;
-  font-weight: 600;
-  border-right: 1px solid #eee;
-}
-
-/* BODY */
-.calendar-body {
-  position: relative;
-}
-
-.time-col {
-  font-size: 12px;
-  text-align: right;
-  padding-right: 6px;
-}
-
-.time-row {
-  height: 60px;
-  border-bottom: 1px solid #eee;
-}
-
-/* Cá»˜T NGÃ€Y */
-.day-col {
-  position: relative;
-  border-right: 1px solid #eee;
-  background: repeating-linear-gradient(
-    to bottom,
-    #fafafa,
-    #fafafa 59px,
-    #eee 60px
-  );
-}
-
-/* TASK */
-.task {
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  background: linear-gradient(135deg, #1e5aa8, #3b82f6);
-  color: white;
-  padding: 6px;
-  font-size: 12px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  cursor: pointer;
-}
-
-.task:hover {
-  opacity: 0.9;
-}
-/* new */
-.task {
-  overflow: hidden;
-  line-height: 1.2;
-}
-
-/* Header */
-.task-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.task-avatar {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-/* Time */
-.task-time {
-  font-size: 11px;
-  opacity: 0.9;
-}
-
-/* ONE LINE */
-.task--tiny {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-}
-
-.task--tiny b {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* DOT MODE */
-.task--dot {
-  padding: 0 !important;
-  height: 6px !important;
-  border-radius: 999px;
-}
-.day-col:hover {
-  background-color: #f0f6ff;
-}
-.task {
-  box-sizing: border-box;
-  border-left: 4px solid rgba(255,255,255,0.6);
-}
-.task {
-  position: absolute;
-}
-
-.task::after {
-  content: attr(title);
-  position: absolute;
-  left: 100%;
-  top: 0;
-  white-space: pre;
-  background: #111;
-  color: #fff;
-  padding: 6px 8px;
-  font-size: 11px;
-  border-radius: 6px;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(6px);
-  transition: 0.2s;
-  z-index: 99;
-}
-
-.task:hover::after {
-  opacity: 1;
-}
-.task.active {
-  outline: 2px solid #fff;
-  box-shadow: 0 0 0 3px #2563eb;
-}
-.week-bar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.week-bar button {
-  border: none;
-  background: #eef3ff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.week-bar button:hover {
-  background: #dbe7ff;
-}
-
-#weekLabel {
-  font-weight: 600;
-}
-.week-bar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-
-.calendar-header {
-  position: sticky;
-  top: 48px; /* week-bar height */
-  z-index: 10;
-}
-.calendar-header div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 6px 0;
-}
-
-/* Day name */
-.calendar-header .day-name {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .4px;
-  color: #64748b;
-  text-transform: uppercase;
-}
-
-/* Date */
-.calendar-header .day-date {
-  min-width: 28px;
-  height: 28px;
-  line-height: 28px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #0f172a;
-  background: #f1f5f9;
-}
-
-.calendar-header .today {
-  background: #eef3ff;
-  border-bottom: 2px solid #2563eb;
-}
-
-.day-col.today {
-  background-color: #f5f9ff;
-}
-.calendar-header .today .day-date {
-  background: #2563eb;
-  color: white;
-  box-shadow: 0 4px 10px rgba(37,99,235,.4);
-}
-
-.day-col.today {
-  background: linear-gradient(
-    to bottom,
-    #f5f9ff,
-    #ffffff
-  );
-}
-  </style>
-
+<div class="home-view">
 <div class="d-flex h-100 app-layout">
 
   <!-- SIDEBAR -->
   <div class="sidebar p-3">
-    <h6>Employees</h6>
+    <h6>Team</h6>
     <div class="employee-list">
       <div id="employee-all" class="employee-item p-2" onclick="allBoardSchedule()">Team Schedule Board</div>
-      {{#each users}}
-        <div id="employee-{{this._id}}" class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
-      {{/each}}
+
+      <div class="sidebar-section-title">Employees</div>
+      {{#if employeeUsers.length}}
+        {{#each employeeUsers}}
+          <div id="user-{{this._id}}" class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
+        {{/each}}
+      {{else}}
+        <div class="text-muted small px-2">No employees</div>
+      {{/if}}
+
+      <div class="sidebar-section-title">Managers</div>
+      {{#if managerUsers.length}}
+        {{#each managerUsers}}
+          <div id="user-{{this._id}}" class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
+        {{/each}}
+      {{else}}
+        <div class="text-muted small px-2">No managers</div>
+      {{/if}}
     </div>
   </div>
-
   <!-- CALENDAR -->
   <div class="calendar flex-grow-1">
 
@@ -411,7 +101,7 @@ body {
   function setActiveSidebar(type, employeeId = null) {
     document.querySelectorAll('.employee-item').forEach(item => item.classList.remove('active'));
 
-    const activeId = type === 'employee' ? `employee-${employeeId}` : 'employee-all';
+    const activeId = type === 'employee' ? `user-${employeeId}` : 'employee-all';
     const activeItem = document.getElementById(activeId);
     if (activeItem) activeItem.classList.add('active');
   }
@@ -516,8 +206,8 @@ body {
       : memberText;
 
     el.title = shouldShowMembersInAllBoard
-      ? `${name}\nMembers: ${memberText}\n${start} – ${end}`
-      : `${name}\n${user}\n${start} – ${end}`;
+      ? `${name}\nMembers: ${memberText}\n${start} ï¿½ ${end}`
+      : `${name}\n${user}\n${start} ï¿½ ${end}`;
 
     if (h < 18) {
       el.classList.add('task--dot');
@@ -534,7 +224,7 @@ body {
     if (h < 50) {
       el.innerHTML = `
         <b>${name}</b>
-        <div class="task-time">${start} – ${end}</div>
+        <div class="task-time">${start} ï¿½ ${end}</div>
         ${shouldShowMembersInAllBoard ? `<div class="task-time">Members: ${displayMemberText}</div>` : ''}
       `;
       return;
@@ -545,7 +235,7 @@ body {
         <img src="${avatar}" class="task-avatar">
         <b>${name}</b>
       </div>
-      <div class="task-time">${start} – ${end}</div>
+      <div class="task-time">${start} ï¿½ ${end}</div>
       ${shouldShowMembersInAllBoard ? `<div class="task-time">Members: ${displayMemberText}</div>` : ''}
     `;
   }
@@ -705,13 +395,4 @@ function reloadCalendar() {
 renderWeekHeader();
 allBoardSchedule();
 </script>
-
-
-
-
-
-
-
-
-
-
+</div>

@@ -1,7 +1,7 @@
 
 const bcrypt = require("bcrypt");
 const User = require("../model/user");
-const { isEmployeePosition } = require('../middleware/roleUtils');
+const { isEmployeePosition, normalizeRole } = require('../middleware/roleUtils');
 
 class LoginController {
     show(req, res){
@@ -30,10 +30,11 @@ class LoginController {
             _id: user._id,
             avatar: user.avatar,
             name: user.name,
+            role: normalizeRole(user.role),
             position: user.position,
             totalWorkingHours: user.totalWorkingHours || 0,
         };
-        if (isEmployeePosition(user.position)) {
+        if (isEmployeePosition(user)) {
             return res.redirect('/dashboard');
         }
         res.redirect("/auth");
