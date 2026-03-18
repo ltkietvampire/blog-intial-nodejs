@@ -1,0 +1,24 @@
+<div id="taskPopover" class="task-popover" hidden>
+  <div class="task-popover-header">
+    <strong id="taskPopoverTitle"></strong>
+    <button type="button" id="taskPopoverClose" class="task-popover-close" aria-label="Close">×</button>
+  </div>
+  <div id="taskPopoverTime" class="task-popover-time"></div>
+  <div id="taskPopoverDesc" class="task-popover-desc"></div>
+  <button type="button" id="taskPopoverDetail" class="task-popover-detail">Xem chi tiết</button>
+</div>
+
+<div class="modal fade" id="taskDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="taskDetailTitle">Task detail</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="taskDetailTime" class="text-muted mb-2"></div>
+        <div id="taskDetailDesc"></div>
+      </div>
+    </div>
+  </div>
+</div>

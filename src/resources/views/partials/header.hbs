@@ -36,6 +36,9 @@
             <li class="nav-item">
               <a class="nav-link" href="/approvals">Approval Center</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/announcements">Announcements</a>
+            </li>
           {{else}}
             <li class="nav-item">
               <a class="nav-link" href="/dashboard">Dashboard</a>
@@ -95,7 +98,12 @@
           {{#if approvalNotifications.items.length}}
             {{#each approvalNotifications.items}}
               <li>
-                <a class="dropdown-item notification-item py-2 px-3" href="{{this.link}}">
+                <a
+                  class="dropdown-item notification-item py-2 px-3"
+                  href="{{this.link}}"
+                  data-announcement-id="{{this.id}}"
+                  data-announcement-seen="{{this.isSeen}}"
+                >
                   <div class="d-flex justify-content-between align-items-start gap-2">
                     <div>
                       <div class="fw-semibold">{{this.title}}</div>
@@ -118,6 +126,38 @@
           </li>
         {{else}}
           <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+            <strong>Announcements</strong>
+            <span class="badge bg-light text-dark">{{announcementNotifications.totalCount}}</span>
+          </li>
+
+          {{#if announcementNotifications.items.length}}
+            {{#each announcementNotifications.items}}
+              <li>
+                <a
+                  class="dropdown-item notification-item py-2 px-3"
+                  href="{{this.link}}"
+                  data-announcement-id="{{this.id}}"
+                  data-announcement-seen="{{this.isSeen}}"
+                >
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                      <div class="fw-semibold">{{this.title}}</div>
+                      <div class="small text-muted">{{this.createdByName}} · {{this.createdAtText}}</div>
+                      <div class="small text-secondary">{{this.detail}}</div>
+                    </div>
+                    <span class="badge {{#if this.isSeen}}bg-light text-dark{{else}}bg-warning text-dark{{/if}} text-uppercase">
+                      {{#if this.isSeen}}seen{{else}}new{{/if}}
+                    </span>
+                  </div>
+                </a>
+              </li>
+            {{/each}}
+          {{else}}
+            <li class="px-3 py-3 text-muted small">No announcements.</li>
+          {{/if}}
+
+          <li class="border-top"></li>
+          <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
             <strong>Task Notifications</strong>
             <span class="badge bg-light text-dark">{{taskNotifications.totalCount}}</span>
           </li>
@@ -125,7 +165,12 @@
           {{#if taskNotifications.items.length}}
             {{#each taskNotifications.items}}
               <li>
-                <a class="dropdown-item notification-item py-2 px-3" href="{{this.link}}">
+                <a
+                  class="dropdown-item notification-item py-2 px-3"
+                  href="{{this.link}}"
+                  data-announcement-id="{{this.id}}"
+                  data-announcement-seen="{{this.isSeen}}"
+                >
                   <div class="d-flex justify-content-between align-items-start gap-2">
                     <div>
                       <div class="fw-semibold">{{this.title}}</div>
@@ -201,3 +246,31 @@
     </div>
   </div>
 </nav>
+
+{{#if isEmployee}}
+<script>
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('[data-announcement-id]');
+    if (!link) return;
+    if (link.dataset.announcementSeen === 'true') return;
+    const announcementId = link.dataset.announcementId;
+    if (!announcementId) return;
+    event.preventDefault();
+
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(`/announcements/${announcementId}/seen`);
+    } else {
+      fetch(`/announcements/${announcementId}/seen`, { method: 'POST', keepalive: true });
+    }
+
+    link.dataset.announcementSeen = 'true';
+    const badge = link.querySelector('.badge');
+    if (badge) {
+      badge.classList.remove('bg-warning', 'text-dark');
+      badge.classList.add('bg-light', 'text-dark');
+      badge.textContent = 'seen';
+    }
+  });
+</script>
+{{/if}}
+

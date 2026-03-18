@@ -3,8 +3,11 @@ const Distributions = require('../model/distribution');
 const sharp = require('sharp');
 const bcrypt = require('bcrypt');
 const fs = require('fs/promises');
-const { mongooseToObject, multipleMongooseToObject } = require('../../until/mongoose');
-const { normalizeEmail, isValidPhone } = require('../../until/validators');
+const { mongooseToObject, multipleMongooseToObject } = require('../../util/mongoose');
+const { normalizeEmail, isValidPhone } = require('../../util/validators');
+const { z } = require('zod');
+const asyncHandler = require('express-async-handler');
+const { emailSchema, phoneSchema } = require('../../util/schemas');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
@@ -20,9 +23,8 @@ async function detectFileType(buffer) {
 }
 
 class AuthController {
-    async index(req, res) {
-        try {
-            const userId = req.session?.user?._id;
+    index = asyncHandler(async (req, res) => {
+        const userId = req.user?._id;
             if (!userId) {
                 req.flash('error', 'Please sign in to continue.');
                 return res.redirect('/login');
@@ -35,9 +37,8 @@ class AuthController {
             ]);
 
             if (!user) {
-                req.session.destroy(() => {
-                    res.redirect('/login');
-                });
+                res.clearCookie('token');
+                res.redirect('/login');
                 return;
             }
 
@@ -81,14 +82,10 @@ class AuthController {
                     weeklyWorkHours: Number(weeklyWorkHours.toFixed(2)),
                 },
             });
-        } catch (error) {
-            res.status(500).send('error');
-        }
-    }
+    });
 
-    async uploads(req, res) {
-        try {
-            const userId = req.session?.user?._id;
+    uploads = asyncHandler(async (req, res) => {
+        const userId = req.user?._id;
             if (!userId) {
                 return res.redirect('/login');
             }
@@ -123,45 +120,27 @@ class AuthController {
             const imagePath = `/uploads/${filename}`;
             await User.updateOne({ _id: userId }, { [type]: imagePath });
 
-            if (type === 'avatar' && req.session.user) {
-                req.session.user.avatar = imagePath;
-            }
+            // with JWT, the syncSessionUser middleware fetches the fresh user data on every request anyway
+
 
             req.flash('success', type === 'avatar' ? 'Avatar updated successfully.' : 'Cover image updated successfully.');
             res.redirect('/auth');
-        } catch (error) {
-            if (req.file?.path) {
-                await fs.unlink(req.file.path).catch(() => {});
-            }
-            req.flash('error', 'Unable to upload image right now.');
-            res.redirect('/auth');
-        }
-    }
+    });
 
-    async updateProfile(req, res) {
-        try {
-            const userId = req.session?.user?._id;
+    updateProfile = asyncHandler(async (req, res) => {
+        const userId = req.user?._id;
             if (!userId) {
                 req.flash('error', 'Please sign in to continue.');
                 return res.redirect('/login');
             }
 
-            const payload = {
-                name: String(req.body.name || '').trim(),
-                email: normalizeEmail(req.body.email),
-                SDT: String(req.body.SDT || '').trim(),
-                state: String(req.body.state || '').trim(),
-                introduce: String(req.body.introduce || '').trim(),
-            };
-
-            if (!payload.name || !payload.email || !payload.SDT) {
-                req.flash('error', 'Please fill in all required fields.');
-                return res.redirect('/auth');
-            }
-            if (!EMAIL_REGEX.test(payload.email) || !isValidPhone(payload.SDT)) {
-                req.flash('error', 'Email or phone number is invalid.');
-                return res.redirect('/auth');
-            }
+        const payload = z.object({
+            name: z.string().trim().min(2, "Name must be at least 2 characters"),
+            email: emailSchema,
+            SDT: phoneSchema,
+            state: z.string().trim().optional(),
+            introduce: z.string().trim().optional(),
+        }).parse(req.body);
 
             const emailExists = await User.findOne({
                 _id: { $ne: userId },
@@ -174,38 +153,27 @@ class AuthController {
 
             await User.updateOne({ _id: userId }, payload);
 
-            if (req.session.user) {
-                req.session.user.name = payload.name;
-            }
+            // syncSessionUser gets fresh user on next request
 
             req.flash('success', 'Profile updated successfully.');
             res.redirect('/auth');
-        } catch (error) {
-            req.flash('error', 'Unable to update profile.');
-            res.redirect('/auth');
-        }
-    }
+    });
 
-    async changePassword(req, res) {
-        try {
-            const userId = req.session?.user?._id;
+    changePassword = asyncHandler(async (req, res) => {
+        const userId = req.user?._id;
             if (!userId) {
                 req.flash('error', 'Please sign in to continue.');
                 return res.redirect('/login');
             }
 
-            const currentPassword = String(req.body.currentPassword || '');
-            const newPassword = String(req.body.newPassword || '');
-            const confirmPassword = String(req.body.confirmPassword || '');
-
-            if (!currentPassword || !newPassword || !confirmPassword) {
-                req.flash('error', 'Please fill in all password fields.');
-                return res.redirect('/auth');
-            }
-            if (newPassword.length < 6 || newPassword !== confirmPassword) {
-                req.flash('error', 'New password must be at least 6 characters and match confirmation.');
-                return res.redirect('/auth');
-            }
+        const { currentPassword, newPassword, confirmPassword } = z.object({
+            currentPassword: z.string().min(1, "Current password is required"),
+            newPassword: z.string().min(6, "New password must be at least 6 characters"),
+            confirmPassword: z.string().min(6, "Confirm password must match"),
+        }).refine(data => data.newPassword === data.confirmPassword, {
+            message: "Passwords don't match",
+            path: ["confirmPassword"]
+        }).parse(req.body);
 
             const user = await User.findById(userId).select('password').lean();
             if (!user) {
@@ -223,11 +191,7 @@ class AuthController {
             await User.updateOne({ _id: userId }, { password: hashed });
             req.flash('success', 'Password changed successfully.');
             res.redirect('/auth');
-        } catch (error) {
-            req.flash('error', 'Unable to change password right now.');
-            res.redirect('/auth');
-        }
-    }
+    });
 }
 
 module.exports = new AuthController();

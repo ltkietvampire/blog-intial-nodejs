@@ -4,7 +4,7 @@ const Task = require('../model/task');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const { isEmployeePosition } = require('../middleware/roleUtils');
-const { combineDateTime, toDateText, toDateTimeText } = require('../../until/dateTime');
+const { combineDateTime, toDateText, toDateTimeText } = require('../../util/dateTime');
 
 dayjs.extend(customParseFormat);
 
@@ -63,20 +63,17 @@ class MyTaskController {
     }
 
     async resolveUser(req) {
-        if (!req.session?.user?._id) {
+        const currentUser = req.user;
+        if (!currentUser?._id) {
             return null;
         }
 
-        const user = await User.findById(req.session.user._id).lean();
+        const user = await User.findById(currentUser._id).lean();
         if (!user) {
             return null;
         }
 
         user.totalWorkingHours = Number(user.totalWorkingHours || 0);
-        req.session.user.role = user.role;
-        req.session.user.position = user.position;
-        req.session.user.totalWorkingHours = user.totalWorkingHours;
-
         return user;
     }
 
@@ -256,10 +253,7 @@ class MyTaskController {
         }
 
         const rows = await Distribution.find({ employeeID: user._id })
-            .populate({
-                path: 'taskID',
-                match: { task_status: { $ne: TASK_STATUS_ARCHIVED } },
-            })
+            .populate({ path: 'taskID' })
             .lean();
 
         const scheduleData = rows.filter((row) => Boolean(row.taskID));
@@ -287,7 +281,6 @@ class MyTaskController {
             employeeID: user._id,
         }).populate({
             path: 'taskID',
-            match: { task_status: { $ne: TASK_STATUS_ARCHIVED } },
         }).lean();
 
         if (!distribution || !distribution.taskID) {

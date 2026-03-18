@@ -1,822 +1,233 @@
 <div class="employees-view">
-<div class="employees-shell">
-  <section class="hero-card">
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
-      <div>
-        <div class="hero-title">People Operations</div>
-        <div class="hero-subtitle">Manage team members, workloads, and availability in one place.</div>
-      </div>
-      <div class="d-flex flex-wrap hero-actions">
-        <a href="/employee/statistics" class="btn btn-soft-light">
-          <i class="bi bi-graph-up-arrow me-1"></i>
-          Employee Statistics
-        </a>
-        <button type="button" class="btn btn-brand" data-bs-toggle="modal" data-bs-target="#addPeopleModal">
-          <i class="bi bi-person-plus-fill me-1"></i>
-          Add Employee
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <section class="summary-grid">
-    <article class="summary-card">
-      <div class="summary-label">Total Members</div>
-      <div class="summary-value" id="summaryTotal">0</div>
-      <div class="summary-hint">All accounts in this workspace</div>
-    </article>
-    <article class="summary-card">
-      <div class="summary-label">Active</div>
-      <div class="summary-value text-success" id="summaryActive">0</div>
-      <div class="summary-hint">Ready for assignments</div>
-    </article>
-    <article class="summary-card">
-      <div class="summary-label">Busy</div>
-      <div class="summary-value" style="color: #c2410c;" id="summaryBusy">0</div>
-      <div class="summary-hint">Currently handling heavy load</div>
-    </article>
-    <article class="summary-card">
-      <div class="summary-label">Off</div>
-      <div class="summary-value text-danger" id="summaryOff">0</div>
-      <div class="summary-hint">Unavailable now</div>
-    </article>
-  </section>
-
-  <section class="workbench">
-    <div class="toolbar">
-      <div class="row g-2 align-items-center">
-        <div class="col-lg-4 col-md-6">
-          <input id="searchInput" type="text" class="form-control" placeholder="Search by name, email, phone">
+  <div class="employees-shell">
+    <section class="hero-card">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <div>
+          <div class="hero-title">People Operations</div>
+          <div class="hero-subtitle">Manage team members, workloads, and availability in one place.</div>
         </div>
-        <div class="col-lg-3 col-md-6">
-          <select id="statusFilter" class="form-select">
-            <option value="all">All statuses</option>
-            <option value="status-active">Active</option>
-            <option value="status-busy">Busy</option>
-            <option value="status-off">Off</option>
-          </select>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <select id="positionFilter" class="form-select">
-            <option value="all">All positions</option>
-          </select>
-        </div>
-        <div class="col-lg-2 col-md-6 d-grid">
-          <button id="clearFilters" type="button" class="btn btn-outline-secondary">Clear filters</button>
+        <div class="d-flex flex-wrap hero-actions">
+          <a href="/employee/statistics" class="btn btn-soft-light">
+            <i class="bi bi-graph-up-arrow me-1"></i>
+            Employee Statistics
+          </a>
+          <button type="button" class="btn btn-brand" data-bs-toggle="modal" data-bs-target="#addPeopleModal">
+            <i class="bi bi-person-plus-fill me-1"></i>
+            Add Employee
+          </button>
         </div>
       </div>
-      <div class="d-flex justify-content-between align-items-center mt-3 gap-2 flex-wrap">
-        <div class="toolbar-meta" id="showingText">Showing 0 of 0 members</div>
-        <div class="small text-muted">Tip: click the 3-dot action menu on each row to edit or delete quickly.</div>
-      </div>
-      <div id="bulkActionsBar" class="d-none flex-wrap align-items-center gap-2 mt-3">
-        <span class="badge text-bg-light border" id="selectedCountText">0 selected</span>
-        <select id="bulkStatusSelect" class="form-select" style="max-width: 200px;">
-          <option value="">Change status...</option>
-          <option value="status-active">Active</option>
-          <option value="status-busy">Busy</option>
-          <option value="status-off">Off</option>
-        </select>
-        <button id="btnApplyBulkStatus" type="button" class="btn btn-outline-primary" disabled>
-          Apply status
-        </button>
-        <button id="btnBulkDelete" type="button" class="btn btn-outline-danger" disabled>
-          Delete selected
-        </button>
-      </div>
-    </div>
+    </section>
 
-    <div class="table-wrap">
-      <div class="table-responsive">
-        <table class="table align-middle">
-          <thead>
-            <tr>
-              <th style="width: 40px;"><input id="selectAllEmployees" type="checkbox" aria-label="select all"></th>
-              <th>Member</th>
-              <th>Phone</th>
-              <th>Role</th>
-              <th>Capacity</th>
-              <th>Hourly Rate</th>
-              <th>Status</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="employeeTableBody">
-            {{#each userss}}
-              <tr
-                class="employee-row"
-                data-name="{{this.name}}"
-                data-email="{{this.email}}"
-                data-phone="{{this.SDT}}"
-                data-position="{{this.position}}"
-                data-role="{{#if this.role}}{{this.role}}{{else}}employee{{/if}}"
-                data-status="{{this.trangthai}}"
-                data-hourlyrate="{{this.hourlyRate}}"
-                data-id="{{this._id}}"
-              >
-                <td><input class="row-checkbox" type="checkbox" aria-label="select row" data-id="{{this._id}}"></td>
-                <td>
-                  <div class="d-flex align-items-center gap-3">
-                    <img
-                      class="avatar-img"
-                      src="{{#if this.avatar}}{{assetPath this.avatar}}{{else}}/img/default-avatar.webp{{/if}}"
-                      alt="{{this.name}}"
-                      onerror="this.src='/img/default-avatar.webp'"
-                    >
-                    <div>
-                      <div class="member-name">{{this.name}}</div>
-                      <div class="member-sub">{{this.email}}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>{{this.SDT}}</td>
-                <td>
-                  <div><span class="role-chip">{{#if this.role}}{{this.role}}{{else}}employee{{/if}}</span></div>
-                  <div class="member-sub mt-1">{{this.position}}</div>
-                </td>
-                <td><span class="capacity-badge">{{this.maxtime}}h/day</span></td>
-                <td><span class="capacity-badge">{{this.hourlyRate}}</span></td>
-                <td>
-                  <span class="status-pill {{this.trangthai}}" data-status="{{this.trangthai}}">
-                    {{this.trangthai}}
-                  </span>
-                </td>
-                <td class="text-end">
-                  <div class="dropdown">
-                    <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                      <li>
-                        <button
-                          type="button"
-                          class="dropdown-item btn-view-profile"
-                          data-id="{{this._id}}"
-                          data-name="{{this.name}}"
-                          data-email="{{this.email}}"
-                          data-sdt="{{this.SDT}}"
-                          data-role="{{#if this.role}}{{this.role}}{{else}}employee{{/if}}"
-                          data-position="{{this.position}}"
-                          data-maxtime="{{this.maxtime}}"
-                          data-hourlyrate="{{this.hourlyRate}}"
-                          data-trangthai="{{this.trangthai}}"
-                          data-avatar="{{#if this.avatar}}{{assetPath this.avatar}}{{else}}/img/default-avatar.webp{{/if}}"
-                          data-cover="{{#if this.cover}}{{assetPath this.cover}}{{else}}/img/default-avatar.webp{{/if}}"
-                          data-state="{{this.state}}"
-                          data-introduce="{{this.introduce}}"
-                          data-totalworkinghours="{{this.totalWorkingHours}}"
-                          data-createdat="{{this.createdAt}}"
-                          data-updatedat="{{this.updatedAt}}"
-                        >
-                          View profile
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          class="dropdown-item btn-edit"
-                          data-id="{{this._id}}"
-                          data-name="{{this.name}}"
-                          data-email="{{this.email}}"
-                          data-sdt="{{this.SDT}}"
-                          data-role="{{#if this.role}}{{this.role}}{{else}}employee{{/if}}"
-                          data-position="{{this.position}}"
-                          data-maxtime="{{this.maxtime}}"
-                          data-hourlyrate="{{this.hourlyRate}}"
-                          data-trangthai="{{this.trangthai}}"
-                        >
-                          Edit employee
-                        </button>
-                      </li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li>
-                        <button
-                          class="dropdown-item text-danger btn-delete"
-                          data-id="{{this._id}}"
-                          data-bs-toggle="modal"
-                          data-bs-target="#deleteEmployeeModal"
-                        >
-                          Delete employee
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </td>
-              </tr>
-            {{else}}
-              <tr>
-                <td colspan="8" class="empty-cell">
-                  No employees found. Start by adding a new employee.
-                </td>
-              </tr>
-            {{/each}}
-            <tr id="emptyFilterRow" style="display: none;">
-              <td colspan="8" class="empty-cell">
-                No results match your filters.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-</div>
+    <section class="summary-grid">
+      <article class="summary-card">
+        <div class="summary-label">Total Members</div>
+        <div class="summary-value" id="summaryTotal">0</div>
+        <div class="summary-hint">All accounts in this workspace</div>
+      </article>
+      <article class="summary-card">
+        <div class="summary-label">Active</div>
+        <div class="summary-value text-success" id="summaryActive">0</div>
+        <div class="summary-hint">Ready for assignments</div>
+      </article>
+      <article class="summary-card">
+        <div class="summary-label">Busy</div>
+        <div class="summary-value" style="color: #c2410c;" id="summaryBusy">0</div>
+        <div class="summary-hint">Currently handling heavy load</div>
+      </article>
+      <article class="summary-card">
+        <div class="summary-label">Off</div>
+        <div class="summary-value text-danger" id="summaryOff">0</div>
+        <div class="summary-hint">Unavailable now</div>
+      </article>
+    </section>
 
-<form method="POST" id="formDelete"></form>
-<form method="POST" id="formBulkDelete" action="/employee/bulk-delete"></form>
-<form method="POST" id="formBulkStatus" action="/employee/bulk-status">
-  <input type="hidden" name="trangthai" id="bulkStatusHidden" value="">
-</form>
-
-<div class="modal fade" id="addPeopleModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Add New Employee</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form id="addPeopleForm" method="POST" action="/employee/store">
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control" name="name" placeholder="Enter full name" required>
+    <section class="workbench">
+      <div class="toolbar">
+        <div class="row g-2 align-items-center">
+          <div class="col-lg-4 col-md-6">
+            <input id="searchInput" type="text" class="form-control" placeholder="Search by name, email, phone">
           </div>
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" placeholder="name@company.com" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Phone (SDT)</label>
-            <input type="text" class="form-control" name="SDT" placeholder="Enter phone number" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" class="form-control" name="password" placeholder="At least 6 characters" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Role</label>
-            <select class="form-select" name="role" required>
-              <option value="employee" selected>Employee</option>
-              <option value="manager">Manager</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Position</label>
-            <input type="text" class="form-control" name="position" placeholder="Example: Staff, Supervisor" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Hourly rate</label>
-            <input type="number" class="form-control" name="hourlyRate" min="0" step="0.01" value="0">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Max working hours/day</label>
-            <input type="number" class="form-control" name="maxtime" min="0" max="8" value="8" required>
-          </div>
-          <div class="mb-1">
-            <label class="form-label">Status</label>
-            <select class="form-select" name="trangthai" required>
-              <option value="status-active" selected>Active</option>
+          <div class="col-lg-3 col-md-6">
+            <select id="statusFilter" class="form-select">
+              <option value="all">All statuses</option>
+              <option value="status-active">Active</option>
               <option value="status-busy">Busy</option>
               <option value="status-off">Off</option>
             </select>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-success">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="viewEmployeeModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Employee Profile</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div id="profileCover" class="profile-cover">
-          <img id="profileAvatar" class="profile-avatar" src="/img/default-avatar.webp" alt="avatar">
-        </div>
-
-        <div class="profile-meta">
-          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-            <div>
-              <div id="profileName" class="profile-title">--</div>
-              <div class="text-muted" id="profileEmail">--</div>
-            </div>
-            <span id="profileStatus" class="status-pill status-active">Active</span>
+          <div class="col-lg-3 col-md-6">
+            <select id="positionFilter" class="form-select">
+              <option value="all">All positions</option>
+            </select>
           </div>
-
-          <div class="info-grid mt-3">
-            <div class="info-item">
-              <div class="label">User ID</div>
-              <div class="value" id="profileId">--</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Phone</div>
-              <div class="value" id="profilePhone">--</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Role</div>
-              <div class="value" id="profileRole">--</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Position</div>
-              <div class="value" id="profilePosition">--</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Hourly Rate</div>
-              <div class="value" id="profileHourlyRate">--</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Max Hours/Day</div>
-              <div class="value" id="profileMaxTime">--</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Total Working Hours</div>
-              <div class="value" id="profileTotalHours">--</div>
-            </div>
-            <div class="info-item">
-              <div class="label">State</div>
-              <div class="value" id="profileState">--</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Created At</div>
-              <div class="value" id="profileCreatedAt">--</div>
-            </div>
-            <div class="info-item">
-              <div class="label">Updated At</div>
-              <div class="value" id="profileUpdatedAt">--</div>
-            </div>
-          </div>
-
-          <div class="info-item mt-3">
-            <div class="label">Introduction</div>
-            <div class="value" id="profileIntroduce">--</div>
+          <div class="col-lg-2 col-md-6 d-grid">
+            <button id="clearFilters" type="button" class="btn btn-outline-secondary">Clear filters</button>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <form method="POST" id="editEmployeeForm" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit Employee</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Name</label>
-          <input type="text" class="form-control" name="name" id="editName" required>
+        <div class="d-flex justify-content-between align-items-center mt-3 gap-2 flex-wrap">
+          <div class="toolbar-meta" id="showingText">Showing 0 of 0 members</div>
+          <div class="small text-muted">Tip: click the 3-dot action menu on each row to edit or delete quickly.</div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control" name="email" id="editEmail" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Phone (SDT)</label>
-          <input type="text" class="form-control" name="SDT" id="editSDT" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Role</label>
-          <select class="form-select" name="role" id="editRole" required>
-            <option value="employee">Employee</option>
-            <option value="manager">Manager</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Position</label>
-          <input type="text" class="form-control" name="position" id="editPosition" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Hourly rate</label>
-          <input type="number" class="form-control" name="hourlyRate" id="editHourlyRate" min="0" step="0.01">
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Max working hours/day</label>
-          <input type="number" class="form-control" name="maxtime" id="editMaxTime" min="0" max="8" step="1" required>
-        </div>
-        <div class="mb-1">
-          <label class="form-label">Status</label>
-          <select class="form-select" name="trangthai" id="editTrangThai" required>
+        <div id="bulkActionsBar" class="d-none flex-wrap align-items-center gap-2 mt-3">
+          <span class="badge text-bg-light border" id="selectedCountText">0 selected</span>
+          <select id="bulkStatusSelect" class="form-select" style="max-width: 200px;">
+            <option value="">Change status...</option>
             <option value="status-active">Active</option>
             <option value="status-busy">Busy</option>
             <option value="status-off">Off</option>
           </select>
+          <button id="btnApplyBulkStatus" type="button" class="btn btn-outline-primary" disabled>
+            Apply status
+          </button>
+          <button id="btnBulkDelete" type="button" class="btn btn-outline-danger" disabled>
+            Delete selected
+          </button>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save changes</button>
+
+      <div class="table-wrap">
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th style="width: 40px;"><input id="selectAllEmployees" type="checkbox" aria-label="select all"></th>
+                <th>Member</th>
+                <th>Phone</th>
+                <th>Role</th>
+                <th>Capacity</th>
+                <th>Hourly Rate</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employeeTableBody">
+              {{#each userss}}
+                <tr
+                  class="employee-row"
+                  data-name="{{this.name}}"
+                  data-email="{{this.email}}"
+                  data-phone="{{this.SDT}}"
+                  data-position="{{this.position}}"
+                  data-role="{{#if this.role}}{{this.role}}{{else}}employee{{/if}}"
+                  data-status="{{this.trangthai}}"
+                  data-hourlyrate="{{this.hourlyRate}}"
+                  data-id="{{this._id}}"
+                >
+                  <td><input class="row-checkbox" type="checkbox" aria-label="select row" data-id="{{this._id}}"></td>
+                  <td>
+                    <div class="d-flex align-items-center gap-3">
+                      <img
+                        class="avatar-img"
+                        src="{{#if this.avatar}}{{assetPath this.avatar}}{{else}}/img/default-avatar.webp{{/if}}"
+                        alt="{{this.name}}"
+                        onerror="this.src='/img/default-avatar.webp'"
+                      >
+                      <div>
+                        <div class="member-name">{{this.name}}</div>
+                        <div class="member-sub">{{this.email}}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{this.SDT}}</td>
+                  <td>
+                    <div><span class="role-chip">{{#if this.role}}{{this.role}}{{else}}employee{{/if}}</span></div>
+                    <div class="member-sub mt-1">{{this.position}}</div>
+                  </td>
+                  <td><span class="capacity-badge">{{this.maxtime}}h/day</span></td>
+                  <td><span class="capacity-badge">{{this.hourlyRate}}</span></td>
+                  <td>
+                    <span class="status-pill {{this.trangthai}}" data-status="{{this.trangthai}}">
+                      {{this.trangthai}}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <div class="dropdown">
+                      <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li>
+                          <button
+                            type="button"
+                            class="dropdown-item btn-view-profile"
+                            data-id="{{this._id}}"
+                            data-name="{{this.name}}"
+                            data-email="{{this.email}}"
+                            data-sdt="{{this.SDT}}"
+                            data-role="{{#if this.role}}{{this.role}}{{else}}employee{{/if}}"
+                            data-position="{{this.position}}"
+                            data-maxtime="{{this.maxtime}}"
+                            data-hourlyrate="{{this.hourlyRate}}"
+                            data-trangthai="{{this.trangthai}}"
+                            data-avatar="{{#if this.avatar}}{{assetPath this.avatar}}{{else}}/img/default-avatar.webp{{/if}}"
+                            data-cover="{{#if this.cover}}{{assetPath this.cover}}{{else}}/img/default-avatar.webp{{/if}}"
+                            data-state="{{this.state}}"
+                            data-introduce="{{this.introduce}}"
+                            data-totalworkinghours="{{this.totalWorkingHours}}"
+                            data-createdat="{{this.createdAt}}"
+                            data-updatedat="{{this.updatedAt}}"
+                          >
+                            View profile
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            class="dropdown-item btn-edit"
+                            data-id="{{this._id}}"
+                            data-name="{{this.name}}"
+                            data-email="{{this.email}}"
+                            data-sdt="{{this.sdt}}"
+                            data-role="{{#if this.role}}{{this.role}}{{else}}employee{{/if}}"
+                            data-position="{{this.position}}"
+                            data-maxtime="{{this.maxtime}}"
+                            data-hourlyrate="{{this.hourlyRate}}"
+                            data-trangthai="{{this.trangthai}}"
+                          >
+                            Edit employee
+                          </button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                          <button
+                            class="dropdown-item text-danger btn-delete"
+                            data-id="{{this._id}}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteEmployeeModal"
+                          >
+                            Delete employee
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              {{else}}
+                <tr>
+                  <td colspan="8" class="empty-cell">
+                    No employees found. Start by adding a new employee.
+                  </td>
+                </tr>
+              {{/each}}
+              <tr id="emptyFilterRow" style="display: none;">
+                <td colspan="8" class="empty-cell">
+                  No results match your filters.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </form>
+    </section>
   </div>
-</div>
 
-<div class="modal fade" tabindex="-1" id="deleteEmployeeModal" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Delete Employee</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p class="mb-0">Are you sure you want to delete this account?</p>
-      </div>
-      <div class="modal-footer">
-        <button id="btn-delete-confirm" type="button" class="btn btn-danger">Delete</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
+  <form method="POST" id="formDelete"></form>
+  <form method="POST" id="formBulkDelete" action="/employee/bulk-delete"></form>
+  <form method="POST" id="formBulkStatus" action="/employee/bulk-status">
+    <input type="hidden" name="trangthai" id="bulkStatusHidden" value="">
+  </form>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const STATUS_LABELS = {
-      'status-active': 'Active',
-      'status-busy': 'Busy',
-      'status-off': 'Off',
-    };
-    const ROLE_LABELS = {
-      employee: 'Employee',
-      manager: 'Manager',
-    };
+  {{> employees-modals}}
 
-    const rows = Array.from(document.querySelectorAll('.employee-row'));
-    const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
-    const positionFilter = document.getElementById('positionFilter');
-    const clearFiltersBtn = document.getElementById('clearFilters');
-    const showingText = document.getElementById('showingText');
-    const emptyFilterRow = document.getElementById('emptyFilterRow');
-    const selectAllEmployees = document.getElementById('selectAllEmployees');
-    const rowCheckboxes = Array.from(document.querySelectorAll('.row-checkbox'));
-    const selectedCountText = document.getElementById('selectedCountText');
-    const bulkActionsBar = document.getElementById('bulkActionsBar');
-    const bulkStatusSelect = document.getElementById('bulkStatusSelect');
-    const btnApplyBulkStatus = document.getElementById('btnApplyBulkStatus');
-    const btnBulkDelete = document.getElementById('btnBulkDelete');
-    const formBulkDelete = document.getElementById('formBulkDelete');
-    const formBulkStatus = document.getElementById('formBulkStatus');
-    const bulkStatusHidden = document.getElementById('bulkStatusHidden');
-
-    const summaryTotal = document.getElementById('summaryTotal');
-    const summaryActive = document.getElementById('summaryActive');
-    const summaryBusy = document.getElementById('summaryBusy');
-    const summaryOff = document.getElementById('summaryOff');
-
-    let deleteId = '';
-
-    function normalizeText(value) {
-      return String(value || '')
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .trim();
-    }
-
-    function toStatusLabel(status) {
-      return STATUS_LABELS[status] || status || 'Unknown';
-    }
-
-    function toRoleLabel(role) {
-      const normalized = normalizeText(role);
-      return ROLE_LABELS[normalized] || 'Employee';
-    }
-
-    function setupStatusLabels() {
-      document.querySelectorAll('.status-pill').forEach((el) => {
-        const status = el.dataset.status || '';
-        el.textContent = toStatusLabel(status);
-      });
-    }
-
-    function populatePositionFilter() {
-      const unique = new Set();
-      rows.forEach((row) => {
-        const value = String(row.dataset.position || '').trim();
-        if (value) {
-          unique.add(value);
-        }
-      });
-
-      Array.from(unique)
-        .sort((a, b) => a.localeCompare(b))
-        .forEach((position) => {
-          const opt = document.createElement('option');
-          opt.value = position;
-          opt.textContent = position;
-          positionFilter.appendChild(opt);
-        });
-    }
-
-    function updateSummary() {
-      const total = rows.length;
-      const active = rows.filter((row) => row.dataset.status === 'status-active').length;
-      const busy = rows.filter((row) => row.dataset.status === 'status-busy').length;
-      const off = rows.filter((row) => row.dataset.status === 'status-off').length;
-
-      summaryTotal.textContent = total;
-      summaryActive.textContent = active;
-      summaryBusy.textContent = busy;
-      summaryOff.textContent = off;
-    }
-
-    function getVisibleRows() {
-      return rows.filter((row) => row.style.display !== 'none');
-    }
-
-    function getCheckedIds() {
-      return rowCheckboxes
-        .filter((checkbox) => checkbox.checked)
-        .map((checkbox) => String(checkbox.dataset.id || '').trim())
-        .filter(Boolean);
-    }
-
-    function updateSelectAllState() {
-      if (!selectAllEmployees) return;
-
-      const visibleCheckboxes = getVisibleRows()
-        .map((row) => row.querySelector('.row-checkbox'))
-        .filter(Boolean);
-
-      if (!visibleCheckboxes.length) {
-        selectAllEmployees.checked = false;
-        selectAllEmployees.indeterminate = false;
-        return;
-      }
-
-      const checkedVisible = visibleCheckboxes.filter((checkbox) => checkbox.checked).length;
-      selectAllEmployees.checked = checkedVisible > 0 && checkedVisible === visibleCheckboxes.length;
-      selectAllEmployees.indeterminate = checkedVisible > 0 && checkedVisible < visibleCheckboxes.length;
-    }
-
-    function updateBulkControls() {
-      const selectedCount = getCheckedIds().length;
-      if (bulkActionsBar) {
-        if (selectedCount > 0) {
-          bulkActionsBar.classList.remove('d-none');
-          bulkActionsBar.classList.add('d-flex');
-        } else {
-          bulkActionsBar.classList.remove('d-flex');
-          bulkActionsBar.classList.add('d-none');
-        }
-      }
-      if (selectedCountText) {
-        selectedCountText.textContent = `${selectedCount} selected`;
-      }
-
-      if (btnBulkDelete) {
-        btnBulkDelete.disabled = selectedCount < 1;
-      }
-      if (btnApplyBulkStatus) {
-        const hasStatus = Boolean(String(bulkStatusSelect?.value || '').trim());
-        btnApplyBulkStatus.disabled = selectedCount < 1 || !hasStatus;
-      }
-    }
-
-    function fillFormIds(form, ids) {
-      const oldInputs = form.querySelectorAll('input[name="ids"]');
-      oldInputs.forEach((node) => node.remove());
-
-      ids.forEach((id) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'ids';
-        input.value = id;
-        form.appendChild(input);
-      });
-    }
-
-    function applyFilters() {
-      const query = normalizeText(searchInput.value);
-      const status = statusFilter.value;
-      const position = positionFilter.value;
-
-      let visible = 0;
-
-      rows.forEach((row) => {
-        const rowText = normalizeText(
-          `${row.dataset.name} ${row.dataset.email} ${row.dataset.phone} ${row.dataset.position}`
-        );
-        const matchSearch = !query || rowText.includes(query);
-        const matchStatus = status === 'all' || row.dataset.status === status;
-        const matchPosition = position === 'all' || row.dataset.position === position;
-        const pass = matchSearch && matchStatus && matchPosition;
-
-        row.style.display = pass ? '' : 'none';
-        if (pass) visible += 1;
-      });
-
-      showingText.textContent = `Showing ${visible} of ${rows.length} members`;
-      if (emptyFilterRow) {
-        emptyFilterRow.style.display = rows.length > 0 && visible === 0 ? '' : 'none';
-      }
-
-      updateSelectAllState();
-      updateBulkControls();
-    }
-
-    function setupEditModal() {
-      const modalEl = document.getElementById('editEmployeeModal');
-      const editModal = new bootstrap.Modal(modalEl);
-
-      document.querySelectorAll('.btn-edit').forEach((btn) => {
-        btn.addEventListener('click', function () {
-          const id = this.dataset.id;
-          document.getElementById('editName').value = this.dataset.name || '';
-          document.getElementById('editEmail').value = this.dataset.email || '';
-          document.getElementById('editSDT').value = this.dataset.sdt || '';
-          document.getElementById('editRole').value = normalizeText(this.dataset.role) || 'employee';
-          document.getElementById('editPosition').value = this.dataset.position || '';
-          document.getElementById('editHourlyRate').value = this.dataset.hourlyrate || '0';
-          document.getElementById('editMaxTime').value = this.dataset.maxtime || '8';
-          document.getElementById('editTrangThai').value = this.dataset.trangthai || 'status-active';
-
-          const form = document.getElementById('editEmployeeForm');
-          form.action = `/employee/${id}?_method=PUT`;
-
-          editModal.show();
-        });
-      });
-    }
-
-    function setupViewProfileModal() {
-      const viewModalEl = document.getElementById('viewEmployeeModal');
-      if (!viewModalEl) return;
-
-      const viewModal = new bootstrap.Modal(viewModalEl);
-      const profileCover = document.getElementById('profileCover');
-      const profileAvatar = document.getElementById('profileAvatar');
-      const profileName = document.getElementById('profileName');
-      const profileEmail = document.getElementById('profileEmail');
-      const profileStatus = document.getElementById('profileStatus');
-      const profileId = document.getElementById('profileId');
-      const profilePhone = document.getElementById('profilePhone');
-      const profileRole = document.getElementById('profileRole');
-      const profilePosition = document.getElementById('profilePosition');
-      const profileHourlyRate = document.getElementById('profileHourlyRate');
-      const profileMaxTime = document.getElementById('profileMaxTime');
-      const profileTotalHours = document.getElementById('profileTotalHours');
-      const profileState = document.getElementById('profileState');
-      const profileIntroduce = document.getElementById('profileIntroduce');
-      const profileCreatedAt = document.getElementById('profileCreatedAt');
-      const profileUpdatedAt = document.getElementById('profileUpdatedAt');
-
-      function safeText(value, fallback = '--') {
-        const text = String(value || '').trim();
-        return text || fallback;
-      }
-
-      function formatDateTime(value) {
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return '--';
-        return date.toLocaleString('vi-VN');
-      }
-
-      function setStatus(statusRaw) {
-        const normalized = String(statusRaw || '').trim();
-        profileStatus.className = `status-pill ${normalized || 'status-active'}`;
-        profileStatus.textContent = toStatusLabel(normalized);
-      }
-
-      document.querySelectorAll('.btn-view-profile').forEach((btn) => {
-        btn.addEventListener('click', function () {
-          const avatar = safeText(this.dataset.avatar, '/img/default-avatar.webp');
-          const cover = safeText(this.dataset.cover, '/img/default-avatar.webp');
-
-          profileAvatar.src = avatar;
-          profileAvatar.onerror = function () {
-            this.src = '/img/default-avatar.webp';
-          };
-          profileCover.style.backgroundImage = `url('${cover}')`;
-
-          profileName.textContent = safeText(this.dataset.name);
-          profileEmail.textContent = safeText(this.dataset.email);
-          profileId.textContent = safeText(this.dataset.id);
-          profilePhone.textContent = safeText(this.dataset.sdt);
-          profileRole.textContent = toRoleLabel(this.dataset.role);
-          profilePosition.textContent = safeText(this.dataset.position);
-          profileHourlyRate.textContent = safeText(this.dataset.hourlyrate, '0');
-          profileMaxTime.textContent = `${safeText(this.dataset.maxtime, '0')}h/day`;
-          profileTotalHours.textContent = `${safeText(this.dataset.totalworkinghours, '0')}h`;
-          profileState.textContent = safeText(this.dataset.state);
-          profileIntroduce.textContent = safeText(this.dataset.introduce);
-          profileCreatedAt.textContent = formatDateTime(this.dataset.createdat);
-          profileUpdatedAt.textContent = formatDateTime(this.dataset.updatedat);
-          setStatus(this.dataset.trangthai);
-
-          viewModal.show();
-        });
-      });
-    }
-
-    function setupBulkActions() {
-      if (selectAllEmployees) {
-        selectAllEmployees.addEventListener('change', function () {
-          const visibleCheckboxes = getVisibleRows()
-            .map((row) => row.querySelector('.row-checkbox'))
-            .filter(Boolean);
-
-          visibleCheckboxes.forEach((checkbox) => {
-            checkbox.checked = selectAllEmployees.checked;
-          });
-
-          updateSelectAllState();
-          updateBulkControls();
-        });
-      }
-
-      rowCheckboxes.forEach((checkbox) => {
-        checkbox.addEventListener('change', function () {
-          updateSelectAllState();
-          updateBulkControls();
-        });
-      });
-
-      if (bulkStatusSelect) {
-        bulkStatusSelect.addEventListener('change', updateBulkControls);
-      }
-
-      if (btnApplyBulkStatus) {
-        btnApplyBulkStatus.addEventListener('click', function () {
-          const ids = getCheckedIds();
-          const statusValue = String(bulkStatusSelect?.value || '').trim();
-          if (!ids.length || !statusValue || !formBulkStatus || !bulkStatusHidden) {
-            return;
-          }
-
-          bulkStatusHidden.value = statusValue;
-          fillFormIds(formBulkStatus, ids);
-          formBulkStatus.submit();
-        });
-      }
-
-      if (btnBulkDelete) {
-        btnBulkDelete.addEventListener('click', function () {
-          const ids = getCheckedIds();
-          if (!ids.length || !formBulkDelete) {
-            return;
-          }
-
-          const ok = window.confirm(`Delete ${ids.length} selected employee(s)?`);
-          if (!ok) return;
-
-          fillFormIds(formBulkDelete, ids);
-          formBulkDelete.submit();
-        });
-      }
-    }
-
-    function setupDeleteModal() {
-      const deleteModal = document.getElementById('deleteEmployeeModal');
-      const deleteBtn = document.getElementById('btn-delete-confirm');
-      const formDelete = document.getElementById('formDelete');
-
-      if (!deleteModal || !deleteBtn || !formDelete) return;
-
-      deleteModal.addEventListener('show.bs.modal', function (event) {
-        const trigger = event.relatedTarget;
-        deleteId = trigger ? trigger.getAttribute('data-id') || '' : '';
-      });
-
-      deleteBtn.addEventListener('click', function () {
-        if (!deleteId) return;
-        formDelete.action = `/employee/${deleteId}?_method=DELETE`;
-        formDelete.submit();
-      });
-    }
-
-    setupStatusLabels();
-    populatePositionFilter();
-    updateSummary();
-    applyFilters();
-    setupBulkActions();
-    setupViewProfileModal();
-    setupEditModal();
-    setupDeleteModal();
-    updateSelectAllState();
-    updateBulkControls();
-
-    searchInput.addEventListener('input', applyFilters);
-    statusFilter.addEventListener('change', applyFilters);
-    positionFilter.addEventListener('change', applyFilters);
-    clearFiltersBtn.addEventListener('click', function () {
-      searchInput.value = '';
-      statusFilter.value = 'all';
-      positionFilter.value = 'all';
-      applyFilters();
-    });
-  });
-</script>
+  <script src="/js/employees.js"></script>
 </div>

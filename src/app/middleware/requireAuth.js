@@ -1,5 +1,5 @@
 function requireAuth(req, res, next) {
-  if (req.session && req.session.user && req.session.user._id) {
+  if (req.user?._id) {
     return next();
   }
 

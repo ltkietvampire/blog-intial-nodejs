@@ -1,398 +1,64 @@
 <div class="home-view">
-<div class="d-flex h-100 app-layout">
+  <div class="d-flex h-100 app-layout">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar p-3">
-    <h6>Team</h6>
-    <div class="employee-list">
-      <div id="employee-all" class="employee-item p-2" onclick="allBoardSchedule()">Team Schedule Board</div>
+    {{> home-sidebar}}
 
-      <div class="sidebar-section-title">Employees</div>
-      {{#if employeeUsers.length}}
-        {{#each employeeUsers}}
-          <div id="user-{{this._id}}" class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
-        {{/each}}
-      {{else}}
-        <div class="text-muted small px-2">No employees</div>
-      {{/if}}
+    <!-- CALENDAR -->
+    <div class="calendar flex-grow-1">
+      <!-- Date header -->
+      <!-- WEEK BAR -->
+      <div class="week-bar">
+        <button onclick="prevWeek()">‹</button>
+        <div id="weekLabel"></div>
+        <button onclick="nextWeek()">›</button>
+      </div>
 
-      <div class="sidebar-section-title">Managers</div>
-      {{#if managerUsers.length}}
-        {{#each managerUsers}}
-          <div id="user-{{this._id}}" class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
-        {{/each}}
-      {{else}}
-        <div class="text-muted small px-2">No managers</div>
-      {{/if}}
+      <div class="calendar-header calendar-grid">
+        <div>Time</div>
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
+        <div>Sun</div>
+      </div>
+
+      <!-- Body -->
+      <div class="calendar-body calendar-grid">
+        <!-- CỘT GIỜ -->
+        <div class="time-col">
+          <div class="time-row">08:00</div>
+          <div class="time-row">09:00</div>
+          <div class="time-row">10:00</div>
+          <div class="time-row">11:00</div>
+          <div class="time-row">12:00</div>
+          <div class="time-row">13:00</div>
+          <div class="time-row">14:00</div>
+          <div class="time-row">15:00</div>
+          <div class="time-row">16:00</div>
+          <div class="time-row">17:00</div>
+          <div class="time-row">18:00</div>
+          <div class="time-row">19:00</div>
+          <div class="time-row">20:00</div>
+        </div>
+
+        <!-- 7 NGÀY -->
+        <div class="day-col" id="day-2"></div>
+        <div class="day-col" id="day-3"></div>
+        <div class="day-col" id="day-4"></div>
+        <div class="day-col" id="day-5"></div>
+        <div class="day-col" id="day-6"></div>
+        <div class="day-col" id="day-7"></div>
+        <div class="day-col" id="day-8"></div>
+      </div>
     </div>
   </div>
-  <!-- CALENDAR -->
-  <div class="calendar flex-grow-1">
 
-    <!-- Date header -->
-    <!-- WEEK BAR -->
-<div class="week-bar">
-  <button onclick="prevWeek()">‹</button>
-  <div id="weekLabel"></div>
-  <button onclick="nextWeek()">›</button>
-</div>
-<div class="calendar-header calendar-grid">
-  <div>Time</div>
-  <div>Mon</div>
-  <div>Tue</div>
-  <div>Wed</div>
-  <div>Thu</div>
-  <div>Fri</div>
-  <div>Sat</div>
-  <div>Sun</div>
-</div>
+  {{> home-modals}}
 
-
-    <!-- Body -->
- <div class="calendar-body calendar-grid">
-
-  <!-- CỘT GIỜ -->
-  <div class="time-col">
-    <div class="time-row">08:00</div>
-    <div class="time-row">09:00</div>
-    <div class="time-row">10:00</div>
-    <div class="time-row">11:00</div>
-    <div class="time-row">12:00</div>
-    <div class="time-row">13:00</div>
-    <div class="time-row">14:00</div>
-    <div class="time-row">15:00</div>
-    <div class="time-row">16:00</div>
-    <div class="time-row">17:00</div>
-    <div class="time-row">18:00</div>
-    <div class="time-row">19:00</div>
-    <div class="time-row">20:00</div>
-  </div>
-
-  <!-- 7 NGÀY -->
-  <div class="day-col" id="day-2"></div>
-  <div class="day-col" id="day-3"></div>
-  <div class="day-col" id="day-4"></div>
-  <div class="day-col" id="day-5"></div>
-  <div class="day-col" id="day-6"></div>
-  <div class="day-col" id="day-7"></div>
-  <div class="day-col" id="day-8"></div>
-
-</div>
-</div>
-</div>
-
-<script>
-  const days = [
-  "day-8",
-  "day-2",
-  "day-3",
-  "day-4",
-  "day-5",
-  "day-6",
-  "day-7"
-];
-  const data = {{{json data}}};
-  let currentView = { type: 'all', employeeId: null };
-  
-  function clearTasks() {
-    document.querySelectorAll('.task').forEach(e => e.remove());
-  }
-
-  function setActiveSidebar(type, employeeId = null) {
-    document.querySelectorAll('.employee-item').forEach(item => item.classList.remove('active'));
-
-    const activeId = type === 'employee' ? `user-${employeeId}` : 'employee-all';
-    const activeItem = document.getElementById(activeId);
-    if (activeItem) activeItem.classList.add('active');
-  }
-  
-  function toMinutes(time) {
-    const [h, m] = time.split(':').map(Number);
-    return h * 60 + m;
-  }
-
-  function parseTaskDate(value) {
-    if (!value) return null;
-
-    const raw = String(value).trim();
-    // Only parse manually when the value is a pure date string (YYYY-MM-DD).
-    // ISO UTC datetimes (e.g. 2026-02-28T17:00:00.000Z) must go through Date()
-    // to avoid timezone-shifted day rendering.
-    const pureDate = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (pureDate) {
-      const year = Number(pureDate[1]);
-      const month = Number(pureDate[2]) - 1;
-      const day = Number(pureDate[3]);
-      return new Date(year, month, day);
-    }
-
-    const d = new Date(raw);
-    if (Number.isNaN(d.getTime())) return null;
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  }
-
-  function isSameDate(a, b) {
-    return (
-      a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate()
-    );
-  }
-
-  function normalizeRecurrenceType(value) {
-    const t = String(value || 'none').toLowerCase();
-    if (t === 'daily' || t === 'weekly' || t === 'monthly') return t;
-    return 'none';
-  }
-
-  function shouldRenderOnDay(startDate, recurrenceType, dayDate) {
-    if (!startDate || !dayDate) return false;
-    if (dayDate < startDate) return false;
-
-    const msPerDay = 24 * 60 * 60 * 1000;
-    const diffDays = Math.floor((dayDate - startDate) / msPerDay);
-
-    switch (recurrenceType) {
-      case 'daily':
-        return true;
-      case 'weekly':
-        return diffDays % 7 === 0;
-      case 'monthly':
-        return dayDate.getDate() === startDate.getDate();
-      default:
-        return isSameDate(startDate, dayDate);
-    }
-  }
-
-  function getTaskOccurrencesInCurrentWeek(task) {
-    const startDate = parseTaskDate(task?.taskID?.deadline);
-    if (!startDate) return [];
-
-    const recurrenceType = normalizeRecurrenceType(task?.taskID?.recurrence_type);
-    const occurrences = [];
-
-    for (let i = 0; i < 7; i++) {
-      const dayDate = new Date(currentWeekStart);
-      dayDate.setDate(currentWeekStart.getDate() + i);
-      dayDate.setHours(0, 0, 0, 0);
-
-      if (shouldRenderOnDay(startDate, recurrenceType, dayDate)) {
-        occurrences.push(dayDate);
-      }
-    }
-
-    return occurrences;
-  }
-
-  // new
-    function renderTaskContent(el, task) {
-    const h = el.offsetHeight;
-
-    const name = task.taskID.name_task;
-    const start = task.taskID.dateStart;
-    const end = task.taskID.dateEnd;
-    const requiredPeople = Number(task?.taskID?.required_people || 1);
-    const memberList = Array.isArray(task.employeeMembers) && task.employeeMembers.length
-      ? task.employeeMembers
-      : (task.employeeID ? [task.employeeID] : []);
-    const firstMember = memberList[0] || {};
-    const user = task.employeeID?.name || '';
-    const avatar = firstMember.avatar || task.employeeID?.avatar || '/img/default-avatar.webp';
-    const memberNames = memberList.map(m => m.name).filter(Boolean);
-    const shouldShowMembersInAllBoard = currentView.type === 'all' && requiredPeople > 1;
-    const memberText = memberNames.join(', ');
-    const displayMemberText = memberNames.length > 3
-      ? `${memberNames.slice(0, 3).join(', ')} +${memberNames.length - 3}`
-      : memberText;
-
-    el.title = shouldShowMembersInAllBoard
-      ? `${name}\nMembers: ${memberText}\n${start} � ${end}`
-      : `${name}\n${user}\n${start} � ${end}`;
-
-    if (h < 18) {
-      el.classList.add('task--dot');
-      el.innerHTML = '';
-      return;
-    }
-
-    if (h < 30) {
-      el.classList.add('task--tiny');
-      el.innerHTML = `<b>${name}</b>`;
-      return;
-    }
-
-    if (h < 50) {
-      el.innerHTML = `
-        <b>${name}</b>
-        <div class="task-time">${start} � ${end}</div>
-        ${shouldShowMembersInAllBoard ? `<div class="task-time">Members: ${displayMemberText}</div>` : ''}
-      `;
-      return;
-    }
-
-    el.innerHTML = `
-      <div class="task-header">
-        <img src="${avatar}" class="task-avatar">
-        <b>${name}</b>
-      </div>
-      <div class="task-time">${start} � ${end}</div>
-      ${shouldShowMembersInAllBoard ? `<div class="task-time">Members: ${displayMemberText}</div>` : ''}
-    `;
-  }
-  function renderTask(task, occurrenceDate = null) {
-    const el = document.createElement('div');
-    el.className = 'task';
-
-    const top = toMinutes(task.taskID.dateStart) - 8 * 60;
-    const height = toMinutes(task.taskID.dateEnd) - toMinutes(task.taskID.dateStart);
-    el.style.top = top + 'px';
-    el.style.height = height + 'px';
-
-    const date = occurrenceDate ? new Date(occurrenceDate) : parseTaskDate(task.taskID.deadline);
-    if (!date) return;
-    const thu = days[date.getDay()];
-    const dayCol = document.getElementById(thu);
-    if (!dayCol) return;
-
-    const overlapCount = dayCol.children.length;
-    el.style.left = 6 + overlapCount * 6 + 'px';
-    el.style.right = 6 + 'px';
-    dayCol.appendChild(el);
-
-    requestAnimationFrame(() => {
-      renderTaskContent(el, task);
-    });
-  }
-
-  document.addEventListener('click', e => {
-  if (!e.target.closest('.task')) return;
-  document.querySelectorAll('.task').forEach(t => t.classList.remove('active'));
-  e.target.closest('.task').classList.add('active');
-});
-  function loadEmployee(nvId, shouldUpdateView = true) {
-    if (shouldUpdateView) {
-      currentView = { type: 'employee', employeeId: nvId };
-    }
-
-    setActiveSidebar('employee', nvId);
-    clearTasks();
-    const dataFil = data.filter(item => item.employeeID._id == nvId);
-    dataFil.forEach(item => {
-      const occurrences = getTaskOccurrencesInCurrentWeek(item);
-      occurrences.forEach(date => renderTask(item, date));
-    });
-  }
-
-  // Team schedule board
-    function allBoardSchedule(shouldUpdateView = true) {
-    if (shouldUpdateView) {
-      currentView = { type: 'all', employeeId: null };
-    }
-
-    setActiveSidebar('all');
-    clearTasks();
-
-    const groupedByTask = new Map();
-
-    data.forEach(item => {
-      const taskId = item?.taskID?._id ? String(item.taskID._id) : null;
-      if (!taskId) return;
-
-      if (!groupedByTask.has(taskId)) {
-        groupedByTask.set(taskId, {
-          ...item,
-          employeeMembers: [],
-        });
-      }
-
-      const group = groupedByTask.get(taskId);
-      const memberId = item?.employeeID?._id ? String(item.employeeID._id) : null;
-      const existed = memberId
-        ? group.employeeMembers.some(m => String(m._id) === memberId)
-        : false;
-
-      if (item.employeeID && !existed) {
-        group.employeeMembers.push({
-          _id: item.employeeID._id,
-          name: item.employeeID.name,
-          avatar: item.employeeID.avatar,
-        });
-      }
-    });
-
-    groupedByTask.forEach(taskGroup => {
-      const occurrences = getTaskOccurrencesInCurrentWeek(taskGroup);
-      occurrences.forEach(date => renderTask(taskGroup, date));
-    });
-  }
-
-let currentWeekStart = getMonday(new Date());
-  function getMonday(d) {
-  const date = new Date(d);
-  const day = date.getDay() || 7;
-  if (day !== 1) date.setDate(date.getDate() - day + 1);
-  date.setHours(0,0,0,0);
-  return date;
-}
-
-function renderWeekHeader() {
-  const start = new Date(currentWeekStart);
-  const end = new Date(start);
-  end.setDate(end.getDate() + 6);
-
-  document.getElementById('weekLabel').innerText =
-    `${formatDate(start)} – ${formatDate(end)}`;
-
-  const headers = document.querySelectorAll('.calendar-header > div');
-  const daysVN = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-
-  for (let i = 1; i <= 7; i++) {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i - 1);
-    headers[i].innerHTML = `<div class="day-name">${daysVN[i-1]}</div>
-  <div class="day-date">${d.getDate()}/${d.getMonth()+1}</div>`;
-  }
-  const today = new Date();
-today.setHours(0,0,0,0);
-
-document.querySelectorAll('.day-col').forEach(c => c.classList.remove('today'));
-document.querySelectorAll('.calendar-header > div').forEach(h => h.classList.remove('today'));
-
-for (let i = 1; i <= 7; i++) {
-  const d = new Date(start);
-  d.setDate(start.getDate() + i - 1);
-  d.setHours(0,0,0,0);
-
-  if (d.getTime() === today.getTime()) {
-    headers[i].classList.add('today');
-    document.getElementById(days[d.getDay()]).classList.add('today');
-  }
-}
-}
-
-function formatDate(d) {
-  return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-}
-
-function prevWeek() {
-  currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-  reloadCalendar();
-}
-
-function nextWeek() {
-  currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-  reloadCalendar();
-}
-
-function reloadCalendar() {
-  renderWeekHeader();
-  if (currentView.type === 'employee' && currentView.employeeId) {
-    loadEmployee(currentView.employeeId, false);
-  } else {
-    allBoardSchedule(false);
-  }
-}
-renderWeekHeader();
-allBoardSchedule();
-</script>
+  <script>
+    window.scheduleData = {{{json data}}};
+  </script>
+  <script src="/js/home.js"></script>
 </div>

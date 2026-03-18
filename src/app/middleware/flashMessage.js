@@ -4,26 +4,23 @@ function toArray(value) {
 }
 
 function flashMessage(req, res, next) {
+  // Use cookies to simulate flash messages since we removed express-session
+  const flashData = req.cookies.flash ? JSON.parse(req.cookies.flash) : { success: [], error: [] };
+  
   req.flash = (type, message) => {
     const key = type === 'success' ? 'success' : 'error';
-    if (!req.session.flash) {
-      req.session.flash = { success: [], error: [] };
-    }
-    if (!Array.isArray(req.session.flash.success)) {
-      req.session.flash.success = [];
-    }
-    if (!Array.isArray(req.session.flash.error)) {
-      req.session.flash.error = [];
-    }
-    req.session.flash[key].push(String(message || '').trim());
+    flashData[key].push(String(message || '').trim());
+    res.cookie('flash', JSON.stringify(flashData), { httpOnly: true, path: '/' });
   };
 
-  const flash = req.session.flash || {};
   res.locals.flash = {
-    success: toArray(flash.success).filter(Boolean),
-    error: toArray(flash.error).filter(Boolean),
+    success: toArray(flashData.success).filter(Boolean),
+    error: toArray(flashData.error).filter(Boolean),
   };
-  delete req.session.flash;
+  
+  if (req.cookies.flash) {
+      res.clearCookie('flash', { path: '/' });
+  }
 
   next();
 }

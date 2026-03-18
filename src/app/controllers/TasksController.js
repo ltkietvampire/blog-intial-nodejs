@@ -1,141 +1,21 @@
+const dayjs = require('dayjs');
 const Users = require('../model/user');
 const Tasks = require('../model/task');
 const Distributions = require('../model/distribution');
-const dayjs = require('dayjs');
-const customParseFormat = require('dayjs/plugin/customParseFormat');
-const { multipleMongooseToObject } = require('../../until/mongoose');
-const { calcHours } = require('../../until/calhours');
-const { toMinuteOfDay, toDateOnly } = require('../../until/dateTime');
-
-dayjs.extend(customParseFormat);
-
-const RECURRENCE_TYPES = new Set(['none', 'daily', 'weekly', 'monthly']);
-const TASK_STATUS = {
-    ACTIVE: 'active',
-    COMPLETED: 'completed',
-    ARCHIVED: 'archived',
-};
-const RECURRENCE_LABELS = {
-    none: 'No recurrence',
-    daily: 'Daily',
-    weekly: 'Weekly',
-    monthly: 'Monthly',
-};
-
-function normalizeRecurrence(value) {
-    const recurrence = String(value || 'none').toLowerCase();
-    return RECURRENCE_TYPES.has(recurrence) ? recurrence : 'none';
-}
-
-function toPositiveInt(value, fallback = 1) {
-    const parsed = Number.parseInt(value, 10);
-    if (!Number.isFinite(parsed) || parsed < 1) {
-        return fallback;
-    }
-    return parsed;
-}
-
-function normalizeTaskStatus(value) {
-    const status = String(value || TASK_STATUS.ACTIVE).toLowerCase();
-    if (status === TASK_STATUS.COMPLETED || status === TASK_STATUS.ARCHIVED) {
-        return status;
-    }
-    return TASK_STATUS.ACTIVE;
-}
-
-function getRecurrenceLabel(value) {
-    const recurrence = normalizeRecurrence(value);
-    return RECURRENCE_LABELS[recurrence] || RECURRENCE_LABELS.none;
-}
-
-function startOfToday() {
-    return dayjs().startOf('day').toDate();
-}
-
-function toPriority(value, fallback = 3) {
-    const parsed = Number.parseInt(value, 10);
-    if (!Number.isFinite(parsed)) {
-        return fallback;
-    }
-    return Math.min(5, Math.max(1, parsed));
-}
-
-function toDayStart(value) {
-    const parsed = dayjs(value);
-    if (!parsed.isValid()) {
-        return null;
-    }
-    return parsed.startOf('day');
-}
-
-function hasTimeOverlap(startA, endA, startB, endB) {
-    return startA < endB && startB < endA;
-}
-
-function occursOnDate(taskMeta, date) {
-    if (!taskMeta || !taskMeta.startDate || !date) {
-        return false;
-    }
-    if (date.isBefore(taskMeta.startDate, 'day')) {
-        return false;
-    }
-
-    const recurrence = taskMeta.recurrenceType;
-    if (recurrence === 'daily') {
-        return true;
-    }
-    if (recurrence === 'weekly') {
-        const diffDays = date.diff(taskMeta.startDate, 'day');
-        return diffDays % 7 === 0;
-    }
-    if (recurrence === 'monthly') {
-        return date.date() === taskMeta.startDate.date();
-    }
-
-    return date.isSame(taskMeta.startDate, 'day');
-}
-
-function getTaskScheduleMeta(task) {
-    if (!task) {
-        return null;
-    }
-
-    const startMinutes = toMinuteOfDay(task.dateStart);
-    const endMinutes = toMinuteOfDay(task.dateEnd || task.dateStart);
-    const startDate = toDayStart(task.deadline || task.createdAt);
-    if (!Number.isFinite(startMinutes) || !Number.isFinite(endMinutes) || endMinutes <= startMinutes || !startDate) {
-        return null;
-    }
-
-    return {
-        startMinutes,
-        endMinutes,
-        startDate,
-        recurrenceType: normalizeRecurrence(task.recurrence_type),
-    };
-}
-
-function findFirstScheduleConflictDate(taskA, taskB, horizonDays = 365) {
-    const metaA = getTaskScheduleMeta(taskA);
-    const metaB = getTaskScheduleMeta(taskB);
-    if (!metaA || !metaB) {
-        return null;
-    }
-
-    if (!hasTimeOverlap(metaA.startMinutes, metaA.endMinutes, metaB.startMinutes, metaB.endMinutes)) {
-        return null;
-    }
-
-    let cursor = metaA.startDate.isAfter(metaB.startDate, 'day') ? metaA.startDate : metaB.startDate;
-    for (let i = 0; i <= horizonDays; i++) {
-        const date = cursor.add(i, 'day');
-        if (occursOnDate(metaA, date) && occursOnDate(metaB, date)) {
-            return date;
-        }
-    }
-
-    return null;
-}
+const { multipleMongooseToObject } = require('../../util/mongoose');
+const { calcHours } = require('../../util/calhours');
+const { toMinuteOfDay, toDateOnly } = require('../../util/dateTime');
+const {
+    TASK_STATUS,
+    normalizeRecurrence,
+    toPositiveInt,
+    normalizeTaskStatus,
+    getRecurrenceLabel,
+    startOfToday,
+    toPriority,
+    getTaskScheduleMeta,
+    findFirstScheduleConflictDate,
+} = require('../../util/taskUtils');
 
 class TasksController {
     constructor() {
@@ -147,6 +27,7 @@ class TasksController {
         this.deleteDis = this.deleteDis.bind(this);
         this.syncTaskAssignmentState = this.syncTaskAssignmentState.bind(this);
         this.autoArchiveCompletedOneTimeTasks = this.autoArchiveCompletedOneTimeTasks.bind(this);
+        this.suggestEmployees = this.suggestEmployees.bind(this);
     }
 
     async autoArchiveCompletedOneTimeTasks() {
@@ -273,6 +154,110 @@ class TasksController {
             });
         } catch (error) {
             res.send('error');
+        }
+    }
+
+    async suggestEmployees(req, res) {
+        try {
+            const taskId = String(req.params.id || '').trim();
+            if (!taskId) {
+                return res.status(400).json({ ok: false, items: [] });
+            }
+
+            const task = await Tasks.findById(taskId).lean();
+            if (!task) {
+                return res.status(404).json({ ok: false, items: [] });
+            }
+
+            const employees = await Users.find({ role: 'employee' })
+                .select('name position totalWorkingHours')
+                .lean();
+
+            if (!employees.length) {
+                return res.json({ ok: true, items: [] });
+            }
+
+            const employeeIds = employees.map((user) => user._id);
+            const distributions = await Distributions.find({
+                employeeID: { $in: employeeIds },
+                taskID: { $ne: taskId },
+            })
+                .populate({
+                    path: 'taskID',
+                    match: { task_status: { $ne: TASK_STATUS.ARCHIVED } },
+                })
+                .select('employeeID taskID assignedAt')
+                .lean();
+
+            const tasksByEmployee = new Map();
+            const tasksThisWeekByEmployee = new Map();
+            const weekStart = dayjs().startOf('week').add(1, 'day');
+            const weekEnd = weekStart.add(7, 'day');
+
+            for (const row of distributions) {
+                if (!row.employeeID || !row.taskID) {
+                    continue;
+                }
+
+                const employeeId = String(row.employeeID);
+                if (!tasksByEmployee.has(employeeId)) {
+                    tasksByEmployee.set(employeeId, []);
+                }
+                tasksByEmployee.get(employeeId).push(row.taskID);
+
+                if (row.assignedAt) {
+                    const assignedAt = dayjs(row.assignedAt);
+                    if (assignedAt.isValid() && !assignedAt.isBefore(weekStart) && assignedAt.isBefore(weekEnd)) {
+                        tasksThisWeekByEmployee.set(
+                            employeeId,
+                            (tasksThisWeekByEmployee.get(employeeId) || 0) + 1
+                        );
+                    }
+                }
+            }
+
+            const candidates = [];
+            for (const employee of employees) {
+                const employeeId = String(employee._id);
+                const assignedTasks = tasksByEmployee.get(employeeId) || [];
+
+                let hasConflict = false;
+                for (const existingTask of assignedTasks) {
+                    const conflictDate = findFirstScheduleConflictDate(task, existingTask, 365);
+                    if (conflictDate) {
+                        hasConflict = true;
+                        break;
+                    }
+                }
+
+                if (hasConflict) {
+                    continue;
+                }
+
+                const hoursWorked = Number(employee.totalWorkingHours) || 0;
+                const tasksThisWeek = tasksThisWeekByEmployee.get(employeeId) || 0;
+                const score = hoursWorked + tasksThisWeek * 2;
+
+                candidates.push({
+                    id: employeeId,
+                    name: employee.name || 'No name',
+                    position: employee.position || '--',
+                    hoursWorked: Number(hoursWorked.toFixed(2)),
+                    tasksThisWeek,
+                    score: Number(score.toFixed(2)),
+                });
+            }
+
+            candidates.sort((a, b) => {
+                if (a.score !== b.score) {
+                    return a.score - b.score;
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            return res.json({ ok: true, items: candidates.slice(0, 3) });
+        } catch (error) {
+            return res.status(500).json({ ok: false, items: [] });
         }
     }
 

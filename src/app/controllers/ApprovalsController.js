@@ -1,5 +1,4 @@
 const dayjs = require('dayjs');
-const customParseFormat = require('dayjs/plugin/customParseFormat');
 const ApprovalRequest = require('../model/approvalRequest');
 const Distribution = require('../model/distribution');
 const Task = require('../model/task');
@@ -8,33 +7,10 @@ const {
   toDateOnly,
   toMinuteOfDay,
   toDateText,
-  toDateTimeText,
-} = require('../../until/dateTime');
-
-dayjs.extend(customParseFormat);
-
-function getTypeLabel(type) {
-  if (type === 'leave') return 'Leave request';
-  if (type === 'shift_change') return 'Shift change';
-  if (type === 'deadline_extension') return 'Deadline extension';
-  return type || 'Unknown';
-}
-
-function getStatusLabel(status) {
-  if (status === 'approved') return 'Approved';
-  if (status === 'rejected') return 'Rejected';
-  return 'Pending';
-}
-
-function getStatusClass(status) {
-  if (status === 'approved') return 'text-bg-success';
-  if (status === 'rejected') return 'text-bg-danger';
-  return 'text-bg-warning';
-}
-
-function toDateTimeTextLocal(value) {
-  return toDateTimeText(value, { format: 'DD/MM/YYYY HH:mm', fallback: '--' });
-}
+} = require('../../util/dateTime');
+const { mapRequestRow } = require('../../util/approvalUtils');
+const asyncHandler = require('express-async-handler');
+const ApprovalService = require('../services/ApprovalService');
 
 class ApprovalsController {
   constructor() {
@@ -45,32 +21,7 @@ class ApprovalsController {
     this.reject = this.reject.bind(this);
   }
 
-  mapRequestRow(row) {
-    const requester = row.requesterID || {};
-    const task = row.taskID || {};
-    const reviewer = row.reviewedBy || {};
-
-    return {
-      ...row,
-      requesterName: requester.name || 'Unknown',
-      requesterEmail: requester.email || '--',
-      taskName: task.name_task || '--',
-      taskDeadlineText: toDateText(task.deadline),
-      requestTypeLabel: getTypeLabel(row.requestType),
-      statusLabel: getStatusLabel(row.status),
-      statusClass: getStatusClass(row.status),
-      requestedFromDateText: toDateText(row.requestedFromDate),
-      requestedToDateText: toDateText(row.requestedToDate),
-      requestedDateText: toDateText(row.requestedDate),
-      requestedDeadlineText: toDateText(row.requestedDeadline),
-      createdAtText: toDateTimeTextLocal(row.createdAt),
-      reviewedAtText: toDateTimeTextLocal(row.reviewedAt),
-      reviewedByName: reviewer.name || '--',
-    };
-  }
-
-  async managerIndex(req, res) {
-    try {
+  managerIndex = asyncHandler(async (req, res) => {
       const [pendingRows, recentRows] = await Promise.all([
         ApprovalRequest.find({ status: 'pending' })
           .populate('requesterID')
@@ -87,18 +38,13 @@ class ApprovalsController {
       ]);
 
       return res.render('approvals-manager', {
-        pendingRequests: pendingRows.map((row) => this.mapRequestRow(row)),
-        historyRequests: recentRows.map((row) => this.mapRequestRow(row)),
+        pendingRequests: pendingRows.map(mapRequestRow),
+        historyRequests: recentRows.map(mapRequestRow),
       });
-    } catch (error) {
-      req.flash('error', 'Unable to load Approval Center.');
-      return res.redirect('/');
-    }
-  }
+  });
 
-  async employeeIndex(req, res) {
-    try {
-      const userId = req.session?.user?._id;
+  employeeIndex = asyncHandler(async (req, res) => {
+      const userId = req.user?._id;
       if (!userId) {
         return res.redirect('/login');
       }
@@ -128,197 +74,43 @@ class ApprovalsController {
         }));
 
       return res.render('approvals-employee', {
-        requestRows: rows.map((row) => this.mapRequestRow(row)),
+        requestRows: rows.map(mapRequestRow),
         assignedTasks,
         todayDate: dayjs().format('YYYY-MM-DD'),
       });
-    } catch (error) {
-      req.flash('error', 'Unable to load request page.');
-      return res.redirect('/dashboard');
-    }
-  }
+  });
 
-  async createRequest(req, res) {
-    try {
-      const userId = req.session?.user?._id;
+  createRequest = asyncHandler(async (req, res) => {
+      const userId = req.user?._id;
       if (!userId) {
         return res.redirect('/login');
       }
 
-      const requestType = String(req.body.requestType || '').trim();
-      const reason = String(req.body.reason || '').trim();
-      if (!['leave', 'shift_change', 'deadline_extension'].includes(requestType)) {
-        req.flash('error', 'Invalid request type.');
-        return res.redirect('/approvals/my');
-      }
-      if (reason.length < 6) {
-        req.flash('error', 'Reason must be at least 6 characters.');
-        return res.redirect('/approvals/my');
-      }
-
-      const payload = {
-        requesterID: userId,
-        requestType,
-        reason,
-        status: 'pending',
-      };
-
-      if (requestType === 'leave') {
-        const fromDate = toDateOnly(req.body.requestedFromDate);
-        const toDate = toDateOnly(req.body.requestedToDate);
-        if (!fromDate || !toDate || toDate < fromDate) {
-          req.flash('error', 'Invalid leave date range.');
-          return res.redirect('/approvals/my');
-        }
-        payload.requestedFromDate = fromDate;
-        payload.requestedToDate = toDate;
-      }
-
-      if (requestType === 'shift_change') {
-        const requestedDate = toDateOnly(req.body.requestedDate);
-        const currentStart = String(req.body.currentTimeStart || '').trim();
-        const currentEnd = String(req.body.currentTimeEnd || '').trim();
-        const requestedStart = String(req.body.requestedTimeStart || '').trim();
-        const requestedEnd = String(req.body.requestedTimeEnd || '').trim();
-
-        const currentStartMin = toMinuteOfDay(currentStart);
-        const currentEndMin = toMinuteOfDay(currentEnd);
-        const requestedStartMin = toMinuteOfDay(requestedStart);
-        const requestedEndMin = toMinuteOfDay(requestedEnd);
-
-        if (
-          !requestedDate
-          || !Number.isFinite(currentStartMin)
-          || !Number.isFinite(currentEndMin)
-          || !Number.isFinite(requestedStartMin)
-          || !Number.isFinite(requestedEndMin)
-          || currentEndMin <= currentStartMin
-          || requestedEndMin <= requestedStartMin
-        ) {
-          req.flash('error', 'Invalid shift change information.');
-          return res.redirect('/approvals/my');
-        }
-
-        payload.requestedDate = requestedDate;
-        payload.currentTimeStart = currentStart;
-        payload.currentTimeEnd = currentEnd;
-        payload.requestedTimeStart = requestedStart;
-        payload.requestedTimeEnd = requestedEnd;
-      }
-
-      if (requestType === 'deadline_extension') {
-        const taskId = String(req.body.taskID || '').trim();
-        const requestedDeadline = toDateOnly(req.body.requestedDeadline);
-        if (!taskId || !requestedDeadline) {
-          req.flash('error', 'Invalid deadline extension information.');
-          return res.redirect('/approvals/my');
-        }
-
-        const distribution = await Distribution.findOne({
-          employeeID: userId,
-          taskID: taskId,
-        })
-          .populate('taskID')
-          .lean();
-
-        if (!distribution || !distribution.taskID) {
-          req.flash('error', 'You are not assigned to this task.');
-          return res.redirect('/approvals/my');
-        }
-
-        const currentDeadline = toDateOnly(distribution.taskID.deadline);
-        if (!currentDeadline || requestedDeadline <= currentDeadline) {
-          req.flash('error', 'New deadline must be later than current deadline.');
-          return res.redirect('/approvals/my');
-        }
-
-        payload.taskID = taskId;
-        payload.requestedDeadline = requestedDeadline;
-      }
-
-      await ApprovalRequest.create(payload);
+      await ApprovalService.createRequest(userId, req.body);
+      
       req.flash('success', 'Request submitted successfully. Waiting for manager review.');
       return res.redirect('/approvals/my');
-    } catch (error) {
-      req.flash('error', 'Unable to submit request right now.');
-      return res.redirect('/approvals/my');
-    }
-  }
+  });
 
-  async approve(req, res) {
-    try {
-      const managerId = req.session?.user?._id;
+  approve = asyncHandler(async (req, res) => {
+      const managerId = req.user?._id;
       const requestId = req.params.id;
 
-      const row = await ApprovalRequest.findOne({ _id: requestId, status: 'pending' })
-        .populate('taskID')
-        .lean();
-      if (!row) {
-        req.flash('error', 'Request does not exist or has already been processed.');
-        return res.redirect('/approvals');
-      }
-
-      if (row.requestType === 'deadline_extension' && row.taskID && row.requestedDeadline) {
-        await Task.updateOne(
-          { _id: row.taskID._id || row.taskID },
-          { deadline: row.requestedDeadline }
-        );
-      }
-
-      await ApprovalRequest.updateOne(
-        { _id: requestId, status: 'pending' },
-        {
-          status: 'approved',
-          managerNote: String(req.body.managerNote || '').trim(),
-          reviewedBy: managerId,
-          reviewedAt: new Date(),
-        }
-      );
-
-      // Apply leave busy status immediately after approval.
-      await syncLeaveBusyStatuses({ force: true });
+      await ApprovalService.approveRequest(requestId, managerId, req.body.managerNote);
 
       req.flash('success', 'Request approved successfully.');
       return res.redirect('/approvals');
-    } catch (error) {
-      req.flash('error', 'Unable to approve request.');
-      return res.redirect('/approvals');
-    }
-  }
+  });
 
-  async reject(req, res) {
-    try {
-      const managerId = req.session?.user?._id;
+  reject = asyncHandler(async (req, res) => {
+      const managerId = req.user?._id;
       const requestId = req.params.id;
-      const managerNote = String(req.body.managerNote || '').trim();
-      if (managerNote.length < 3) {
-        req.flash('error', 'Please enter a rejection note of at least 3 characters.');
-        return res.redirect('/approvals');
-      }
-
-      const result = await ApprovalRequest.updateOne(
-        { _id: requestId, status: 'pending' },
-        {
-          status: 'rejected',
-          managerNote,
-          reviewedBy: managerId,
-          reviewedAt: new Date(),
-        }
-      );
-
-      const modified = Number(result.modifiedCount) || Number(result.nModified) || 0;
-      if (modified < 1) {
-        req.flash('error', 'Request does not exist or has already been processed.');
-        return res.redirect('/approvals');
-      }
+      
+      await ApprovalService.rejectRequest(requestId, managerId, req.body.managerNote);
 
       req.flash('success', 'Request rejected.');
       return res.redirect('/approvals');
-    } catch (error) {
-      req.flash('error', 'Unable to reject request.');
-      return res.redirect('/approvals');
-    }
-  }
+  });
 }
 
 module.exports = new ApprovalsController();

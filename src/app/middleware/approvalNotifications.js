@@ -12,7 +12,7 @@ async function approvalNotifications(req, res, next) {
   res.locals.approvalNotifications = { totalCount: 0, items: [] };
 
   try {
-    const currentUser = req.session?.user;
+    const currentUser = req.user;
     if (!currentUser?._id || !isManagerPosition(currentUser)) {
       return next();
     }

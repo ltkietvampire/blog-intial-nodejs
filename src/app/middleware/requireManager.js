@@ -1,7 +1,7 @@
 const { isManagerPosition } = require('./roleUtils');
 
 function requireManager(req, res, next) {
-  const user = req.session?.user;
+  const user = req.user;
   if (!user?._id) {
     return res.redirect('/login');
   }

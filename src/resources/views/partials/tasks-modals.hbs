@@ -1,0 +1,287 @@
+<!-- ARCHIVED TASKS MODAL -->
+<div class="modal fade" id="archivedTasksModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Archive/Completed Tasks</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Recurrence</th>
+                <th>Deadline</th>
+                <th>People</th>
+                <th>Completed At</th>
+                <th>Archived At</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#if archivedTasks.length}}
+                {{#each archivedTasks}}
+                  <tr>
+                    <td>
+                      <div class="fw-semibold">{{this.name_task}}</div>
+                      <div class="small-muted">{{this.description_task}}</div>
+                    </td>
+                    <td>{{this.recurrence_label}}</td>
+                    <td>{{this.deadlineText}}</td>
+                    <td>{{this.assigned_people_count}} / {{this.required_people}}</td>
+                    <td>{{this.completedAtText}}</td>
+                    <td>{{this.archivedAtText}}</td>
+                  </tr>
+                {{/each}}
+              {{else}}
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    No archived tasks yet.
+                  </td>
+                </tr>
+              {{/if}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE TASK MODAL -->
+<div class="modal fade" id="taskModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <form id="taskForm" class="modal-content" method="POST" action="/tasks/store">
+      <div class="modal-header">
+        <h5 class="modal-title">Create new task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Task name</label>
+          <input name="name_task" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Description</label>
+          <textarea name="description_task" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Start time</label>
+            <input
+              type="time"
+              id="createDateStart"
+              name="dateStart"
+              class="form-control"
+              min="08:00"
+              max="19:00"
+              step="3600"
+              value="08:00"
+              required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">End time</label>
+            <input
+              type="time"
+              id="createDateEnd"
+              name="dateEnd"
+              class="form-control"
+              min="09:00"
+              max="20:00"
+              step="3600"
+              value="09:00"
+              required>
+          </div>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Deadline</label>
+            <input type="date" id="createDeadline" name="deadline" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Priority</label>
+            <select name="priority" class="form-select">
+              <option value="1">1 - Very high</option>
+              <option value="2">2 - High</option>
+              <option value="3" selected>3 - Medium</option>
+              <option value="4">4 - Low</option>
+              <option value="5">5 - Very low</option>
+            </select>
+          </div>
+        </div>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Recurrence</label>
+            <select name="recurrence_type" class="form-select">
+              <option value="none" selected>No recurrence</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Required people</label>
+            <input type="number" name="required_people" min="1" value="1" class="form-control" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- EDIT TASK MODAL -->
+<div class="modal fade" id="taskEditModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <form id="taskEditForm" class="modal-content" method="POST">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Task name</label>
+          <input id="editNameTask" name="name_task" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Description</label>
+          <textarea id="editDescriptionTask" name="description_task" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Start time</label>
+            <input type="time" id="editDateStart" name="dateStart" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">End time</label>
+            <input type="time" id="editDateEnd" name="dateEnd" class="form-control" required>
+          </div>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Deadline</label>
+            <input type="date" id="editDeadline" name="deadline" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Priority</label>
+            <select id="editPriority" name="priority" class="form-select">
+              <option value="1">1 - Very high</option>
+              <option value="2">2 - High</option>
+              <option value="3">3 - Medium</option>
+              <option value="4">4 - Low</option>
+              <option value="5">5 - Very low</option>
+            </select>
+          </div>
+        </div>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Recurrence</label>
+            <select id="editRecurrenceType" name="recurrence_type" class="form-select">
+              <option value="none">No recurrence</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Required people</label>
+            <input type="number" id="editRequiredPeople" name="required_people" min="1" class="form-control" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete task: <strong id="deleteTaskName"></strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ASSIGN TASK MODAL -->
+<div class="modal fade" id="assignTaskModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Assign task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="p-3 rounded-3 mb-3" style="background:#f8fafc">
+          <div class="fw-semibold mb-1" id="assignTaskName">Task name</div>
+          <div class="small-muted" id="assignTaskInfo">00:00 - 00:00</div>
+          <div class="small-muted mt-1" id="assignTaskSlots">Available slots: 0</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Filter by position</label>
+          <select id="filterPosition" class="form-select">
+            <option value="all">All</option>
+            {{#each position}}
+              <option value="{{this}}">{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="mb-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <label class="form-label fw-semibold mb-1">Suggested employees</label>
+            <span id="suggestedHint" class="small text-muted"></span>
+          </div>
+          <div id="suggestedEmployees" class="d-flex flex-wrap gap-2"></div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label fw-semibold">Employee</label>
+          <select id="assignEmployeeSelect" class="form-select" size="6" required></select>
+          <div class="invalid-feedback">Please select an employee.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmAssignBtn">Assign task</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UNASSIGN MODAL -->
+<div class="modal fade" id="unassignModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Remove assignment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Remove task assignment for <strong id="unassignUserName"></strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmUnassignBtn">Unassign</button>
+      </div>
+    </div>
+  </div>
+</div>

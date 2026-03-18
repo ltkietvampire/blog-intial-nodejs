@@ -43,7 +43,7 @@ async function taskNotifications(req, res, next) {
   res.locals.taskNotifications = { totalCount: 0, urgentCount: 0, items: [] };
 
   try {
-    const userId = req.session?.user?._id;
+    const userId = req.user?._id;
     if (!userId) {
       return next();
     }

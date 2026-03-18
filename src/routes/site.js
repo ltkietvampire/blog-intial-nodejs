@@ -4,7 +4,6 @@ const router = express.Router()
 const SiteController = require ('../app/controllers/SiteController')
 
 
-router.get('/searchnew', SiteController.search);
 router.get('/', SiteController.index);
 
 

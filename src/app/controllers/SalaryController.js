@@ -3,8 +3,9 @@ const Distribution = require('../model/distribution');
 const User = require('../model/user');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
-const { combineDateTime } = require('../../until/dateTime');
-const { getStartOfWeek, getEndOfWeek } = require('../../until/timePeriods');
+const { combineDateTime } = require('../../util/dateTime');
+const { getStartOfWeek, getEndOfWeek } = require('../../util/timePeriods');
+const asyncHandler = require('express-async-handler');
 
 dayjs.extend(customParseFormat);
 
@@ -42,7 +43,7 @@ function calcTaskHours(task, distribution) {
 }
 
 class SalaryController {
-  async index(req, res) {
+  index = asyncHandler(async (req, res) => {
     const dateParam = String(req.query.date || '').trim();
     const targetDate = dayjs(dateParam || new Date());
     const start = getStartOfWeek(targetDate.toDate());
@@ -125,9 +126,9 @@ class SalaryController {
       periodLabel: `${dayjs(start).format('DD/MM/YYYY')} - ${dayjs(end).format('DD/MM/YYYY')}`,
       hasRecords: existing.length > 0,
     });
-  }
+  });
 
-  async generate(req, res) {
+  generate = asyncHandler(async (req, res) => {
     const periodStart = dayjs(String(req.body.periodStart || '').trim());
     const periodEnd = dayjs(String(req.body.periodEnd || '').trim());
 
@@ -190,7 +191,7 @@ class SalaryController {
     await Salary.insertMany(newRecords);
     req.flash('success', `Generated payroll for ${newRecords.length} employee(s).`);
     return res.redirect(`/salary?date=${periodStart.format('YYYY-MM-DD')}`);
-  }
+  });
 }
 
 module.exports = new SalaryController();

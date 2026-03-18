@@ -3,7 +3,8 @@ const customParseFormat = require('dayjs/plugin/customParseFormat');
 const User = require('../model/user');
 const Distribution = require('../model/distribution');
 const { isEmployeePosition } = require('../middleware/roleUtils');
-const { toTaskDateTime } = require('../../until/dateTime');
+const { toTaskDateTime } = require('../../util/dateTime');
+const asyncHandler = require('express-async-handler');
 
 dayjs.extend(customParseFormat);
 
@@ -11,9 +12,8 @@ const COMPLETE_STATUS = 'completed';
 const LATE_STATUS = 'late';
 
 class DashboardController {
-  async index(req, res) {
-    try {
-      const userId = req.session?.user?._id;
+  index = asyncHandler(async (req, res) => {
+      const userId = req.user?._id;
       if (!userId) {
         return res.redirect('/login');
       }
@@ -21,11 +21,6 @@ class DashboardController {
       const user = await User.findById(userId).lean();
       if (!user) {
         return res.redirect('/login');
-      }
-
-      if (req.session?.user) {
-        req.session.user.role = user.role;
-        req.session.user.position = user.position;
       }
 
       if (!isEmployeePosition(user)) {
@@ -107,13 +102,7 @@ class DashboardController {
         urgentTasks: urgentRows.slice(0, 8),
         nowText: now.format('DD/MM/YYYY HH:mm:ss'),
       });
-    } catch (error) {
-      if (typeof req.flash === 'function') {
-        req.flash('error', 'Unable to load employee dashboard.');
-      }
-      return res.redirect('/auth');
-    }
-  }
+    });
 }
 
 module.exports = new DashboardController();

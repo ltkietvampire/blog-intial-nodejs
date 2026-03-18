@@ -1,7 +1,7 @@
 const { isEmployeePosition } = require('./roleUtils');
 
 function requireEmployee(req, res, next) {
-  const user = req.session?.user;
+  const user = req.user;
   if (!user?._id) {
     return res.redirect('/login');
   }

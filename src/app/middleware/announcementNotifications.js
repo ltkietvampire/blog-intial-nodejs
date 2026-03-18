@@ -1,0 +1,43 @@
+const Announcement = require('../model/announcement');
+const { isEmployeePosition } = require('./roleUtils');
+
+async function announcementNotifications(req, res, next) {
+  res.locals.announcementNotifications = { totalCount: 0, items: [] };
+
+  try {
+    const currentUser = req.user;
+    if (!currentUser?._id || !isEmployeePosition(currentUser)) {
+      return next();
+    }
+
+    const [rows, unseenCount] = await Promise.all([
+      Announcement.find({ isActive: true })
+        .populate('createdBy')
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean(),
+      Announcement.countDocuments({ isActive: true }),
+    ]);
+
+    const items = rows.map((row) => ({
+      title: row.title,
+      detail: row.message,
+      createdAtText: row.createdAt ? new Date(row.createdAt).toLocaleString('vi-VN') : '--',
+      createdByName: row.createdBy?.name || 'Manager',
+      link: '#',
+      isSeen: false,
+      id: String(row._id),
+    }));
+
+    res.locals.announcementNotifications = {
+      totalCount: unseenCount,
+      items,
+    };
+  } catch (error) {
+    res.locals.announcementNotifications = { totalCount: 0, items: [] };
+  }
+
+  return next();
+}
+
+module.exports = announcementNotifications;

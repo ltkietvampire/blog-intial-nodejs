@@ -1,0 +1,25 @@
+<!-- SIDEBAR -->
+<div class="sidebar p-3">
+  <h6>Team</h6>
+  <div class="employee-list">
+    <div id="employee-all" class="employee-item p-2" onclick="allBoardSchedule()">Team Schedule Board</div>
+
+    <div class="sidebar-section-title">Employees</div>
+    {{#if employeeUsers.length}}
+      {{#each employeeUsers}}
+        <div id="user-{{this._id}}" class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
+      {{/each}}
+    {{else}}
+      <div class="text-muted small px-2">No employees</div>
+    {{/if}}
+
+    <div class="sidebar-section-title">Managers</div>
+    {{#if managerUsers.length}}
+      {{#each managerUsers}}
+        <div id="user-{{this._id}}" class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
+      {{/each}}
+    {{else}}
+      <div class="text-muted small px-2">No managers</div>
+    {{/if}}
+  </div>
+</div>
