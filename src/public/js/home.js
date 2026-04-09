@@ -199,6 +199,7 @@ function renderTask(task, occurrenceDate = null) {
   el.dataset.desc = String(task.taskID.description_task || '').trim();
   el.dataset.startMin = startMin;
   el.dataset.endMin = endMin;
+  el.dataset.id = task.taskID._id;
 
   const date = occurrenceDate ? new Date(occurrenceDate) : parseTaskDate(task.taskID.deadline);
   if (!date) return;
@@ -411,14 +412,60 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (popoverDetail) {
-    popoverDetail.addEventListener('click', () => {
+    popoverDetail.addEventListener('click', async () => {
       if (!lastTaskEl || !detailModal) return;
       detailTitle.textContent = lastTaskEl.dataset.title || 'Task';
       detailTime.textContent = lastTaskEl.dataset.time || '';
       detailDesc.textContent = lastTaskEl.dataset.desc || 'No description.';
+      
+      const commentsContainer = document.getElementById('taskDetailComments');
+      if (commentsContainer) {
+        commentsContainer.innerHTML = '<div class="text-muted small">Loading comments...</div>';
+      }
+      
       detailModal.show();
+      
+      const taskId = lastTaskEl.dataset.id;
+      if (taskId && commentsContainer) {
+        try {
+          const res = await fetch(`/api/tasks/${taskId}/comments`);
+          const data = await res.json();
+          if (data && Array.isArray(data.items)) {
+            if (data.items.length === 0) {
+              commentsContainer.innerHTML = '<div class="text-muted small">No comments yet.</div>';
+            } else {
+              commentsContainer.innerHTML = data.items.map(c => `
+                <div class="d-flex mb-2">
+                  <img src="${c.userID?.avatar || '/img/default-avatar.webp'}" class="rounded-circle me-2" width="32" height="32" style="object-fit:cover">
+                  <div class="bg-light p-2 rounded flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <strong class="small">${c.userID?.name || 'Unknown'}</strong>
+                      <small class="text-muted" style="font-size:0.7rem">${new Date(c.createdAt).toLocaleString()}</small>
+                    </div>
+                    <div class="small mt-1">${c.content}</div>
+                  </div>
+                </div>
+              `).join('');
+            }
+          } else {
+            commentsContainer.innerHTML = '<div class="text-danger small">Failed to load data.</div>';
+          }
+        } catch (e) {
+          commentsContainer.innerHTML = '<div class="text-danger small">Connection error.</div>';
+        }
+      }
     });
   }
+
+  document.addEventListener('dblclick', (event) => {
+    const taskEl = event.target.closest('.task');
+    if (taskEl) {
+      document.querySelectorAll('.task').forEach(t => t.classList.remove('active'));
+      taskEl.classList.add('active');
+      showPopover(taskEl);
+      if(popoverDetail) popoverDetail.click();
+    }
+  });
 
   if (popoverClose) popoverClose.addEventListener('click', hidePopover);
   window.addEventListener('scroll', hidePopover, { passive: true });

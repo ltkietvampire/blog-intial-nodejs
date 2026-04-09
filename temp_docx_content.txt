@@ -1,0 +1,174 @@
+3.1. Kịch bản kiểm thử
+3.1.1. KTT-001: Đăng nhập hệ thống & Tính toàn vẹn Session (Login Flow & Session)
+Mục đích: Đảm bảo luồng đăng nhập an toàn, sinh Token chính xác, ngăn chặn các hình thức tấn công Brute-force & Xử lý Validation ở giao diện.
+Điều kiện tiên quyết: Backend server đang chạy. Database có mẫu User đầy đủ các vai trò.
+Các bước thực hiện:
+1. Truy cập URL `/login` từ trình duyệt Chrome. Kết quả mong đợi: Giao diện Form đăng nhập hiển thị đầy đủ, tiêu đề chuẩn.
+2. Cố tình bỏ qua các trường Email và Password, bấm thẳng nút "Đăng Nhập". Kết quả mong đợi: Cảnh báo Required Validation ("Vui lòng điền Email và Mật khẩu") hiển thị ngay trên Form thay vì gửi Request rỗng lên Server.
+3. Nhập giá trị vào Email dạng `admin_no_domain` thay vì `admin@company.com`. Kết quả mong đợi: Báo lỗi sai định dạng Email trực tiếp tại Client-side.
+4. Nhập đúng chuẩn Email nhưng gõ sai `Password`. Bấm Submit. Kết quả mong đợi: Server API trả về mã lỗi 401 (Unauthorized), giao diện hiện Toast Message màu đỏ "Tài khoản hoặc mật khẩu không chính xác."
+5. Lặp lại bước 4 quá 5 lần liên tục trong 1 phút. Kết quả mong đợi: Hệ thống khóa tạm thời truy cập từ IP hoặc yêu cầu Captcha (Rate limit kiểm tra).
+6. Nhập đúng Email và Password của một nhân viên (Employee). Bấm Đăng Nhập. Kết quả mong đợi: API trả về mã 200, JWT Token được cấp thành công và ghi vào HTTP-Only Cookie hoặc LocalStorage.
+7. Redirect thành công về `/dashboard`. Tại đây, mở Developer Tools kiểm tra App Data chặn truy cập Token chéo (An toàn XSS).
+8. Mở Tab mới trên trình duyệt, dán URL `/login` trong khi vẫn đang đăng xuất. Kết quả mong đợi: Hệ thống thông minh tự nhận biết Session hiện tại và Auto-redirect chuyển thẳng đến Dashboard (không hiện lại Form đăng nhập tránh thao tác thừa).
+9. Bấm nút Logout (Đăng xuất). Kết quả mong đợi: Token được xóa, Client bị ép đẩy ra trang Login, không thể quay lại bằng phím Back.
+Tiêu chí đánh giá: Tính mượt mà tuyệt đối của bộ Authentication JWT/Cookie. Front-end Validation bắt hết lỗ hổng đầu vào.
+
+
+
+
+3.1.2. KTT-002: Xác thực luồng Role-Based Access Control (RBAC) Cấp độ cao
+Mục đích: Ngăn chặn tuyệt đối lỗ hổng nâng quyền (Privilege escalation) giữa các tầng Role (Employee < Manager < Director < Admin).
+Điều kiện tiên quyết: Tài khoản Employee đang có Session đăng nhập mới nhất.
+Các bước thực hiện:
+1. Quan sát UI của Navbar / Sidebar Menu bên tay trái. Kết quả mong đợi: Trải nghiệm riêng biệt, hệ thống che mất hoàn toàn các nút menu: `Bảng Lương`, `Cấu hình hệ thống`, `Duyệt Yêu cầu Nhóm`.
+2. Gõ trực tiếp thanh địa chỉ URL của Giám Đốc: `domain.com/salary/approvals` và nhấn Enter. Kết quả mong đợi: Ngay lập tức Middleware backend báo lỗi 403 Forbidden, điều hướng trang về 404 hoặc Màn hình Access Denied ("Bạn Không Thể Vào Đây").
+3. Dùng API Client (Ví dụ Postman), copy JWT Token của Employee, thực hiện gọi Method PUT API `/api/users/update-role` để tự phong mình làm Admin. Kết quả mong đợi: Backend API chặn request, trả mã 403 kèm nội dung lỗi cụ thể trong Json "Không có đặc quyền Admin".
+4. Đăng xuất, sau đó Login lại bằng tài khoản Role `Admin`. Kết quả mong đợi: Full Menu hiện ra toàn bộ. Giao diện thay đổi theo quyền hành đầy đủ.
+Tiêu chí đánh giá: Bảo vệ 100% đường dẫn Frontend lẫn Backend endpoints từ các tác động sửa đổi Role trái phép.
+3.1.3. KTT-003: Luồng giao việc của Manager (Create & Monitor Task)
+Mục đích: Kiểm thử thao tác xử lý Tạo task với dữ kiện chuyên sâu.
+Điều kiện tiên quyết: Đăng nhập Role Manager.
+Các bước thực hiện:
+1. Click vào bảng "Quản lý công việc" -> Vào phần "Thêm Nhiệm Vụ" (`/tasks/create`).
+2. Bỏ qua mục Title công việc, chỉ chọn Assignee rồi Submit. Kết quả mong đợi: Bắn lỗi "Tiêu đề không được để trống".
+3. Điền Tên: `Chuẩn hóa Base Database`, Assign to: `Employee B`, Deadline: `Nhập ngày hôm qua`. Kết quả mong đợi: Validation chặn không cho giao deadline đã lùi vào quá khứ. Báo lỗi Time range.
+4. Sửa lại deadline thành 2 tuần sau. Viết mô tả dài 1000 từ. Đính kèm Tag ưu tiên `High`. Nhấn Create. Kết quả mong đợi: Toast message "Giao việc thành công". Chuyển hướng màn hình về List công việc tổng của Manager.
+5. Kiểm tra danh sách hiển thị Task. Kết quả mong đợi: Thấy công việc `Chuẩn hóa Base Database` đang ở cột `To Do`, Assignee hiện đúng Avatar Employee B, Tag "High" hiện màu Đỏ.
+6. Sử dụng tính năng "Filter / Tìm kiếm" theo Assignee hoặc Text. Kết quả mong đợi: Bảng re-render, chỉ hiển thị đúng task của Employee B.
+Tiêu chí đánh giá: Tránh được các lỗi form submission, Dashboard của Manager phản ánh đúng dữ liệu gốc Realtime.
+
+3.1.4. KTT-004: Employee Cập nhật Báo cáo công việc (My Task, Comments, Statuses)
+Mục đích: Mô phỏng quy trình tương tác công việc 2 chiều (Làm Task -> Báo Cáo -> Bình Luận) chuẩn xác.
+Điều kiện tiên quyết: Employee B đã nhận được Task từ kịch bản 3.
+Các bước thực hiện:
+1. Employee B truy cập list công việc `/my-task`. Kết quả mong đợi: Hệ thống đếm tổng số lượng task "To-Do: 1" hiển thị rõ ràng trên Badge.
+2. Click mở chi tiết Task `Chuẩn hóa Base Database`.
+3. Trong giao diện chi tiết, Employee chuyển thẻ Select-box từ `To-do` sang trạng thái `In-Progress`. Kết quả mong đợi: Vòng quay Loading hiện ra 0.5s -> Cập nhật thành công. System log ghi vết *"Employee B đổi Status sang In-Progress lúc 09:00"*.
+4. Kéo tới phần Bình luận (Comment). Nhập nội dung chứa chữ HTML đặc biệt `<script>alert(1)</script>` để test lỗi XSS bảo mật, nhấn Gửi. Kết quả mong đợi: Hệ thống Encode ký tự chặn tấn công XSS, comment đăng xuất hiện như Text bình thường, không bẫy mã độc.
+5. Viết một Comment thứ 2: "Đã làm xong Bước số 1", kèm thao tác tải (Upload) file `bang-luong.pdf`. Bấm Gửi. Kết quả mong đợi: File PDF lưu ở máy chủ an toàn. Hiển thị link có thể Download được cho bất kỳ ai có quyền, kèm dòng Text kia.
+6. Chuyển trạng thái Task thành `Completed` (Kèm báo hiệu hoàn thành).
+7. Manager đăng nhập trở lại ở máy khác để kiểm duyệt. Kết quả mong đợi: Manager thấy tổng trạng thái Task nhảy qua "Done", đọc được file nhân viên đính kèm mà không lỗi quyền.
+Tiêu chí đánh giá: Dữ liệu an toàn chống mã độc. Cập nhật Status có dấu vết rõ ràng. Bình luận dạng Array (JSON/DB) chạy ổn định nối chuỗi hợp lý.
+3.1.5. KTT-005: Tính lương, Điều chỉnh Thực Lãnh (Manager Payroll Processing)
+Mục đích: Validation tính toán Lương dựa theo hệ số và khóa dữ liệu sau Submit.
+Điều kiện tiên quyết: Chu kỳ tính lương đã đến.
+Các bước thực hiện:
+1. Manager vào Bảng lương `/salary`.
+2. Kiểm tra dòng Employee A trong tháng hiện tại có Tổng Giờ Làm là 160 tiếng. Rate lương 10K/h. Hệ thống đã tính Gross 1600K.
+3. Manager nhập khoản "Bonus" (Thưởng): 200K và "Penalty" (Phạt đi muộn): 50K. Kết quả mong đợi: Bảng tính Reactivity/Auto-calculate nảy số NET Salary thành 1750K ngay trên UI.
+4. Bấm "Lưu nháp" dữ liệu. Kết quả mong đợi: Bảng lương giữ nguyên trạng thái Nháp, Director chưa thể nhìn thấy.
+5. Manager chính thức click nút `Manager approve`. Có Confirmation "Bạn có chắc muốn Trình duyệt bảng lương này, sau khi trình sẽ đóng chỉnh sửa?". Bấm YES. Kết quả mong đợi: Bảng lương đổi trạng thái "Pending Director Approval". Giao diện Manager Lock vĩnh viễn quyền Sửa/Xóa tháng đó.
+Tiêu chí đánh giá: JS Calc công thức đúng 100%. Luồng xác nhận chống Lock nhầm hoạt động.
+3.1.6. KTT-006: Workflow Phê duyệt hoặc Bác bỏ của Giám Đốc (Director Approve / Reject)
+Mục đích: Test luồng 2 cấp, không để lọt chỉnh sửa lậu sau duyệt.
+Các bước thực hiện:
+1. Tài khoản Director vào Màn hình `/salary/approvals`. Hiển thị có chấm Đỏ nhắc việc Notification.
+2. Director xem kĩ chi tiết Bảng lương Manager vừa nộp. Chọn hành động "Từ Chối" (Reject).
+3. Modals popup bắt buộc nhập "Lý do từ chối". Cố tình để trống và Submit. Kết quả mong đợi: Lỗi Validation bắt buộc nhập Lý do.
+4. Nhập lý do: "Đề nghị trừ lại tiền phạt 100K do ngày 5/10 nghỉ" => Reject. Kết quả mong đợi: Status File Lương từ Pending trở về Rejected/Drafted.
+5. Manager đăng nhập, thấy bảng Lương mở khóa trở lại cùng lời nhắn màu đỏ của Director. Manager trừ tiền lại trên Form (100K), Re-submit lần hai.
+6. Director quay lại Màn hình xác nhận, kiểm tra dữ liệu thay đổi và bấm "Phê Duyệt" (Approve).
+7. Kết quả mong đợi: System chuyển Record gốc Lương vào luồng `Completed/Paid`. Record Lương khóa cứng mọi chức năng chỉnh sửa đổi, chỉ lưu chế độ `Read-Only`.
+Tiêu chí đánh giá: Lifecycle status State Machine chuyển mượt: Draft -> Pending -> Reject -> Pending -> Approve. Thắt chặt được an ninh dữ liệu tài chính của phòng ban.
+
+
+3.1.7. KTT-007: Quy trình tạo luồng Yêu Cầu và Xác thực Logic (Requests & Logic)
+Mục đích: Xác minh Nhân sự nộp yêu cầu chính xác, Manager theo dõi quản lý trực quan.
+Các bước thực hiện:
+1. Employee A truy cập Menu "Đơn Yêu Cầu" (Approvals). Click Create Request.
+2. Chọn loại Đơn: `Nghỉ phép ốm`. Thời gian bắt đầu: Ngày Mùng 2. Thời gian kết thúc: Ngày Mùng 1. Bấm gửi. Kết quả mong đợi: System bắt lỗi "Ngày kết thúc không được nhỏ hơn ngày bắt đầu" trực quan.
+3. Sửa đúng ngày. Điền Note "Nhập viện cần xin nghỉ". `. Gửi đơn.
+4. Kết quả mong đợi: Tạo mới dòng Đơn ở trạng thái "Chờ xử lý" (Pending).
+5. Manager đăng nhập, kiểm tra "Dashboard Yêu Cầu", thấy Đơn Xin Nghỉ ở trên.
+6. Manager nhấn vào xem lý do. Kết quả mong đợi: lý do hợp lý
+7. Click "Duyệt đơn".
+8. Employee nhận được Message thông báo. Tín hiệu trên Thông báo (nofication) hệ thống đơn đã được duyệt.
+Tiêu chí đánh giá: hệ thống CRUD của Approval hoạt động tốt, không fail. Quá trình xử lý Approval map chính xác. 
+
+
+3.1.8. KTT-008: Bảo Mật Giao Tiếp Webhook qua Token JWT Nội Bộ (Bot Security)
+Mục đích: Ngăn hệ thống bên ngoài gọi Endpoint API tự động (Hack spam dữ liệu Task) mà thiếu Session bảo vệ.
+Các bước thực hiện:
+1. Sử dụng Client như cURL hoặc Postman, gọi Request POST thẳng vào API Server URL chứa Controller N8N Webhook Receiver nhưng *KHÔNG* đưa vào `Bearer Token`.
+2. Kết quả mong đợi: HTTP Status 401 Unauthorized do middleware `requireAuth` phát động ngăn lại (Block anonymous requests).
+3. Đưa Bearer JWT hợp lệ lấy từ tài khoản của Manager A vào Request Headers, kèm Body JSON ảo. Thực thi gọi API.
+4. Kết quả mong đợi: Xuyên qua Middleware thành công (Response 200). Hệ thống hiểu request được ban hành chính thức từ Session của Manager A qua N8n.
+
+3.1.9. KTT-009: Năng lực nhận diện ý định & Mapped Model Của Agent (NLP & Auto-creation)
+Mục đích: Chatbot AI (Just-chat frontend x N8n) phải xử lý ngôn ngữ tự nhiên ra dạng data Task lưu thẳng vào Database chuẩn xác tham số.
+Các bước thực hiện:
+1. Đăng nhập với tư cách tài khoản Employee.
+2. Bật cửa sổ "Chat với AI Hỗ Trợ".
+3. Soạn tin với Context lộn xộn để thử thách AI: *"Anh bị quên giao việc hôm qua. Nhờ em mở nhanh một task tên 'Hỗ trợ sự kiện cuối năm', dealine thì là 10 giờ sáng mai nhe, ưu tiên rất cao đỏ chót lên, à và anh muốn tự gán cho tài khoản của anh luôn"*. Gửi tin đi!
+4. Kết quả mong đợi: Front-end hiện "Agent is typing...".
+5. Agent phản hồi bằng Text thân thiện "Dạ em đã tạo xong tác vụ 'Hỗ trợ sự kiện cuối năm' vào hệ thống cho anh với độ ưu tiên cao nhất, hạn chót sáng mai. Chúc anh một ngày hiệu quả!"
+6. Kiểm tra chéo ở Tab `/my-task`. Re-fetch API / Refresh trang.
+7. Kết quả mong đợi: Có đúng 1 thẻ Task mới sinh ra với tiêu đề "Hỗ trợ sự kiện cuối năm". Cờ Prority = "Thấp" hay "Cao"? Phải bóc tách là "Cao/High". Thời hạn Deadline Map là "Sáng ngày mai của System Time". Người chịu tác vụ đúng là (Employee ID).
+Tiêu chí đánh giá: Trọng tâm vào quy tắc Parser của Prompt N8N, khả năng map Schema API `req.body.title`, `req.body.deadline`. Nếu AI nhầm Title ra kết quả dị dạng, là test Failed.
+3.1.10. KTT-010: Tự Động Định Hình UI Chat bot (Chatbot Configuration)
+Mục đích: Admin không rành code áp đặt thiết lập Giao diện - Logic một cách liền mạch.
+Các bước thực hiện:
+1. Đăng nhập quyền tối thượng `Admin`. Truy cập Tab `System Config`.
+2. Tại Form cài đặt, đổi tên Name system từ "BaseHR" thành "Company X Portal".
+3. Thay đổi Color Theme từ mảng xanh sáng (#00FF00) sang mảng Đen/Gradient Premium (Dark mode code).
+4. Bấm "Cập Nhật App". Kết quả mong đợi: Form Submit kèm API Save. Toàn bộ trang web ngay lập tức giật chuyển DOM đổi màu sắc, logo bị đổi màu, Header đổi chữ Name mới.
+5. Kiểm tra ở máy ảo thiết bị di động (Employee Phone view). Kết quả mong đợi: Do Sync vào Redux/Context hoặc Database call API chung, Client khác F5 một phát cũng auto tải giao diện mới của Admin cấu hình, không lệch màu sắc.
+Tiêu chí đánh giá: CSS Variable / Style components nhận Global state hoàn chỉnh và lưu dài hạn dưới CSDL.
+
+3.1.11. KTT-011:
+
+3.1.12. KTT-012: Kết xuất Báo Cáo & Xử Lý File (Export / Import Reports)
+Mục đích: Đảm bảo luồng trích xuất dữ liệu kế toán và phân tách Database hoạt động hiệu quả khi Admin/Manager cần tải File.
+Các bước thực hiện:
+1. Truy cập mục Báo Cáo / Bảng Lương tháng mới nhất đã duyệt (Completed).
+2. Bấm vào nút Export (Xuất Excel hoặc in PDF).
+3. Kết quả mong đợi: Thanh trạng thái chuẩn bị tệp tin xử lý mất khoảng 1-2s. Browser kích hoạt hộp thoại tự động tải File `.xlsx`/`.pdf` nguyên bản.
+4. Mở file lưu về máy đọc thử. Kết quả mong đợi: Font unicode ASCII Tiếng Việt không bị vỡ (Không bị biến thành dấu ?? loạn mã). Các cột số liệu ánh xạ chuẩn xác Số tiền, Ngày tạo, Tên nhân viên như giao diện hiển thị web.
+
+3.1.13. KTT-013: Khả năng tương thích nền tảng & Responsive UI (Cross-Browser & Devices)
+Mục đích: Kiểm tra sức chịu đựng của View/CSS, mảng trải nghiệm UI/UX đối với một hệ thống đa thiết bị (Máy tính, Tablet, Mobile).
+Các bước thực hiện:
+1. Khởi động ứng dụng trong các trình duyệt khác nhau: Firefox, Safari và Edge.
+2. Vận hành quy trình mở Chatbot gửi yêu cầu. Kết quả mong đợi: Giao diện AI N8N không bị lệch font, hiệu ứng Glassmorphism chạy mượt.
+3. Thu nhỏ Browser (Resize Window) tới ngưỡng màn hình Điện thoại Dọc (Width < 480px).
+4. Khảo sát Sidebar Menu và Bảng tính Lương (Data table nhiều cột). Kết quả mong đợi: Bảng Lương không bị tràn đè lên chữ khác, có xuất hiện thanh cuộn Ngang (`overflow-x: auto`) mượt mà hoặc Collapse thành Card Layout. Sidebar Menu tự động thu gọn lại thành Hamburger Icon (Nút 3 gạch).
+
+
+
+
+
+{
+  "type": "object",
+  "properties": {
+    "name_task": {
+      "type": "string",
+      "description": "Tên ngắn gọn của công việc cần làm. Trích xuất ý chính từ người dùng. Bắt buộc có."
+    },
+    "description_task": {
+      "type": "string",
+      "description": "Mô tả chi tiết nội dung công việc. Nếu người dùng nói nhiều thì tóm tắt lại đưa vào đây. Nếu không rõ thì để trống."
+    },
+    "dateStart": {
+      "type": "string",
+      "description": "Thời gian bắt đầu việc trong ngày, định dạng giờ và phút 'HH:mm' (ví dụ: '08:00', '13:30'). Nếu người dùng không nhắc giờ cụ thể, mặc định điền '08:00'."
+    },
+    "dateEnd": {
+      "type": "string",
+      "description": "Thời gian kết thúc việc trong ngày, định dạng giờ và phút 'HH:mm' (ví dụ: '17:00'). Nếu người dùng không nhắc giờ cụ thể, mặc định điền '17:00'."
+    },
+    "deadline": {
+      "type": "string",
+      "description": "Ngày thời hạn hoàn thành công việc (chót), định dạng bắt buộc 'YYYY-MM-DD'. Bạn (AI) phải tự quy đổi từ ngữ ('mai' -> tính từ ngày hiện tại +1, 'tháng sau' -> cộng thêm 1 tháng). Đây là trường bắt buộc có, nếu người dùng hoàn toàn không nhắc gì đến thời gian, bạn hãy lấy ngày của vòng lặp tiếp theo."
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["1", "2", "3"],
+      "description": "Độ ưu tiên của công việc dạng chuỗi số: '1' là Bình thường/Thấp, '2' là Quan trọng/Vừa vừa, '3' là Rất khẩn cấp/Cao. Mặc định là '1' nếu người dùng nói chuyện bình tĩnh."
+    }
+  },
+  "required": [
+    "name_task",
+    "deadline"
+  ]
+}

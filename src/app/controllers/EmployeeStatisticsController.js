@@ -1,5 +1,6 @@
 const User = require('../model/user');
 const Distribution = require('../model/distribution');
+const Salary = require('../model/salary');
 const { Parser } = require('@json2csv/plainjs');
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
@@ -54,6 +55,7 @@ class EmployeeStatisticsController {
   constructor() {
     this.statistics = this.statistics.bind(this);
     this.statisticsExport = this.statisticsExport.bind(this);
+    this.salaryExport = this.salaryExport.bind(this);
   }
 
   async buildStatistics(period) {
@@ -90,7 +92,28 @@ class EmployeeStatisticsController {
         lateCount: 0,
         lateMinutes: 0,
         skippedCount: 0,
+        totalPaidSalary: 0,
       });
+    }
+
+    const salaryFilter = { status: 'paid' };
+    if (periodRange.start && periodRange.end) {
+      if (normalizedPeriod === 'month' || normalizedPeriod === 'week') {
+        salaryFilter.month = periodRange.start.getMonth() + 1;
+        salaryFilter.year = periodRange.start.getFullYear();
+      } else if (normalizedPeriod === 'quarter') {
+        salaryFilter.year = periodRange.start.getFullYear();
+        const startMonth = periodRange.start.getMonth() + 1;
+        salaryFilter.month = { $gte: startMonth, $lte: startMonth + 2 };
+      }
+    }
+    const salaries = await Salary.find(salaryFilter).lean();
+
+    for (const sal of salaries) {
+      const row = reportByUser.get(String(sal.employeeID));
+      if (row && sal.totalPay) {
+        row.totalPaidSalary += Number(sal.totalPay);
+      }
     }
 
     for (const record of distributions) {
@@ -178,8 +201,9 @@ class EmployeeStatisticsController {
       acc.assignedTasks += item.assignedTasks;
       acc.lateCount += item.lateCount;
       acc.skippedCount += item.skippedCount;
+      acc.totalPaidSalary += item.totalPaidSalary;
       return acc;
-    }, { workHours: 0, assignedTasks: 0, lateCount: 0, skippedCount: 0 });
+    }, { workHours: 0, assignedTasks: 0, lateCount: 0, skippedCount: 0, totalPaidSalary: 0 });
 
     const periodOptions = [
       { value: 'all', label: 'All time', selected: normalizedPeriod === 'all' },
@@ -233,6 +257,55 @@ class EmployeeStatisticsController {
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', `attachment; filename="employee-statistics-${statData.period}-${dateTag}.csv"`);
       return res.send(csv);
+  });
+
+  salaryExport = asyncHandler(async (req, res) => {
+    const normalizedPeriod = normalizeStatPeriod(req.query.period);
+    const periodRange = getPeriodRange(normalizedPeriod);
+    const salaryFilter = { status: 'paid' };
+    if (periodRange.start && periodRange.end) {
+      if (normalizedPeriod === 'month' || normalizedPeriod === 'week') {
+        salaryFilter.month = periodRange.start.getMonth() + 1;
+        salaryFilter.year = periodRange.start.getFullYear();
+      } else if (normalizedPeriod === 'quarter') {
+        salaryFilter.year = periodRange.start.getFullYear();
+        const startMonth = periodRange.start.getMonth() + 1;
+        salaryFilter.month = { $gte: startMonth, $lte: startMonth + 2 };
+      }
+    }
+
+    const salaries = await Salary.find(salaryFilter).populate('employeeID').lean();
+    
+    const rows = salaries.map(sal => ({
+      name: sal.employeeID ? sal.employeeID.name : 'Unknown',
+      email: sal.employeeID ? sal.employeeID.email : 'Unknown',
+      period: `${sal.month}/${sal.year}`,
+      totalHours: sal.totalHours || 0,
+      hourlyRate: sal.hourlyRate || 0,
+      bonus: sal.bonus || 0,
+      deduction: sal.deduction || 0,
+      totalPay: sal.totalPay || 0,
+      approvedAt: sal.directorApprovedAt ? dayjs(sal.directorApprovedAt).format('YYYY-MM-DD HH:mm:ss') : ''
+    }));
+
+    const fields = [
+      { label: 'Employee', value: 'name' },
+      { label: 'Email', value: 'email' },
+      { label: 'Month/Year', value: 'period' },
+      { label: 'Total Hours', value: 'totalHours' },
+      { label: 'Hourly Rate', value: 'hourlyRate' },
+      { label: 'Bonus', value: 'bonus' },
+      { label: 'Deduction', value: 'deduction' },
+      { label: 'Total Pay', value: 'totalPay' },
+      { label: 'Director Approved At', value: 'approvedAt' },
+    ];
+    
+    const parser = new Parser({ fields });
+    const csv = `\uFEFF${parser.parse(rows)}`;
+    const dateTag = new Date().toISOString().slice(0, 10);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="payroll-${normalizedPeriod}-${dateTag}.csv"`);
+    return res.send(csv);
   });
 }
 

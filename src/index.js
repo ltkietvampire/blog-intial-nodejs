@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express')
 const morgan = require('morgan')
 const {engine} = require('express-handlebars') ;
@@ -12,6 +13,7 @@ const approvalNotifications = require('./app/middleware/approvalNotifications');
 const announcementNotifications = require('./app/middleware/announcementNotifications');
 const leaveBusySync = require('./app/middleware/leaveBusySync');
 const syncSessionUser = require('./app/middleware/syncSessionUser');
+const chatbotConfigMiddleware = require('./app/middleware/chatbotConfigMiddleware');
 const { isEmployeePosition, isManagerPosition } = require('./app/middleware/roleUtils');
 
 
@@ -20,6 +22,18 @@ const port = 3000
 
 database.connect();
 
+// Backward compatibility for Express 5: res.redirect('back')
+app.use((req, res, next) => {
+    const originalRedirect = res.redirect;
+    res.redirect = function(...args) {
+        let pathIdx = args.length === 2 ? 1 : 0;
+        if (args[pathIdx] === 'back') {
+            args[pathIdx] = req.get('Referrer') || '/';
+        }
+        return originalRedirect.apply(this, args);
+    };
+    next();
+});
 app.use(express.urlencoded({
   extended:  true
 }
@@ -46,6 +60,9 @@ app.engine('hbs', engine({
       }
       return `/${raw.replace(/^\.?\//, '')}`;
     },
+    eq: (a, b) => a === b,
+    or: (a, b) => a || b,
+    sum: (a, b) => (Number(a) || 0) + (Number(b) || 0),
   },
 }));
 app.set('view engine',  'hbs');
@@ -64,10 +81,11 @@ app.use(leaveBusySync);
 app.use(taskNotifications);
 app.use(approvalNotifications);
 app.use(announcementNotifications);
+app.use(chatbotConfigMiddleware);
 const errorHandler = require('./app/middleware/errorHandler');
 route(app);
 app.use(errorHandler);
 
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

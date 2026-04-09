@@ -67,8 +67,11 @@ function hasTimeOverlap(startA, endA, startB, endB) {
   return startA < endB && startB < endA;
 }
 
-function occursOnDate(taskMeta, date) {
+function occursOnDate(taskMeta, date, holidaysArr = []) {
   if (!taskMeta || !taskMeta.startDate || !date) {
+    return false;
+  }
+  if (holidaysArr.includes(date.format('DD/MM'))) {
     return false;
   }
   if (date.isBefore(taskMeta.startDate, 'day')) {
@@ -110,7 +113,7 @@ function getTaskScheduleMeta(task) {
   };
 }
 
-function findFirstScheduleConflictDate(taskA, taskB, horizonDays = 365) {
+function findFirstScheduleConflictDate(taskA, taskB, horizonDays = 365, holidaysArr = []) {
   const metaA = getTaskScheduleMeta(taskA);
   const metaB = getTaskScheduleMeta(taskB);
   if (!metaA || !metaB) {
@@ -124,7 +127,7 @@ function findFirstScheduleConflictDate(taskA, taskB, horizonDays = 365) {
   let cursor = metaA.startDate.isAfter(metaB.startDate, 'day') ? metaA.startDate : metaB.startDate;
   for (let i = 0; i <= horizonDays; i++) {
     const date = cursor.add(i, 'day');
-    if (occursOnDate(metaA, date) && occursOnDate(metaB, date)) {
+    if (occursOnDate(metaA, date, holidaysArr) && occursOnDate(metaB, date, holidaysArr)) {
       return date;
     }
   }

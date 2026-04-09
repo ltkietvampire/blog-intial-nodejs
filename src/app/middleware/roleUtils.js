@@ -6,7 +6,7 @@ function normalizeText(value) {
     .trim();
 }
 
-const ROLE_VALUES = new Set(['employee', 'manager']);
+const ROLE_VALUES = new Set(['employee', 'manager', 'director', 'admin']);
 
 function normalizeRole(value) {
   const role = normalizeText(value);
@@ -25,7 +25,17 @@ function isEmployeePosition(value) {
 }
 
 function isManagerPosition(value) {
-  return normalizeRole(getRoleValue(value)) === 'manager';
+  const role = normalizeRole(getRoleValue(value));
+  return role === 'manager' || role === 'director' || role === 'admin';
+}
+
+function isDirectorPosition(value) {
+  const role = normalizeRole(getRoleValue(value));
+  return role === 'director' || role === 'admin';
+}
+
+function isAdminPosition(value) {
+  return normalizeRole(getRoleValue(value)) === 'admin';
 }
 
 module.exports = {
@@ -33,4 +43,6 @@ module.exports = {
   normalizeRole,
   isEmployeePosition,
   isManagerPosition,
+  isDirectorPosition,
+  isAdminPosition,
 };

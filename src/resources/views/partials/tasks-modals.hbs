@@ -285,3 +285,29 @@
     </div>
   </div>
 </div>
+
+<!-- COMMENTS MODAL -->
+<div class="modal fade" id="commentsModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="commentTaskName">Task Discussions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column" style="height: 70vh;">
+        <div id="commentsList" class="flex-grow-1 overflow-auto d-flex flex-column gap-3 mb-3 p-3 bg-light rounded shadow-sm border" style="min-height: 300px;">
+          <!-- Comments will be injected here -->
+          <div class="text-center text-muted small mt-4">Loading comments...</div>
+        </div>
+        <form id="commentForm">
+          <div class="input-group">
+            <input type="text" id="commentContent" class="form-control form-control-lg" placeholder="Type your comment..." required autocomplete="off">
+            <button class="btn btn-primary px-4 fw-semibold" type="submit" id="btnSendComment">
+              <i class="bi bi-send-fill me-1"></i> Send
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

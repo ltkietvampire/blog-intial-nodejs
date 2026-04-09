@@ -1,0 +1,129 @@
+<!-- COMMENTS MODAL -->
+<div class="modal fade" id="commentsModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="commentTaskName">Task Discussions / Report Issue</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column" style="height: 70vh;">
+        <div id="commentsList" class="flex-grow-1 overflow-auto d-flex flex-column gap-3 mb-3 p-3 bg-light rounded shadow-sm border" style="min-height: 300px;">
+          <!-- Comments will be injected here -->
+          <div class="text-center text-muted small mt-4">Loading comments...</div>
+        </div>
+        <form id="commentForm">
+          <div class="input-group">
+            <input type="text" id="commentContent" class="form-control form-control-lg" placeholder="Type your comment or report issue..." required autocomplete="off">
+            <button class="btn btn-primary px-4 fw-semibold" type="submit" id="btnSendComment">
+              <i class="bi bi-send-fill me-1"></i> Send
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const commentsModalEl = document.getElementById('commentsModal');
+  const commentsModal = commentsModalEl ? new bootstrap.Modal(commentsModalEl) : null;
+  const commentsList = document.getElementById('commentsList');
+  const commentForm = document.getElementById('commentForm');
+  let currentCommentTaskId = '';
+
+  const escapeHtml = (value) => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  const escapeAttr = (value) => escapeHtml(value);
+
+  const renderCommentItem = (item) => {
+    const avatar = item.userID?.avatar || '/img/default-avatar.webp';
+    const name = item.userID?.name || 'Unknown';
+    const time = new Date(item.createdAt).toLocaleString('vi-VN');
+    const content = escapeHtml(item.content);
+    return `
+      <div class="d-flex flex-row p-3 rounded bg-white border border-light shadow-sm w-100 mb-2">
+        <img src="${escapeAttr(avatar)}" width="40" height="40" class="rounded-circle me-3 mt-1 shadow-sm">
+        <div class="w-100">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold text-dark">${escapeHtml(name)}</span>
+            <small class="text-muted"><i class="bi bi-clock"></i> ${time}</small>
+          </div>
+          <p class="mb-0 text-dark" style="white-space: pre-wrap; font-size: 0.95rem;">${content}</p>
+        </div>
+      </div>
+    `;
+  };
+
+  async function loadComments(taskId) {
+    if (!commentsList) return;
+    commentsList.innerHTML = '<div class="text-center text-muted small mt-4"><div class="spinner-border spinner-border-sm me-2"></div>Loading comments...</div>';
+    try {
+      const res = await fetch(`/api/tasks/${taskId}/comments`);
+      const data = await res.json();
+      if (!data.ok) throw new Error();
+      if (!data.items || data.items.length === 0) {
+        commentsList.innerHTML = '<div class="text-center text-muted small mt-4">No comments yet. Start the discussion!</div>';
+        return;
+      }
+      commentsList.innerHTML = data.items.map(renderCommentItem).join('');
+      setTimeout(() => { commentsList.scrollTop = commentsList.scrollHeight; }, 100);
+    } catch (e) {
+      commentsList.innerHTML = '<div class="text-center text-danger small mt-4">Failed to load comments</div>';
+    }
+  }
+
+  document.querySelectorAll('.btn-comments-task').forEach((btn) => {
+    btn.addEventListener('click', function (event) {
+      event.preventDefault();
+      if (commentsModal) {
+        currentCommentTaskId = this.dataset.id;
+        document.getElementById('commentTaskName').textContent = this.dataset.name || 'Task Discussions / Report Issue';
+        commentsModal.show();
+        loadComments(currentCommentTaskId);
+      }
+    });
+  });
+
+  if (commentForm) {
+    commentForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (!currentCommentTaskId) return;
+      const contentInput = document.getElementById('commentContent');
+      const content = contentInput.value.trim();
+      if (!content) return;
+      
+      const btnSend = document.getElementById('btnSendComment');
+      if (btnSend) {
+          btnSend.disabled = true;
+          btnSend.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
+      }
+
+      try {
+        const res = await fetch(`/api/tasks/${currentCommentTaskId}/comments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ content })
+        });
+        const data = await res.json();
+        if (data.ok && data.item) {
+          contentInput.value = '';
+          if (commentsList.innerHTML.includes('No comments yet')) {
+            commentsList.innerHTML = '';
+          }
+          commentsList.insertAdjacentHTML('beforeend', renderCommentItem(data.item));
+          commentsList.scrollTop = commentsList.scrollHeight;
+        } else {
+          alert(data.message || 'Failed to post comment');
+        }
+      } catch (err) {
+        alert('An error occurred. Please try again.');
+      } finally {
+        if (btnSend) {
+            btnSend.disabled = false;
+            btnSend.innerHTML = '<i class="bi bi-send-fill me-1"></i> Send';
+        }
+      }
+    });
+  }
+});
+</script>

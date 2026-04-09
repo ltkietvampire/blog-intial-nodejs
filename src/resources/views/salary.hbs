@@ -1,15 +1,19 @@
 <section class="container py-4">
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
     <div>
-      <h3 class="mb-1">Weekly Payroll</h3>
-      <div class="text-muted">Period: {{periodLabel}}</div>
+      <h3 class="mb-1">Monthly Payroll</h3>
+      <div class="text-muted">Payroll Period: {{periodLabel}}</div>
     </div>
     <form method="GET" action="/salary" class="d-flex flex-wrap align-items-end gap-2">
       <div>
-        <label class="form-label mb-1">Week of</label>
-        <input type="date" class="form-control" name="date" value="{{dateInput}}">
+        <label class="form-label mb-1">Month</label>
+        <input type="number" class="form-control" name="month" value="{{monthInput}}" min="1" max="12" style="width: 80px;">
       </div>
-      <button type="submit" class="btn btn-outline-primary">Load week</button>
+      <div>
+        <label class="form-label mb-1">Year</label>
+        <input type="number" class="form-control" name="year" value="{{yearInput}}" min="2000" style="width: 100px;">
+      </div>
+      <button type="submit" class="btn btn-outline-primary">View Payroll</button>
     </form>
   </div>
 
@@ -19,32 +23,55 @@
         <thead class="table-light">
           <tr>
             <th>Employee</th>
-            <th>Email</th>
-            <th class="text-end">Hours</th>
-            <th class="text-end">Hourly Rate</th>
-            <th class="text-end">Total Pay</th>
+            <th class="d-none d-md-table-cell">Email</th>
+            <th class="text-end d-none d-md-table-cell">Hours</th>
+            <th class="text-end d-none d-md-table-cell">Rate</th>
+            <th class="text-end text-success">Bonus</th>
+            <th class="text-end text-danger">Deduction</th>
+            <th class="text-end text-primary">Total Pay</th>
             <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {{#each rows}}
             <tr>
               <td>{{this.employee.name}}</td>
-              <td class="text-muted">{{this.employee.email}}</td>
-              <td class="text-end">{{this.totalHours}}</td>
-              <td class="text-end">{{this.hourlyRate}}</td>
-              <td class="text-end">{{this.totalPay}}</td>
+              <td class="text-muted d-none d-md-table-cell">{{this.employee.email}}</td>
+              <td class="text-end d-none d-md-table-cell">{{this.totalHours}}</td>
+              <td class="text-end d-none d-md-table-cell">{{this.hourlyRate}}</td>
+              <td class="text-end text-success">{{#if this.bonus}}+{{this.bonus}}{{else}}-{{/if}}</td>
+              <td class="text-end text-danger">{{#if this.deduction}}-{{this.deduction}}{{else}}-{{/if}}</td>
+              <td class="text-end fw-bold text-primary">{{this.totalPay}}</td>
               <td>
                 {{#if this.hasRecord}}
-                  <span class="badge bg-warning text-dark text-uppercase">{{this.status}}</span>
+                  <span class="badge border border-secondary text-dark text-uppercase bg-light">
+                    {{this.status}}
+                  </span>
                 {{else}}
-                  <span class="badge bg-light text-dark text-uppercase">not generated</span>
+                  <span class="badge bg-light text-muted text-uppercase border">not generated</span>
+                {{/if}}
+              </td>
+              <td>
+                {{#if this.hasRecord}}
+                  {{#if ../isManager}}
+                    <button class="btn btn-sm btn-outline-info adjust-btn" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#adjustModal" 
+                      data-id="{{this._id}}" 
+                      data-status="{{this.status}}"
+                      data-name="{{this.employee.name}}" 
+                      data-bonus="{{this.bonus}}" 
+                      data-deduction="{{this.deduction}}">
+                      <i class="bi bi-pencil-square"></i> Adjust
+                    </button>
+                  {{/if}}
                 {{/if}}
               </td>
             </tr>
           {{else}}
             <tr>
-              <td colspan="6" class="text-center text-muted py-4">No employees found.</td>
+              <td colspan="6" class="text-center text-muted py-4">No employee data found.</td>
             </tr>
           {{/each}}
         </tbody>
@@ -52,16 +79,136 @@
     </div>
   </div>
 
-  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
-    <div class="fw-semibold">
-      Total hours: {{totals.totalHours}} | Total pay: {{totals.totalPay}}
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4">
+    <div class="fw-semibold fs-5">
+      Total Hours: {{totals.totalHours}} | Total Pay: <span class="text-success">{{totals.totalPay}}</span>
     </div>
-    <form method="POST" action="/salary/generate">
-      <input type="hidden" name="periodStart" value="{{periodStartISO}}">
-      <input type="hidden" name="periodEnd" value="{{periodEndISO}}">
-      <button type="submit" class="btn btn-primary" {{#if hasRecords}}disabled{{/if}}>
-        Generate payroll
+    
+    <div class="d-flex gap-2 flex-wrap">
+      <form method="POST" action="/salary/generate">
+        <input type="hidden" name="month" value="{{monthInput}}">
+        <input type="hidden" name="year" value="{{yearInput}}">
+        <button type="submit" class="btn btn-primary" {{#if hasRecords}}disabled{{/if}}>
+          Generate Payroll
+        </button>
+      </form>
+
+      {{#if isManager}}
+      <form method="POST" action="/salary/manager-approve" onsubmit="return confirm('Confirm manager approval for this payroll?');">
+        <input type="hidden" name="month" value="{{monthInput}}">
+        <input type="hidden" name="year" value="{{yearInput}}">
+        <button type="submit" class="btn btn-warning" {{#unless canManagerApprove}}disabled{{/unless}}>
+          Manager Approve (Submit)
+        </button>
+      </form>
+      {{/if}}
+
+      {{#if isDirector}}
+      <form method="POST" action="/salary/director-approve" onsubmit="return confirm('Confirm director approval and payment?');">
+        <input type="hidden" name="month" value="{{monthInput}}">
+        <input type="hidden" name="year" value="{{yearInput}}">
+        <button type="submit" class="btn btn-success" {{#unless canDirectorApprove}}disabled{{/unless}}>
+          <i class="bi bi-check-circle me-1"></i>Director Approve (Pay)
+        </button>
+      </form>
+      <button type="button" class="btn btn-danger" id="openRejectModal" {{#unless canDirectorApprove}}disabled{{/unless}}>
+        <i class="bi bi-x-circle me-1"></i>Director Reject
       </button>
-    </form>
+      {{/if}}
+    </div>
   </div>
 </section>
+
+<!-- Director Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-danger">
+      <form method="POST" action="/salary/director-reject">
+        <input type="hidden" name="month" value="{{monthInput}}">
+        <input type="hidden" name="year" value="{{yearInput}}">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title"><i class="bi bi-x-octagon me-2"></i>Reject Payroll - {{periodLabel}}</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-warning d-flex gap-2">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>All <strong>Pending</strong> payroll records for this month will be reset to <strong>Draft</strong> status.</span>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Rejection Reason <span class="text-danger">*</span></label>
+            <textarea class="form-control" name="rejectReason" rows="3" placeholder="Enter specific reason so Managers know what to adjust..." required minlength="10"></textarea>
+            <div class="form-text text-muted">This reason will be visible to all Managers.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle me-1"></i>Confirm Rejection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Adjust Modal -->
+<div class="modal fade" id="adjustModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="adjustForm" method="POST" action="">
+        <div class="modal-header">
+          <h5 class="modal-title">Adjust Salary: <span id="adjustEmpName" class="text-primary"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label text-success fw-bold">Bonus Amount (VND)</label>
+            <input type="number" class="form-control" name="bonus" id="adjustBonus" min="0" value="0" required>
+            <div class="form-text">Add bonus or allowance to the payroll.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-danger fw-bold">Deduction / Penalty (VND)</label>
+            <input type="number" class="form-control" name="deduction" id="adjustDeduction" min="0" value="0" required>
+            <div class="form-text">Deduct penalty (e.g., 50000 for being late).</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Adjust Modal
+  const adjustBtns = document.querySelectorAll('.adjust-btn');
+  adjustBtns.forEach(btn => {
+    if(btn.dataset.status !== 'draft') {
+      btn.style.display = 'none';
+    }
+    btn.addEventListener('click', function() {
+      const id = this.dataset.id;
+      const name = this.dataset.name;
+      const bonus = this.dataset.bonus || 0;
+      const deduction = this.dataset.deduction || 0;
+      
+      document.getElementById('adjustForm').action = '/salary/' + id + '/adjust';
+      document.getElementById('adjustEmpName').textContent = name;
+      document.getElementById('adjustBonus').value = bonus;
+      document.getElementById('adjustDeduction').value = deduction;
+    });
+  });
+
+  // Reject Modal
+  const openRejectBtn = document.getElementById('openRejectModal');
+  if (openRejectBtn) {
+    openRejectBtn.addEventListener('click', function() {
+      const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+      modal.show();
+    });
+  }
+});
+</script>
+

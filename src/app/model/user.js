@@ -6,7 +6,7 @@ const User = new Schema(
     name: { type: String, default: 'no name', trim: true },
     role: {
       type: String,
-      enum: ['employee', 'manager'],
+      enum: ['employee', 'manager', 'director', 'admin'],
       required: true,
       default: 'employee',
     },
@@ -18,6 +18,7 @@ const User = new Schema(
       enum: ['status-active', 'status-busy', 'status-off'],
       default: 'status-active',
     },
+    isBanned: { type: Boolean, default: false },
     leaveAutoBusy: { type: Boolean, default: false },
     statusBeforeLeave: {
       type: String,

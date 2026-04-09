@@ -39,6 +39,14 @@
             <li class="nav-item">
               <a class="nav-link" href="/announcements">Announcements</a>
             </li>
+            {{#if isAdmin}}
+            <li class="nav-item pe-2 border-start ms-2">
+              <a class="nav-link fw-bold text-danger" href="/admin/config">System Config</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-danger" href="/admin/logs">Audit Logs</a>
+            </li>
+            {{/if}}
           {{else}}
             <li class="nav-item">
               <a class="nav-link" href="/dashboard">Dashboard</a>
@@ -72,17 +80,17 @@
         aria-expanded="false"
       >
         {{#if isManager}}
-          <i class="bi bi-bell-fill fs-5 {{#if approvalNotifications.totalCount}}bell-alert{{/if}}"></i>
-          {{#if approvalNotifications.totalCount}}
+          <i class="bi bi-bell-fill fs-5 {{#if (or approvalNotifications.totalCount announcementNotifications.totalCount)}}bell-alert{{/if}}"></i>
+          {{#if (or approvalNotifications.totalCount announcementNotifications.totalCount)}}
             <span class="badge bg-danger position-absolute notification-badge">
-              {{approvalNotifications.totalCount}}
+              {{sum (or approvalNotifications.totalCount 0) (or announcementNotifications.totalCount 0)}}
             </span>
           {{/if}}
         {{else}}
-          <i class="bi bi-bell-fill fs-5 {{#if taskNotifications.urgentCount}}bell-alert{{/if}}"></i>
-          {{#if taskNotifications.totalCount}}
+          <i class="bi bi-bell-fill fs-5 {{#if (or taskNotifications.urgentCount announcementNotifications.totalCount)}}bell-alert{{/if}}"></i>
+          {{#if (or taskNotifications.totalCount announcementNotifications.totalCount)}}
             <span class="badge bg-danger position-absolute notification-badge">
-              {{taskNotifications.totalCount}}
+              {{sum (or taskNotifications.totalCount 0) (or announcementNotifications.totalCount 0)}}
             </span>
           {{/if}}
         {{/if}}
@@ -124,6 +132,32 @@
           <li class="border-top">
             <a class="dropdown-item text-center py-2" href="/approvals">Open Approval Center</a>
           </li>
+
+          <!-- Announcements for Managers -->
+          <li class="px-3 py-2 border-top border-bottom d-flex justify-content-between align-items-center bg-light">
+            <strong>System Announcements</strong>
+            <span class="badge bg-secondary">{{announcementNotifications.totalCount}}</span>
+          </li>
+          {{#if announcementNotifications.items.length}}
+            {{#each announcementNotifications.items}}
+              <li>
+                <a class="dropdown-item notification-item py-2 px-3" href="{{this.link}}" data-announcement-id="{{this.id}}" data-announcement-seen="{{this.isSeen}}">
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div style="max-width: 200px;">
+                      <div class="fw-semibold text-wrap">{{this.title}}</div>
+                      <div class="small text-muted text-truncate">{{this.createdByName}} · {{this.createdAtText}}</div>
+                      <div class="small text-secondary text-wrap">{{this.detail}}</div>
+                    </div>
+                    <span class="badge {{#if this.isSeen}}bg-light text-dark{{else}}bg-warning text-dark{{/if}} text-uppercase">
+                      {{#if this.isSeen}}seen{{else}}new{{/if}}
+                    </span>
+                  </div>
+                </a>
+              </li>
+            {{/each}}
+          {{else}}
+            <li class="px-3 py-3 text-muted small text-center">No announcements for you.</li>
+          {{/if}}
         {{else}}
           <li class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
             <strong>Announcements</strong>
@@ -247,7 +281,7 @@
   </div>
 </nav>
 
-{{#if isEmployee}}
+{{#if currentUser}}
 <script>
   document.addEventListener('click', (event) => {
     const link = event.target.closest('[data-announcement-id]');

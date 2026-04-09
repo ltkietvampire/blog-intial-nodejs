@@ -28,6 +28,7 @@
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dayjs": "^1.11.19",
+    "dotenv": "^17.4.1",
     "express": "^5.2.1",
     "express-async-handler": "^1.2.0",
     "express-handlebars": "^7.1.3",

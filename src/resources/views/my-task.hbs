@@ -1,4 +1,5 @@
 <div class="my-task-view">
+{{> comments-modal}}
 <div class="container py-4 mytask-wrap">
   <div class="mytask-header mb-4">
     <div class="d-flex flex-wrap justify-content-between gap-3 align-items-start">
@@ -46,7 +47,10 @@
                 <div class="meta-text">Completed: {{this.completedAtText}}</div>
               {{/if}}
 
-              <div class="d-flex gap-2 mt-3">
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-comments-task" data-id="{{this.taskId}}" data-name="{{this.name}}">
+                  <i class="bi bi-chat-dots-fill"></i> Discuss / Report
+                </button>
                 {{#if this.canCheckIn}}
                   <form method="POST" action="/my-task/{{this.distributionId}}/check-in">
                     <button type="submit" class="btn btn-outline-primary btn-sm">Check in</button>
@@ -100,6 +104,12 @@
               {{#if this.completedAtText}}
                 <div class="meta-text">Completed: {{this.completedAtText}}</div>
               {{/if}}
+
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-comments-task" data-id="{{this.taskId}}" data-name="{{this.name}}">
+                  <i class="bi bi-chat-dots-fill"></i> Discuss / Report
+                </button>
+              </div>
             </div>
           </div>
         {{/each}}
@@ -139,7 +149,10 @@
                 <div class="meta-text">Check-in: {{this.checkInAtText}}</div>
               {{/if}}
 
-              <div class="d-flex gap-2 mt-3">
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-comments-task" data-id="{{this.taskId}}" data-name="{{this.name}}">
+                  <i class="bi bi-chat-dots-fill"></i> Discuss / Report
+                </button>
                 {{#if this.canComplete}}
                   <form method="POST" action="/my-task/{{this.distributionId}}/complete">
                     <button type="submit" class="btn btn-success btn-sm">Complete</button>

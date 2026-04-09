@@ -7,5 +7,6 @@ const requireManager = require('../app/middleware/requireManager');
 router.get('/', AnnouncementsController.index);
 router.post('/', requireManager, AnnouncementsController.store);
 router.post('/:id/seen', AnnouncementsController.markSeen);
+router.delete('/:id', requireManager, AnnouncementsController.delete);
 
 module.exports = router;

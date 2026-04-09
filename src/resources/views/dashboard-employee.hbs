@@ -45,41 +45,86 @@
         <div class="summary-label">Week hours</div>
       </div>
     </div>
+    <div class="col-md-4 col-lg-3">
+      <div class="card summary-card p-3">
+        <div class="summary-value text-success format-currency" data-value="{{stats.totalEarned}}">{{stats.totalEarned}}</div>
+        <div class="summary-label">Total Earned</div>
+      </div>
+    </div>
   </div>
 
-  <div class="card summary-card mb-4">
-    <div class="card-body">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">Urgent Tasks</h5>
-        <a href="/my-task" class="btn btn-sm btn-outline-primary">Go to My Tasks</a>
-      </div>
-      <div class="table-responsive">
-        <table class="table task-table align-middle mb-0">
-          <thead>
-            <tr>
-              <th>Task</th>
-              <th>Deadline</th>
-              <th>Time</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#if urgentTasks.length}}
-              {{#each urgentTasks}}
+  <div class="row g-4 mb-4">
+    <div class="col-lg-7">
+      <div class="card summary-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Urgent Tasks</h5>
+            <a href="/my-task" class="btn btn-sm btn-outline-primary">Go to My Tasks</a>
+          </div>
+          <div class="table-responsive">
+            <table class="table task-table align-middle mb-0">
+              <thead>
                 <tr>
-                  <td class="fw-semibold">{{this.taskName}}</td>
-                  <td>{{this.deadlineText}}</td>
-                  <td>{{this.timeText}}</td>
-                  <td><span class="badge {{this.badgeClass}}">{{this.statusText}}</span></td>
+                  <th>Task</th>
+                  <th>Deadline</th>
+                  <th>Time</th>
+                  <th>Status</th>
                 </tr>
-              {{/each}}
-            {{else}}
-              <tr>
-                <td colspan="4" class="text-center text-muted py-4">No urgent task right now.</td>
-              </tr>
-            {{/if}}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {{#if urgentTasks.length}}
+                  {{#each urgentTasks}}
+                    <tr>
+                      <td class="fw-semibold">{{this.taskName}}</td>
+                      <td>{{this.deadlineText}}</td>
+                      <td>{{this.timeText}}</td>
+                      <td><span class="badge {{this.badgeClass}}">{{this.statusText}}</span></td>
+                    </tr>
+                  {{/each}}
+                {{else}}
+                  <tr>
+                    <td colspan="4" class="text-center text-muted py-4">No urgent task right now.</td>
+                  </tr>
+                {{/if}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card summary-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Recent Salaries</h5>
+          </div>
+          <div class="table-responsive">
+            <table class="table task-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Total Pay</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#if salaryHistory.length}}
+                  {{#each salaryHistory}}
+                    <tr>
+                      <td class="fw-semibold">{{this.period}}</td>
+                      <td class="format-currency" data-value="{{this.totalPay}}">{{this.totalPay}}</td>
+                      <td><span class="badge {{this.badgeClass}}">{{this.statusText}}</span></td>
+                    </tr>
+                  {{/each}}
+                {{else}}
+                  <tr>
+                    <td colspan="3" class="text-center text-muted py-4">No salary records yet.</td>
+                  </tr>
+                {{/if}}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -91,4 +136,13 @@
     <a href="/auth" class="btn btn-outline-secondary">My Profile</a>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.format-currency').forEach(el => {
+      const val = Number(el.getAttribute('data-value')) || 0;
+      el.textContent = val.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    });
+  });
+</script>
 </div>

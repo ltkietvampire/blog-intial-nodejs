@@ -19,12 +19,16 @@ document.addEventListener('DOMContentLoaded', function () {
   const deleteModalEl = document.getElementById('deleteConfirmModal');
   const assignModalEl = document.getElementById('assignTaskModal');
   const unassignModalEl = document.getElementById('unassignModal');
+  const commentsModalEl = document.getElementById('commentsModal');
+  const commentsList = document.getElementById('commentsList');
+  const commentForm = document.getElementById('commentForm');
 
   const taskModal = taskModalEl ? new bootstrap.Modal(taskModalEl) : null;
   const editModal = editModalEl ? new bootstrap.Modal(editModalEl) : null;
   const deleteModal = deleteModalEl ? new bootstrap.Modal(deleteModalEl) : null;
   const assignModal = assignModalEl ? new bootstrap.Modal(assignModalEl) : null;
   const unassignModal = unassignModalEl ? new bootstrap.Modal(unassignModalEl) : null;
+  const commentsModal = commentsModalEl ? new bootstrap.Modal(commentsModalEl) : null;
 
   const actionForm = document.getElementById('actionForm');
   const users = window.usersData || [];
@@ -60,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let currentAssignTaskId = '';
   let currentUnassignTaskId = '';
+  let currentCommentTaskId = '';
   let currentUnassignDistributionId = '';
   let currentAssignedEmployeeIds = [];
   let currentRemainingSlots = 0;
@@ -235,6 +240,12 @@ document.addEventListener('DOMContentLoaded', function () {
                   <div class="small-muted">${safeEstimatedHours} hours</div>
                 </div>
                 <div class="task-actions">
+                  <button class="task-action-btn btn-comments-task"
+                    data-id="${safeTaskId}"
+                    data-name="${escapeAttr(task.name_task || '')}"
+                    title="Discussions">
+                    <i class="bi bi-chat-dots-fill text-primary"></i>
+                  </button>
                   <button class="task-action-btn btn-edit-task"
                     data-id="${safeTaskId}"
                     data-name="${escapeAttr(task.name_task || '')}"
@@ -315,6 +326,12 @@ document.addEventListener('DOMContentLoaded', function () {
                   <div class="fw-semibold">${safeDateStart} - ${safeDateEnd}</div>
                 </div>
                 <div class="task-actions">
+                  <button class="task-action-btn btn-comments-task"
+                    data-id="${safeTaskId}"
+                    data-name="${escapeAttr(task ? (task.name_task || '') : (row.taskName || ''))}"
+                    title="Discussions">
+                    <i class="bi bi-chat-dots-fill text-primary"></i>
+                  </button>
                   <button class="task-action-btn btn-edit-task"
                     data-id="${safeTaskId}"
                     data-name="${escapeAttr(task ? (task.name_task || '') : (row.taskName || ''))}"
@@ -421,6 +438,102 @@ document.addEventListener('DOMContentLoaded', function () {
           unassignModal.show();
         }
       });
+    });
+
+    document.querySelectorAll('.btn-comments-task').forEach((btn) => {
+      btn.addEventListener('click', function (event) {
+        event.stopPropagation();
+        if (commentsModal) {
+          currentCommentTaskId = this.dataset.id;
+          document.getElementById('commentTaskName').textContent = this.dataset.name || 'Task Discussions';
+          commentsModal.show();
+          loadComments(currentCommentTaskId);
+        }
+      });
+    });
+  }
+
+  const renderCommentItem = (item) => {
+    const avatar = item.userID?.avatar || '/img/default-avatar.webp';
+    const name = item.userID?.name || 'Unknown';
+    const time = new Date(item.createdAt).toLocaleString('vi-VN');
+    const content = escapeHtml(item.content);
+    return `
+      <div class="d-flex flex-row p-3 rounded bg-white border border-light shadow-sm w-100 mb-2">
+        <img src="${escapeAttr(avatar)}" width="40" height="40" class="rounded-circle me-3 mt-1 shadow-sm">
+        <div class="w-100">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold text-dark">${escapeHtml(name)}</span>
+            <small class="text-muted"><i class="bi bi-clock"></i> ${time}</small>
+          </div>
+          <p class="mb-0 text-dark" style="white-space: pre-wrap; font-size: 0.95rem;">${content}</p>
+        </div>
+      </div>
+    `;
+  };
+
+  async function loadComments(taskId) {
+    if (!commentsList) return;
+    commentsList.innerHTML = '<div class="text-center text-muted small mt-4"><div class="spinner-border spinner-border-sm me-2"></div>Loading comments...</div>';
+    try {
+      const res = await fetch(`/api/tasks/${taskId}/comments`);
+      const data = await res.json();
+      if (!data.ok) throw new Error();
+      if (!data.items || data.items.length === 0) {
+        commentsList.innerHTML = '<div class="text-center text-muted small mt-4">No comments yet. Start the discussion!</div>';
+        return;
+      }
+      commentsList.innerHTML = data.items.map(renderCommentItem).join('');
+      setTimeout(() => {
+        commentsList.scrollTop = commentsList.scrollHeight;
+      }, 100);
+    } catch (e) {
+      commentsList.innerHTML = '<div class="text-center text-danger small mt-4">Failed to load comments</div>';
+    }
+  }
+
+  if (commentForm) {
+    commentForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (!currentCommentTaskId) return;
+      const contentInput = document.getElementById('commentContent');
+      const content = contentInput.value.trim();
+      if (!content) return;
+      
+      const btnSend = document.getElementById('btnSendComment');
+      if (btnSend) {
+          btnSend.disabled = true;
+          btnSend.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
+      }
+
+      try {
+        const res = await fetch(`/api/tasks/${currentCommentTaskId}/comments`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ content })
+        });
+        const data = await res.json();
+        if (data.ok && data.item) {
+          contentInput.value = '';
+          if (commentsList.innerHTML.includes('No comments yet')) {
+            commentsList.innerHTML = '';
+          }
+          commentsList.insertAdjacentHTML('beforeend', renderCommentItem(data.item));
+          commentsList.scrollTop = commentsList.scrollHeight;
+        } else {
+          alert(data.message || 'Failed to post comment');
+        }
+      } catch (err) {
+        alert('An error occurred. Please try again.');
+      } finally {
+        if (btnSend) {
+            btnSend.disabled = false;
+            btnSend.innerHTML = '<i class="bi bi-send-fill me-1"></i> Send';
+        }
+      }
     });
   }
 

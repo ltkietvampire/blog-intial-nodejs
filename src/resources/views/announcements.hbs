@@ -35,19 +35,28 @@
           {{#if announcements.length}}
             <div class="list-group">
               {{#each announcements}}
-                <div class="list-group-item" data-announcement-id="{{this._id}}" data-announcement-seen="{{this.isSeen}}">
-                  <div class="d-flex justify-content-between align-items-start gap-3">
+                <div class="list-group-item announcement-item" data-announcement-id="{{this._id}}" data-announcement-seen="{{this.isSeen}}">
+                  <div class="announcement-inner d-flex justify-content-between align-items-start gap-3">
                     <div>
                       <div class="fw-semibold">{{this.title}}</div>
                       <div class="small text-muted">By {{this.createdByName}} · {{this.createdAtText}}</div>
                       <div class="mt-2">{{this.message}}</div>
                     </div>
-                    {{#if isEmployee}}
+                    {{#if ../isEmployee}}
                     <span class="badge {{#if this.isSeen}}bg-light text-dark{{else}}bg-warning text-dark{{/if}} text-uppercase">
                       {{#if this.isSeen}}seen{{else}}new{{/if}}
                     </span>
                     {{/if}}
                   </div>
+                  {{#if ../isManager}}
+                  <div class="announcement-delete-wrapper">
+                    <form method="POST" action="/announcements/{{this._id}}?_method=DELETE" style="height: 100%;">
+                      <button type="submit" class="announcement-delete-btn" title="Delete Announcement">
+                        <i class="bi bi-trash"></i> Xóa
+                      </button>
+                    </form>
+                  </div>
+                  {{/if}}
                 </div>
               {{/each}}
             </div>
@@ -59,5 +68,57 @@
     </div>
   </div>
 </div>
+
+<script>
+(function () {
+  const HOLD_MS = 1500; // 1.5 giây
+  const items = document.querySelectorAll('.announcement-item');
+
+  items.forEach(function (item) {
+    let holdTimer = null;
+
+    function startHold(e) {
+      // Nếu click vào nút xóa thì bỏ qua
+      if (e.target.closest('.announcement-delete-wrapper')) return;
+      // Nếu đã hiện rồi thì click bên trong nội dung = ẩn lại
+      if (item.classList.contains('show-delete')) {
+        item.classList.remove('show-delete');
+        return;
+      }
+
+      item.classList.add('holding');
+      holdTimer = setTimeout(function () {
+        item.classList.remove('holding');
+        item.classList.add('show-delete');
+      }, HOLD_MS);
+    }
+
+    function cancelHold() {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+      }
+      item.classList.remove('holding');
+    }
+
+    // Mouse events (desktop)
+    item.addEventListener('mousedown', startHold);
+    item.addEventListener('mouseup', cancelHold);
+    item.addEventListener('mouseleave', cancelHold);
+
+    // Touch events (mobile)
+    item.addEventListener('touchstart', startHold, { passive: true });
+    item.addEventListener('touchend', cancelHold);
+    item.addEventListener('touchcancel', cancelHold);
+
+    // Click bên ngoài item thì ẩn nút xóa
+    document.addEventListener('click', function (e) {
+      if (!item.contains(e.target)) {
+        item.classList.remove('show-delete');
+      }
+    });
+  });
+})();
+</script>
 
 

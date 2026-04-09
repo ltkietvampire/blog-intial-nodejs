@@ -2,6 +2,7 @@ const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 const User = require('../model/user');
 const Distribution = require('../model/distribution');
+const Salary = require('../model/salary');
 const { isEmployeePosition } = require('../middleware/roleUtils');
 const { toTaskDateTime } = require('../../util/dateTime');
 const asyncHandler = require('express-async-handler');
@@ -93,12 +94,27 @@ class DashboardController {
         }
       }
 
+      const salaries = await Salary.find({ employeeID: userId }).sort({ year: -1, month: -1 }).lean();
+      let totalEarned = 0;
+      const salaryHistory = salaries.map(s => {
+        if (s.status === 'paid') totalEarned += (s.totalPay || 0);
+        return {
+          period: `${s.month}/${s.year}`,
+          totalHours: s.totalHours || 0,
+          totalPay: s.totalPay || 0,
+          statusText: s.status === 'paid' ? 'Paid' : (s.status === 'pending' ? 'Pending Approval' : 'Draft'),
+          badgeClass: s.status === 'paid' ? 'text-bg-success' : (s.status === 'pending' ? 'text-bg-warning' : 'text-bg-secondary')
+        };
+      });
+
       return res.render('dashboard-employee', {
         user,
         stats: {
           ...stats,
           weeklyHours: Number(stats.weeklyHours.toFixed(2)),
+          totalEarned,
         },
+        salaryHistory: salaryHistory.slice(0, 5),
         urgentTasks: urgentRows.slice(0, 8),
         nowText: now.format('DD/MM/YYYY HH:mm:ss'),
       });

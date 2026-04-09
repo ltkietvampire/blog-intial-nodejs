@@ -9,6 +9,7 @@ router.post('/bulk-delete', EmployeeController.bulkDelete);
 router.post('/bulk-status', EmployeeController.bulkUpdateStatus);
 router.delete('/:id', EmployeeController.delete);
 router.put('/:id', EmployeeController.update);
+router.get('/statistics/export-salary', EmployeeStatisticsController.salaryExport);
 router.get('/statistics/export', EmployeeStatisticsController.statisticsExport);
 router.get('/statistics', EmployeeStatisticsController.statistics);
 router.get('/', EmployeeController.index);

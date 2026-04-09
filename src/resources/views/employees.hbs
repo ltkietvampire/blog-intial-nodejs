@@ -140,6 +140,9 @@
                     <span class="status-pill {{this.trangthai}}" data-status="{{this.trangthai}}">
                       {{this.trangthai}}
                     </span>
+                    {{#if this.isBanned}}
+                      <span class="badge bg-danger ms-1">Banned</span>
+                    {{/if}}
                   </td>
                   <td class="text-end">
                     <div class="dropdown">
@@ -198,6 +201,17 @@
                             Delete employee
                           </button>
                         </li>
+                        {{#if ../isAdmin}}
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                          <form action="/admin/toggle-ban" method="POST" class="m-0 p-0">
+                            <input type="hidden" name="userId" value="{{this._id}}">
+                            <button type="submit" class="dropdown-item text-warning fw-bold">
+                              {{#if this.isBanned}}Unban User{{else}}Ban User{{/if}}
+                            </button>
+                          </form>
+                        </li>
+                        {{/if}}
                       </ul>
                     </div>
                   </td>

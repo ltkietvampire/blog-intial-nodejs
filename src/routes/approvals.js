@@ -7,7 +7,7 @@ const requireEmployee = require('../app/middleware/requireEmployee');
 
 router.get('/', requireManager, ApprovalsController.managerIndex);
 router.get('/my', requireEmployee, ApprovalsController.employeeIndex);
-router.post('/request', requireEmployee, ApprovalsController.createRequest);
+router.post('/request', ApprovalsController.createRequest); // All authenticated users can submit requests
 router.post('/:id/approve', requireManager, ApprovalsController.approve);
 router.post('/:id/reject', requireManager, ApprovalsController.reject);
 

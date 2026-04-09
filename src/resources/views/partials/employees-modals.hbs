@@ -29,6 +29,10 @@
             <select class="form-select" name="role" required>
               <option value="employee" selected>Employee</option>
               <option value="manager">Manager</option>
+              {{#if isDirector}}
+              <option value="director">Giám đốc (Director)</option>
+              <option value="admin">Admin Cấp cao (Admin)</option>
+              {{/if}}
             </select>
           </div>
           <div class="mb-3">
@@ -165,6 +169,10 @@
           <select class="form-select" name="role" id="editRole" required>
             <option value="employee">Employee</option>
             <option value="manager">Manager</option>
+            {{#if isDirector}}
+            <option value="director">Giám đốc (Director)</option>
+            <option value="admin">Admin Cấp cao (Admin)</option>
+            {{/if}}
           </select>
         </div>
         <div class="mb-3">

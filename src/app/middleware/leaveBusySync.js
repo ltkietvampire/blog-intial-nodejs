@@ -4,7 +4,6 @@ async function leaveBusySync(req, res, next) {
   try {
     await syncLeaveBusyStatuses();
   } catch (error) {
-    // Ignore sync errors and continue request flow.
   }
   return next();
 }

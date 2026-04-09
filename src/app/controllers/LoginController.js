@@ -5,6 +5,7 @@ const { isEmployeePosition, normalizeRole } = require('../middleware/roleUtils')
 const asyncHandler = require('express-async-handler');
 const { z } = require('zod');
 const { emailSchema, passwordSchema } = require('../../util/schemas');
+const AuditService = require('../services/AuditService');
 
 const loginSchema = z.object({
   email: emailSchema,
@@ -45,6 +46,9 @@ class LoginController {
             sameSite: 'lax',
             secure: false,
         });
+
+        await AuditService.log('LOGIN', user._id, `Đăng nhập hệ thống`);
+
         if (isEmployeePosition(user)) {
             return res.redirect('/dashboard');
         }

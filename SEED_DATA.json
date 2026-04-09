@@ -1,0 +1,2689 @@
+{
+  "users": [
+    {
+      "_id": {
+        "$oid": "8e13f428765f6bf7fe443c70"
+      },
+      "name": "Super Admin",
+      "email": "admin@gmail.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "admin",
+      "position": "Quản trị hệ thống",
+      "hourlyRate": 0,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0900000000",
+      "introduce": "Tài khoản quản trị hệ thống.",
+      "totalWorkingHours": 0
+    },
+    {
+      "_id": {
+        "$oid": "d293b147c91a10b0c44d6741"
+      },
+      "name": "Trần Minh Khoa",
+      "email": "director@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "director",
+      "position": "Giám đốc điều hành",
+      "hourlyRate": 100,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0901111111",
+      "introduce": "Giám đốc điều hành công ty.",
+      "totalWorkingHours": 0
+    },
+    {
+      "_id": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "name": "Lê Thị Hương",
+      "email": "manager1@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "manager",
+      "position": "Trưởng phòng Kỹ thuật",
+      "hourlyRate": 45,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0912345678",
+      "introduce": "Phụ trách phòng Kỹ thuật.",
+      "totalWorkingHours": 0
+    },
+    {
+      "_id": {
+        "$oid": "3da93bf3ab521f2d5de3b78d"
+      },
+      "name": "Nguyễn Văn Bình",
+      "email": "manager2@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "manager",
+      "position": "Trưởng phòng Kinh doanh",
+      "hourlyRate": 45,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0923456789",
+      "introduce": "Phụ trách phòng Kinh doanh.",
+      "totalWorkingHours": 0
+    },
+    {
+      "_id": {
+        "$oid": "f530fcc47d2f79b37c27eb3d"
+      },
+      "name": "Phạm Thị Lan",
+      "email": "manager3@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "manager",
+      "position": "Trưởng phòng Nhân sự",
+      "hourlyRate": 40,
+      "maxtime": 8,
+      "trangthai": "status-busy",
+      "SDT": "0934567890",
+      "introduce": "Phụ trách phòng Nhân sự.",
+      "totalWorkingHours": 0
+    },
+    {
+      "_id": {
+        "$oid": "6afdd4a1d58659ebe623b13c"
+      },
+      "name": "Hoàng Đức Thắng",
+      "email": "manager4@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "manager",
+      "position": "Trưởng phòng Hành chính",
+      "hourlyRate": 40,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0945678901",
+      "introduce": "Phụ trách phòng Hành chính.",
+      "totalWorkingHours": 0
+    },
+    {
+      "_id": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "name": "Vũ Thành Long",
+      "email": "employee1@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Lập trình viên Backend",
+      "hourlyRate": 18,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0956789012",
+      "introduce": "Chuyên về Node.js, MongoDB.",
+      "totalWorkingHours": 160
+    },
+    {
+      "_id": {
+        "$oid": "f6e4ef0e66a6daa2895cf022"
+      },
+      "name": "Đặng Thị Mai",
+      "email": "employee2@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Lập trình viên Frontend",
+      "hourlyRate": 16,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0967890123",
+      "introduce": "Chuyên về React, Vue.",
+      "totalWorkingHours": 152
+    },
+    {
+      "_id": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "name": "Bùi Quang Hải",
+      "email": "employee3@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Kỹ thuật viên Mạng",
+      "hourlyRate": 15,
+      "maxtime": 8,
+      "trangthai": "status-off",
+      "SDT": "0978901234",
+      "introduce": "Quản lý hạ tầng mạng nội bộ.",
+      "totalWorkingHours": 120,
+      "leaveAutoBusy": true
+    },
+    {
+      "_id": {
+        "$oid": "5a9de23305261cde2a7d2036"
+      },
+      "name": "Trịnh Thị Ngọc",
+      "email": "employee4@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Nhân viên Kinh doanh",
+      "hourlyRate": 14,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0989012345",
+      "introduce": "Phụ trách kênh bán hàng B2B.",
+      "totalWorkingHours": 170
+    },
+    {
+      "_id": {
+        "$oid": "6ac450b76f06de3574de0b96"
+      },
+      "name": "Phan Anh Tuấn",
+      "email": "employee5@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Nhân viên Kinh doanh",
+      "hourlyRate": 14,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0990123456",
+      "introduce": "Phụ trách kênh bán hàng B2C.",
+      "totalWorkingHours": 165
+    },
+    {
+      "_id": {
+        "$oid": "cf718f3de3be048a4cf058ac"
+      },
+      "name": "Lý Thanh Tuyền",
+      "email": "employee6@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Nhân viên Nhân sự",
+      "hourlyRate": 13,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0901234567",
+      "introduce": "Phụ trách tuyển dụng và onboarding.",
+      "totalWorkingHours": 158
+    },
+    {
+      "_id": {
+        "$oid": "fa61f37eb2fe74f46deb751d"
+      },
+      "name": "Đinh Văn Phúc",
+      "email": "employee7@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Kế toán viên",
+      "hourlyRate": 15,
+      "maxtime": 8,
+      "trangthai": "status-busy",
+      "SDT": "0912345670",
+      "introduce": "Phụ trách sổ sách kế toán.",
+      "totalWorkingHours": 175
+    },
+    {
+      "_id": {
+        "$oid": "b577748337d1875c51097c9c"
+      },
+      "name": "Cao Thị Thu",
+      "email": "employee8@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Thiết kế đồ họa",
+      "hourlyRate": 13,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0923456780",
+      "introduce": "Thiết kế UI/UX, branding.",
+      "totalWorkingHours": 144
+    },
+    {
+      "_id": {
+        "$oid": "3fa23f68336966c10fb8c099"
+      },
+      "name": "Nông Văn Sơn",
+      "email": "employee9@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Hỗ trợ khách hàng",
+      "hourlyRate": 12,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0934567801",
+      "introduce": "Phụ trách CSKH và ticketing.",
+      "totalWorkingHours": 160
+    },
+    {
+      "_id": {
+        "$oid": "062cd035f0e736f137fce4cc"
+      },
+      "name": "Huỳnh Bảo Châu",
+      "email": "employee10@company.com",
+      "password": "$2b$10$VKy4TC1abpna/Z1jJwjvXeul6iaq4OqNrYL2V83qnF/vuB1h5w3wG",
+      "role": "employee",
+      "position": "Thực tập sinh IT",
+      "hourlyRate": 8,
+      "maxtime": 8,
+      "trangthai": "status-active",
+      "SDT": "0945678012",
+      "introduce": "Thực tập IT, hỗ trợ dev team.",
+      "totalWorkingHours": 80
+    }
+  ],
+  "tasks": [
+    {
+      "_id": {
+        "$oid": "eeadc5022b166e0aa789d1af"
+      },
+      "name_task": "Xây dựng API quản lý lương",
+      "description_task": "Viết RESTful API cho module Salary: generate, approve, reject.",
+      "estimated_total_hours": 4,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-14T17:30:13.839Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "12:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-18T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "251b3a262d62e21e874e83d9"
+      },
+      "name_task": "Thiết kế giao diện trang Dashboard",
+      "description_task": "Redesign toàn bộ màn hình Dashboard theo Figma mới.",
+      "estimated_total_hours": 4,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-15T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "13:00",
+      "dateEnd": "17:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-17T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "8ed011a873358b65e8beb634"
+      },
+      "name_task": "Cài đặt luồng xác thực JWT",
+      "description_task": "Triển khai JWT login, middleware requireAuth, RBAC.",
+      "estimated_total_hours": 8,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-05T17:30:13.840Z"
+      },
+      "task_status": "completed",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "17:00",
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      },
+      "createdAt": {
+        "$date": "2026-03-16T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "e844b3b25b4ccee510b14cce"
+      },
+      "name_task": "Báo cáo doanh số Q1/2026",
+      "description_task": "Tổng hợp số liệu kinh doanh Q1, xuất Excel trình bày.",
+      "estimated_total_hours": 4,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-17T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "12:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-15T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "6b1a3476f2d2d92002f3228c"
+      },
+      "name_task": "Triển khai hệ thống Chatbot AI",
+      "description_task": "Tích hợp n8n workflow với AI Agent hỗ trợ nhân viên.",
+      "estimated_total_hours": 4,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-18T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "13:00",
+      "dateEnd": "17:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-14T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "38a9d8668e524dd0c2e58746"
+      },
+      "name_task": "Migrate Database lên MongoDB 7.x",
+      "description_task": "Nâng cấp MongoDB, kiểm tra hiệu năng sau migrate.",
+      "estimated_total_hours": 8,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-05T17:30:13.840Z"
+      },
+      "task_status": "completed",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "17:00",
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      },
+      "createdAt": {
+        "$date": "2026-03-13T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "1c5297dd232062d5f664d90c"
+      },
+      "name_task": "Phát triển module phê duyệt đơn từ",
+      "description_task": "Xây dựng luồng duyệt xin nghỉ phép, đổi ca.",
+      "estimated_total_hours": 4,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-15T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "12:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-12T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "7f24ce923827196512a910a1"
+      },
+      "name_task": "Chăm sóc fanpage và social media",
+      "description_task": "Lên lịch nội dung, theo dõi metrics tuần này.",
+      "estimated_total_hours": 4,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-16T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "13:00",
+      "dateEnd": "17:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-11T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "0eb6c91c7f7ae32cf2c55e81"
+      },
+      "name_task": "Thiết kế branding công ty 2026",
+      "description_task": "Cập nhật bộ nhận diện: logo, màu sắc, font chữ.",
+      "estimated_total_hours": 8,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-05T17:30:13.840Z"
+      },
+      "task_status": "completed",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "17:00",
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      },
+      "createdAt": {
+        "$date": "2026-03-10T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "c59d3911d0574b7cb38582b6"
+      },
+      "name_task": "Xử lý khiếu nại khách hàng tháng 3",
+      "description_task": "Rà soát ticket tồn đọng, phân loại và phản hồi.",
+      "estimated_total_hours": 4,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-18T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "12:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-09T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "be4fcb3596436b6abdf1b9cd"
+      },
+      "name_task": "Kiểm thử toàn bộ hệ thống (UAT)",
+      "description_task": "Chạy test cases cho tất cả module trước go-live.",
+      "estimated_total_hours": 4,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-14T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "13:00",
+      "dateEnd": "17:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-08T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "be83674af038611e274ac1f0"
+      },
+      "name_task": "Soạn tài liệu SRS nội bộ",
+      "description_task": "Soạn thảo tài liệu đặc tả yêu cầu phần mềm.",
+      "estimated_total_hours": 8,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-05T17:30:13.840Z"
+      },
+      "task_status": "completed",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "17:00",
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      },
+      "createdAt": {
+        "$date": "2026-03-07T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "bb199b6f385a18102aaf22d7"
+      },
+      "name_task": "Tối ưu truy vấn MongoDB & Indexing",
+      "description_task": "Phân tích slow query, thêm index, giảm thời gian phản hồi.",
+      "estimated_total_hours": 4,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-16T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "12:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-06T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "a8eaf64aa200736a8cd3033d"
+      },
+      "name_task": "Cấu hình email thông báo tự động",
+      "description_task": "Tích hợp SMTP gửi thông báo khi có đơn duyệt/chấm công.",
+      "estimated_total_hours": 4,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-17T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "13:00",
+      "dateEnd": "17:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-05T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "8fd53614d6befe3eaa444590"
+      },
+      "name_task": "Họp review sản phẩm với BGĐ",
+      "description_task": "Chuẩn bị slide, demo live hệ thống cho Giám đốc.",
+      "estimated_total_hours": 8,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-05T17:30:13.840Z"
+      },
+      "task_status": "completed",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "17:00",
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      },
+      "createdAt": {
+        "$date": "2026-03-04T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "8ee64b36e64ef99ee78ba245"
+      },
+      "name_task": "Làm báo cáo nhân sự tháng 4",
+      "description_task": "Tổng hợp số giờ, số ngày nghỉ toàn bộ nhân viên.",
+      "estimated_total_hours": 4,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-14T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "12:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-03T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "9fa28ffa68440c1be71f0d93"
+      },
+      "name_task": "Xây dựng Dashboard thống kê realtime",
+      "description_task": "Biểu đồ số task active, nhân viên online theo giờ.",
+      "estimated_total_hours": 4,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-15T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "13:00",
+      "dateEnd": "17:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-02T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "00f368600503411fd52e1ac1"
+      },
+      "name_task": "Cài đặt bảo mật bổ sung cho API",
+      "description_task": "Thêm Rate Limiting, JWT refresh, chặn brute-force.",
+      "estimated_total_hours": 4,
+      "priority": 2,
+      "deadline": {
+        "$date": "2026-04-16T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "12:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-03-01T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "c3ebc7e8f17f40a037c8702c"
+      },
+      "name_task": "Kiểm tra bảo trì thiết bị văn phòng",
+      "description_task": "Kiểm tra máy tính, máy in, đặt lịch bảo dưỡng.",
+      "estimated_total_hours": 4,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-17T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "13:00",
+      "dateEnd": "17:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-02-28T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "f74d4070ee9290722f2bd58b"
+      },
+      "name_task": "Tổ chức đào tạo nhân viên mới",
+      "description_task": "Chuẩn bị tài liệu onboarding cho 3 nhân viên mới.",
+      "estimated_total_hours": 4,
+      "priority": 1,
+      "deadline": {
+        "$date": "2026-04-18T17:30:13.840Z"
+      },
+      "task_status": "active",
+      "recurrence_type": "none",
+      "required_people": 2,
+      "assigned_people_count": 2,
+      "assignee": true,
+      "dateStart": "08:00",
+      "dateEnd": "12:00",
+      "completedAt": null,
+      "createdAt": {
+        "$date": "2026-02-27T17:30:13.840Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    }
+  ],
+  "distributions": [
+    {
+      "_id": {
+        "$oid": "7af2c89b44ee67e036993bf1"
+      },
+      "employeeID": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "taskID": {
+        "$oid": "eeadc5022b166e0aa789d1af"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-18T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-28T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "42ec976bbf2b0d1f8a4477ae"
+      },
+      "employeeID": {
+        "$oid": "f6e4ef0e66a6daa2895cf022"
+      },
+      "taskID": {
+        "$oid": "eeadc5022b166e0aa789d1af"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-18T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-28T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "fbbf14a42ffdfc580b380da9"
+      },
+      "employeeID": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "taskID": {
+        "$oid": "251b3a262d62e21e874e83d9"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-17T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-29T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "976cea7a33a2a33645e85f15"
+      },
+      "employeeID": {
+        "$oid": "cf718f3de3be048a4cf058ac"
+      },
+      "taskID": {
+        "$oid": "251b3a262d62e21e874e83d9"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-17T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-29T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "6bf17a393d1bbecd0eb7e005"
+      },
+      "employeeID": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "taskID": {
+        "$oid": "8ed011a873358b65e8beb634"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-16T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-30T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "61c895419427fd8bedc930a0"
+      },
+      "employeeID": {
+        "$oid": "062cd035f0e736f137fce4cc"
+      },
+      "taskID": {
+        "$oid": "8ed011a873358b65e8beb634"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-16T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-30T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "296f409aecc091c65041e777"
+      },
+      "employeeID": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "taskID": {
+        "$oid": "e844b3b25b4ccee510b14cce"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-15T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-31T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "68767ffa83ac9e8a81bf2617"
+      },
+      "employeeID": {
+        "$oid": "5a9de23305261cde2a7d2036"
+      },
+      "taskID": {
+        "$oid": "e844b3b25b4ccee510b14cce"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-15T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-31T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "d7f282c3fa98ac8e1971e73a"
+      },
+      "employeeID": {
+        "$oid": "f6e4ef0e66a6daa2895cf022"
+      },
+      "taskID": {
+        "$oid": "6b1a3476f2d2d92002f3228c"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-14T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-01T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "afb02473ea4ac78d92be4909"
+      },
+      "employeeID": {
+        "$oid": "fa61f37eb2fe74f46deb751d"
+      },
+      "taskID": {
+        "$oid": "6b1a3476f2d2d92002f3228c"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-14T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-01T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "c933bd1e6bf2c4c82d53b210"
+      },
+      "employeeID": {
+        "$oid": "f6e4ef0e66a6daa2895cf022"
+      },
+      "taskID": {
+        "$oid": "38a9d8668e524dd0c2e58746"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-13T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-02T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "a21431cf45837fed86888fc1"
+      },
+      "employeeID": {
+        "$oid": "3fa23f68336966c10fb8c099"
+      },
+      "taskID": {
+        "$oid": "38a9d8668e524dd0c2e58746"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-13T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-02T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "df7e83fdbcc3e93d921dac6d"
+      },
+      "employeeID": {
+        "$oid": "6ac450b76f06de3574de0b96"
+      },
+      "taskID": {
+        "$oid": "1c5297dd232062d5f664d90c"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-12T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-03T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "fb09f130e71f8ba2cfc3ee6c"
+      },
+      "employeeID": {
+        "$oid": "cf718f3de3be048a4cf058ac"
+      },
+      "taskID": {
+        "$oid": "1c5297dd232062d5f664d90c"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-12T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-03T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "4fd0212a0c4c2a04ea171149"
+      },
+      "employeeID": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "taskID": {
+        "$oid": "7f24ce923827196512a910a1"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-11T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-28T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "0066619b4ecf186bf6ec0c3b"
+      },
+      "employeeID": {
+        "$oid": "b577748337d1875c51097c9c"
+      },
+      "taskID": {
+        "$oid": "7f24ce923827196512a910a1"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-11T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-28T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "f53d8a6a2204daccf079c580"
+      },
+      "employeeID": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "taskID": {
+        "$oid": "0eb6c91c7f7ae32cf2c55e81"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-10T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-29T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "1c2a86fdfd6ffe0e2c50fe5e"
+      },
+      "employeeID": {
+        "$oid": "b577748337d1875c51097c9c"
+      },
+      "taskID": {
+        "$oid": "0eb6c91c7f7ae32cf2c55e81"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-10T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-29T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "e0e63d0c7d66b6d348274d45"
+      },
+      "employeeID": {
+        "$oid": "fa61f37eb2fe74f46deb751d"
+      },
+      "taskID": {
+        "$oid": "c59d3911d0574b7cb38582b6"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-09T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-30T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "20e0f1c72bf5069899748aae"
+      },
+      "employeeID": {
+        "$oid": "b577748337d1875c51097c9c"
+      },
+      "taskID": {
+        "$oid": "c59d3911d0574b7cb38582b6"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-09T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-30T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "e5e872f7c149280eaef7fded"
+      },
+      "employeeID": {
+        "$oid": "5a9de23305261cde2a7d2036"
+      },
+      "taskID": {
+        "$oid": "be4fcb3596436b6abdf1b9cd"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-08T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-31T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "51230848ba8f01f5804d9e72"
+      },
+      "employeeID": {
+        "$oid": "3fa23f68336966c10fb8c099"
+      },
+      "taskID": {
+        "$oid": "be4fcb3596436b6abdf1b9cd"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-08T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-31T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "4e263233f25841ce30142ee3"
+      },
+      "employeeID": {
+        "$oid": "5a9de23305261cde2a7d2036"
+      },
+      "taskID": {
+        "$oid": "be83674af038611e274ac1f0"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-07T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-01T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "cbda27f6f125cb0ab8f5b702"
+      },
+      "employeeID": {
+        "$oid": "fa61f37eb2fe74f46deb751d"
+      },
+      "taskID": {
+        "$oid": "be83674af038611e274ac1f0"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-07T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-01T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "42c797193bf5cd5707eeab00"
+      },
+      "employeeID": {
+        "$oid": "3fa23f68336966c10fb8c099"
+      },
+      "taskID": {
+        "$oid": "bb199b6f385a18102aaf22d7"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-06T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-02T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "54fcd14469232d64d7868f59"
+      },
+      "employeeID": {
+        "$oid": "062cd035f0e736f137fce4cc"
+      },
+      "taskID": {
+        "$oid": "bb199b6f385a18102aaf22d7"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-06T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-02T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "21925ac426f0552a4e9cdddd"
+      },
+      "employeeID": {
+        "$oid": "6ac450b76f06de3574de0b96"
+      },
+      "taskID": {
+        "$oid": "a8eaf64aa200736a8cd3033d"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-05T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-03T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "df9a950b5108a126e5cf1ff6"
+      },
+      "employeeID": {
+        "$oid": "062cd035f0e736f137fce4cc"
+      },
+      "taskID": {
+        "$oid": "a8eaf64aa200736a8cd3033d"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-05T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-03T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "fff8d3c7703295bc19be50e1"
+      },
+      "employeeID": {
+        "$oid": "6ac450b76f06de3574de0b96"
+      },
+      "taskID": {
+        "$oid": "8fd53614d6befe3eaa444590"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-04T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-28T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "2023992864b564637f1a4a3c"
+      },
+      "employeeID": {
+        "$oid": "cf718f3de3be048a4cf058ac"
+      },
+      "taskID": {
+        "$oid": "8fd53614d6befe3eaa444590"
+      },
+      "status": "completed",
+      "assignedAt": {
+        "$date": "2026-03-04T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-28T17:30:13.840Z"
+      },
+      "completedAt": {
+        "$date": "2026-04-06T17:30:13.840Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "1f92f3edef62d69ce243c797"
+      },
+      "employeeID": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "taskID": {
+        "$oid": "8ee64b36e64ef99ee78ba245"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-03T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-29T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "fc2adf613734d8a919ec06c6"
+      },
+      "employeeID": {
+        "$oid": "062cd035f0e736f137fce4cc"
+      },
+      "taskID": {
+        "$oid": "8ee64b36e64ef99ee78ba245"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-03T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-29T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "7479e2d3c1efb929d78d8dbe"
+      },
+      "employeeID": {
+        "$oid": "cf718f3de3be048a4cf058ac"
+      },
+      "taskID": {
+        "$oid": "9fa28ffa68440c1be71f0d93"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-02T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-30T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "9b3f1ff78ba5d7dd65224c76"
+      },
+      "employeeID": {
+        "$oid": "5a9de23305261cde2a7d2036"
+      },
+      "taskID": {
+        "$oid": "9fa28ffa68440c1be71f0d93"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-02T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-30T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "c4c759439beffd0d57b18a74"
+      },
+      "employeeID": {
+        "$oid": "f6e4ef0e66a6daa2895cf022"
+      },
+      "taskID": {
+        "$oid": "00f368600503411fd52e1ac1"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-01T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-31T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "20d10d8c39639992634295bd"
+      },
+      "employeeID": {
+        "$oid": "3fa23f68336966c10fb8c099"
+      },
+      "taskID": {
+        "$oid": "00f368600503411fd52e1ac1"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-03-01T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-03-31T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "c024ea5756c8852926424a3b"
+      },
+      "employeeID": {
+        "$oid": "fa61f37eb2fe74f46deb751d"
+      },
+      "taskID": {
+        "$oid": "c3ebc7e8f17f40a037c8702c"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-02-28T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-01T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "48a4e94e75a3139e128f83fc"
+      },
+      "employeeID": {
+        "$oid": "6ac450b76f06de3574de0b96"
+      },
+      "taskID": {
+        "$oid": "c3ebc7e8f17f40a037c8702c"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-02-28T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-01T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "0823c6fc4e0ecca4a245830f"
+      },
+      "employeeID": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "taskID": {
+        "$oid": "f74d4070ee9290722f2bd58b"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-02-27T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-02T17:30:13.840Z"
+      },
+      "completedAt": null
+    },
+    {
+      "_id": {
+        "$oid": "d29626a3cfe8b485d631b81c"
+      },
+      "employeeID": {
+        "$oid": "b577748337d1875c51097c9c"
+      },
+      "taskID": {
+        "$oid": "f74d4070ee9290722f2bd58b"
+      },
+      "status": "working",
+      "assignedAt": {
+        "$date": "2026-02-27T17:30:13.840Z"
+      },
+      "checkInAt": {
+        "$date": "2026-04-02T17:30:13.840Z"
+      },
+      "completedAt": null
+    }
+  ],
+  "comments": [
+    {
+      "_id": {
+        "$oid": "d70b3f28c4bb4d7522282d19"
+      },
+      "taskID": {
+        "$oid": "eeadc5022b166e0aa789d1af"
+      },
+      "userID": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "content": "Em đã hoàn thành phần gọi API generate lương, đang test edge case.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-03-29T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-29T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "317bb72706050a5857863af9"
+      },
+      "taskID": {
+        "$oid": "eeadc5022b166e0aa789d1af"
+      },
+      "userID": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "content": "Tốt! Nhớ viết thêm unit test cho hàm tính totalPay nhé.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-03-30T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-30T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "27466cf048f24f050e557d0f"
+      },
+      "taskID": {
+        "$oid": "8ed011a873358b65e8beb634"
+      },
+      "userID": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "content": "Phần dashboard responsive mobile chưa ổn, đang sửa breakpoint.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-03-30T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-30T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "d7b1d379a7746486a5effd71"
+      },
+      "taskID": {
+        "$oid": "8ed011a873358b65e8beb634"
+      },
+      "userID": {
+        "$oid": "3da93bf3ab521f2d5de3b78d"
+      },
+      "content": "Xem thêm 768px nha, hình như bị vỡ layout ở tablet.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-03-31T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-31T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "33e2620d976dbae16afcaa96"
+      },
+      "taskID": {
+        "$oid": "6b1a3476f2d2d92002f3228c"
+      },
+      "userID": {
+        "$oid": "f6e4ef0e66a6daa2895cf022"
+      },
+      "content": "Sếp ơi em đang gặp lỗi kết nối webhook n8n, không biết sao.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-03-31T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-31T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "4b3976b55bce0ea9a89e6c57"
+      },
+      "taskID": {
+        "$oid": "6b1a3476f2d2d92002f3228c"
+      },
+      "userID": {
+        "$oid": "f530fcc47d2f79b37c27eb3d"
+      },
+      "content": "Thử kiểm tra lại URL webhook và header Authorization.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-01T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-01T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "946f4f7a9f5e76bf6d3fd6ac"
+      },
+      "taskID": {
+        "$oid": "1c5297dd232062d5f664d90c"
+      },
+      "userID": {
+        "$oid": "6ac450b76f06de3574de0b96"
+      },
+      "content": "Đã tổng hợp xong báo cáo Q1, file ở Google Drive folder chia sẻ.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-01T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-01T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "df4c4566e57f8dc3c72480de"
+      },
+      "taskID": {
+        "$oid": "1c5297dd232062d5f664d90c"
+      },
+      "userID": {
+        "$oid": "6afdd4a1d58659ebe623b13c"
+      },
+      "content": "Nhớ gửi thêm bản PDF cho Giám đốc trước 5h chiều nha.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "8b11ea7413a84ba8ab147226"
+      },
+      "taskID": {
+        "$oid": "0eb6c91c7f7ae32cf2c55e81"
+      },
+      "userID": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "content": "Phần xử lý khiếu nại xong 12/15 ticket, còn 3 cần leo thang.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "dfd919d6c94cad5fdc4e8a3a"
+      },
+      "taskID": {
+        "$oid": "0eb6c91c7f7ae32cf2c55e81"
+      },
+      "userID": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "content": "3 cái đó gửi mail qua Technical Lead để xử lý nhé.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-03T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-03T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "0078ba005c75a0909082844b"
+      },
+      "taskID": {
+        "$oid": "be4fcb3596436b6abdf1b9cd"
+      },
+      "userID": {
+        "$oid": "5a9de23305261cde2a7d2036"
+      },
+      "content": "Bộ nhận diện mới được BGĐ duyệt rồi, bắt đầu apply từ tuần sau!",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-03T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-03T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "721686442828ef0acf4fe29c"
+      },
+      "taskID": {
+        "$oid": "be4fcb3596436b6abdf1b9cd"
+      },
+      "userID": {
+        "$oid": "3da93bf3ab521f2d5de3b78d"
+      },
+      "content": "Tuyệt! Nhớ cập nhật cả email signature và tài liệu chính thức.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "5901f6633362da68306ffe72"
+      },
+      "taskID": {
+        "$oid": "bb199b6f385a18102aaf22d7"
+      },
+      "userID": {
+        "$oid": "3fa23f68336966c10fb8c099"
+      },
+      "content": "Em xong luồng xin nghỉ phép, đang làm tiếp phần đổi ca.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "fefcf48b63bffe57e8defa62"
+      },
+      "taskID": {
+        "$oid": "bb199b6f385a18102aaf22d7"
+      },
+      "userID": {
+        "$oid": "f530fcc47d2f79b37c27eb3d"
+      },
+      "content": "Validate ngày không được trùng lịch làm việc hiện tại nhé.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-05T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-05T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "b5e935fb9dae4bda5c336e69"
+      },
+      "taskID": {
+        "$oid": "8fd53614d6befe3eaa444590"
+      },
+      "userID": {
+        "$oid": "6ac450b76f06de3574de0b96"
+      },
+      "content": "Fanpage tuần này tăng 15% engagement, chiến dịch đang tốt!",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-05T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-05T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "4b5bf6d956b52a6d552ee6db"
+      },
+      "taskID": {
+        "$oid": "8fd53614d6befe3eaa444590"
+      },
+      "userID": {
+        "$oid": "6afdd4a1d58659ebe623b13c"
+      },
+      "content": "Tiếp tục trend này, thử A/B test caption format mới xem sao.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-06T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "3b12b1ad1b65bfeef67d8a8a"
+      },
+      "taskID": {
+        "$oid": "9fa28ffa68440c1be71f0d93"
+      },
+      "userID": {
+        "$oid": "cf718f3de3be048a4cf058ac"
+      },
+      "content": "Database migrate xong, đang monitor 48h để đảm bảo ổn định.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-06T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-06T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "957ce2c86a5b51618fcc1b29"
+      },
+      "taskID": {
+        "$oid": "9fa28ffa68440c1be71f0d93"
+      },
+      "userID": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "content": "Theo dõi thêm disk I/O và memory usage nhé, đặt alert.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-07T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-07T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "03a6f694e5bc217b38ae677b"
+      },
+      "taskID": {
+        "$oid": "c3ebc7e8f17f40a037c8702c"
+      },
+      "userID": {
+        "$oid": "fa61f37eb2fe74f46deb751d"
+      },
+      "content": "Server đã cấu hình xong Rate Limiting 5 req/15min cho login.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-07T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-07T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "f5ad18364029b8e2c3d21c99"
+      },
+      "taskID": {
+        "$oid": "c3ebc7e8f17f40a037c8702c"
+      },
+      "userID": {
+        "$oid": "3da93bf3ab521f2d5de3b78d"
+      },
+      "content": "Tốt lắm! Test thêm trường hợp IP đổi liên tục để chặn bypass.",
+      "attachments": [],
+      "createdAt": {
+        "$date": "2026-04-08T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-08T17:30:13.841Z"
+      }
+    }
+  ],
+  "salaries": [
+    {
+      "_id": {
+        "$oid": "913055fdb4f30bc9709d4c76"
+      },
+      "employeeID": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 160,
+      "hourlyRate": 18,
+      "bonus": 200,
+      "deduction": 0,
+      "totalPay": 3080,
+      "status": "paid",
+      "managerApprovedBy": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "managerApprovedAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      },
+      "directorApprovedBy": {
+        "$oid": "d293b147c91a10b0c44d6741"
+      },
+      "directorApprovedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      },
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "2f2b4b84b412cfc64ea213d3"
+      },
+      "employeeID": {
+        "$oid": "f6e4ef0e66a6daa2895cf022"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 152,
+      "hourlyRate": 16,
+      "bonus": 100,
+      "deduction": 50,
+      "totalPay": 2482,
+      "status": "paid",
+      "managerApprovedBy": {
+        "$oid": "3da93bf3ab521f2d5de3b78d"
+      },
+      "managerApprovedAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      },
+      "directorApprovedBy": {
+        "$oid": "d293b147c91a10b0c44d6741"
+      },
+      "directorApprovedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      },
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "9924b46e382132cfa4fe3fe6"
+      },
+      "employeeID": {
+        "$oid": "5a9de23305261cde2a7d2036"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 170,
+      "hourlyRate": 14,
+      "bonus": 300,
+      "deduction": 0,
+      "totalPay": 2680,
+      "status": "paid",
+      "managerApprovedBy": {
+        "$oid": "3da93bf3ab521f2d5de3b78d"
+      },
+      "managerApprovedAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      },
+      "directorApprovedBy": {
+        "$oid": "d293b147c91a10b0c44d6741"
+      },
+      "directorApprovedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      },
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "e7017f851a0740db4e2c5544"
+      },
+      "employeeID": {
+        "$oid": "fa61f37eb2fe74f46deb751d"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 175,
+      "hourlyRate": 15,
+      "bonus": 150,
+      "deduction": 0,
+      "totalPay": 2775,
+      "status": "paid",
+      "managerApprovedBy": {
+        "$oid": "f530fcc47d2f79b37c27eb3d"
+      },
+      "managerApprovedAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      },
+      "directorApprovedBy": {
+        "$oid": "d293b147c91a10b0c44d6741"
+      },
+      "directorApprovedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      },
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "a92b66abf6500db24426ea22"
+      },
+      "employeeID": {
+        "$oid": "6ac450b76f06de3574de0b96"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 165,
+      "hourlyRate": 14,
+      "bonus": 0,
+      "deduction": 0,
+      "totalPay": 2310,
+      "status": "pending",
+      "managerApprovedBy": {
+        "$oid": "3da93bf3ab521f2d5de3b78d"
+      },
+      "managerApprovedAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      },
+      "directorApprovedBy": null,
+      "directorApprovedAt": null,
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "2ada7d9e7198df4db2aba5ab"
+      },
+      "employeeID": {
+        "$oid": "cf718f3de3be048a4cf058ac"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 158,
+      "hourlyRate": 13,
+      "bonus": 0,
+      "deduction": 30,
+      "totalPay": 2024,
+      "status": "pending",
+      "managerApprovedBy": {
+        "$oid": "f530fcc47d2f79b37c27eb3d"
+      },
+      "managerApprovedAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      },
+      "directorApprovedBy": null,
+      "directorApprovedAt": null,
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.841Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.841Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "97b79a061091410fddf95d5d"
+      },
+      "employeeID": {
+        "$oid": "b577748337d1875c51097c9c"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 144,
+      "hourlyRate": 13,
+      "bonus": 50,
+      "deduction": 0,
+      "totalPay": 1922,
+      "status": "pending",
+      "managerApprovedBy": {
+        "$oid": "6afdd4a1d58659ebe623b13c"
+      },
+      "managerApprovedAt": {
+        "$date": "2026-04-02T17:30:13.841Z"
+      },
+      "directorApprovedBy": null,
+      "directorApprovedAt": null,
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.842Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "b1b742b769050b1a152c1993"
+      },
+      "employeeID": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 120,
+      "hourlyRate": 15,
+      "bonus": 0,
+      "deduction": 100,
+      "totalPay": 1700,
+      "status": "draft",
+      "managerApprovedBy": null,
+      "managerApprovedAt": null,
+      "directorApprovedBy": null,
+      "directorApprovedAt": null,
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.842Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "a1c15a0922302b94f9f43b79"
+      },
+      "employeeID": {
+        "$oid": "3fa23f68336966c10fb8c099"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 160,
+      "hourlyRate": 12,
+      "bonus": 0,
+      "deduction": 0,
+      "totalPay": 1920,
+      "status": "draft",
+      "managerApprovedBy": null,
+      "managerApprovedAt": null,
+      "directorApprovedBy": null,
+      "directorApprovedAt": null,
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.842Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "fabe84d336015f8eda380993"
+      },
+      "employeeID": {
+        "$oid": "062cd035f0e736f137fce4cc"
+      },
+      "month": 4,
+      "year": 2026,
+      "totalHours": 80,
+      "hourlyRate": 8,
+      "bonus": 0,
+      "deduction": 0,
+      "totalPay": 640,
+      "status": "draft",
+      "managerApprovedBy": null,
+      "managerApprovedAt": null,
+      "directorApprovedBy": null,
+      "directorApprovedAt": null,
+      "rejectedBy": null,
+      "rejectedAt": null,
+      "rejectReason": null,
+      "createdAt": {
+        "$date": "2026-03-28T17:30:13.842Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-04T17:30:13.842Z"
+      }
+    }
+  ],
+  "approvalRequests": [
+    {
+      "_id": {
+        "$oid": "90ef081956d4a7cd5927645c"
+      },
+      "requesterID": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "requestType": "leave",
+      "reason": "Bị sốt phải nằm viện, xin nghỉ 3 ngày điều trị.",
+      "status": "approved",
+      "requestedFromDate": {
+        "$date": "2026-04-04T17:30:13.842Z"
+      },
+      "requestedToDate": {
+        "$date": "2026-04-08T17:30:13.842Z"
+      },
+      "reviewedBy": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "reviewedAt": {
+        "$date": "2026-04-03T17:30:13.842Z"
+      },
+      "managerNote": "Đồng ý. Chúc bạn mau khỏe!",
+      "createdAt": {
+        "$date": "2026-04-02T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "645a0437bf7d940e1151886e"
+      },
+      "requesterID": {
+        "$oid": "b577748337d1875c51097c9c"
+      },
+      "requestType": "leave",
+      "reason": "Gia đình có đám giỗ, cần về quê 2 ngày.",
+      "status": "pending",
+      "requestedFromDate": {
+        "$date": "2026-04-12T17:30:13.842Z"
+      },
+      "requestedToDate": {
+        "$date": "2026-04-14T17:30:13.842Z"
+      },
+      "createdAt": {
+        "$date": "2026-04-06T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "0970667dafa6a9e6c60bfdba"
+      },
+      "requesterID": {
+        "$oid": "6ac450b76f06de3574de0b96"
+      },
+      "requestType": "leave",
+      "reason": "Muốn nghỉ phép đi du lịch cùng gia đình.",
+      "status": "rejected",
+      "requestedFromDate": {
+        "$date": "2026-04-09T17:30:13.842Z"
+      },
+      "requestedToDate": {
+        "$date": "2026-04-12T17:30:13.842Z"
+      },
+      "reviewedBy": {
+        "$oid": "3da93bf3ab521f2d5de3b78d"
+      },
+      "reviewedAt": {
+        "$date": "2026-04-05T17:30:13.842Z"
+      },
+      "managerNote": "Dự án đang giai đoạn nước rút, không thể nghỉ.",
+      "createdAt": {
+        "$date": "2026-04-04T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "0103da5d099e845acc2e926b"
+      },
+      "requesterID": {
+        "$oid": "f6e4ef0e66a6daa2895cf022"
+      },
+      "requestType": "shift_change",
+      "reason": "Cần đưa con đi khám bệnh buổi sáng.",
+      "status": "approved",
+      "requestedDate": {
+        "$date": "2026-04-08T17:30:13.842Z"
+      },
+      "currentTimeStart": "08:00",
+      "currentTimeEnd": "12:00",
+      "requestedTimeStart": "13:00",
+      "requestedTimeEnd": "17:00",
+      "reviewedBy": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "reviewedAt": {
+        "$date": "2026-04-06T17:30:13.842Z"
+      },
+      "managerNote": "OK, nhớ báo team.",
+      "createdAt": {
+        "$date": "2026-04-05T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "73a80bc8aeae28a0b64bdd7f"
+      },
+      "requesterID": {
+        "$oid": "3fa23f68336966c10fb8c099"
+      },
+      "requestType": "shift_change",
+      "reason": "Có lịch học thêm buổi sáng, xin dời sang ca chiều.",
+      "status": "pending",
+      "requestedDate": {
+        "$date": "2026-04-13T17:30:13.842Z"
+      },
+      "currentTimeStart": "08:30",
+      "currentTimeEnd": "12:30",
+      "requestedTimeStart": "13:00",
+      "requestedTimeEnd": "17:00",
+      "createdAt": {
+        "$date": "2026-04-07T17:30:13.782Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "ff3ce653a23c1c0443d42e7b"
+      },
+      "requesterID": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "requestType": "deadline_extension",
+      "taskID": {
+        "$oid": "6b1a3476f2d2d92002f3228c"
+      },
+      "reason": "Lỗi CORS phức tạp trong n8n webhook chưa resolve, cần thêm 3 ngày.",
+      "status": "pending",
+      "requestedDeadline": {
+        "$date": "2026-04-17T17:30:13.842Z"
+      },
+      "createdAt": {
+        "$date": "2026-04-06T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "1a851f9405aef5dae6855110"
+      },
+      "requesterID": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "requestType": "deadline_extension",
+      "taskID": {
+        "$oid": "38a9d8668e524dd0c2e58746"
+      },
+      "reason": "Migrate data mất nhiều thời gian hơn do volume lớn.",
+      "status": "approved",
+      "requestedDeadline": {
+        "$date": "2026-04-21T17:30:13.842Z"
+      },
+      "reviewedBy": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "reviewedAt": {
+        "$date": "2026-04-05T17:30:13.842Z"
+      },
+      "managerNote": "Chấp thuận, cập nhật deadline mới.",
+      "createdAt": {
+        "$date": "2026-04-03T17:30:13.842Z"
+      }
+    }
+  ],
+  "announcements": [
+    {
+      "_id": {
+        "$oid": "d6f8f8744a912edc611de661"
+      },
+      "title": "Chính sách thưởng Tết 2026",
+      "message": "<p>Ban Giám đốc thông báo chính sách thưởng Tết Bính Ngọ 2026: Nhân viên KPI ≥ 80% thưởng 1 tháng lương...</p>",
+      "createdBy": {
+        "$oid": "d293b147c91a10b0c44d6741"
+      },
+      "isActive": true,
+      "seenBy": [
+        {
+          "$oid": "5eb09f3c4bbfccfcb10a6e15"
+        },
+        {
+          "$oid": "f6e4ef0e66a6daa2895cf022"
+        },
+        {
+          "$oid": "c2bd9ecc377645ae34556487"
+        },
+        {
+          "$oid": "3da93bf3ab521f2d5de3b78d"
+        }
+      ],
+      "createdAt": {
+        "$date": "2026-03-24T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "0bc1ee4bf125330e6651cb3f"
+      },
+      "title": "Lịch nghỉ lễ 30/4 và 01/5",
+      "message": "<p>Toàn thể CB-NV nghỉ lễ từ 30/4 đến 02/5/2026. Bộ phận trực sẽ được thông báo riêng.</p>",
+      "createdBy": {
+        "$oid": "f530fcc47d2f79b37c27eb3d"
+      },
+      "isActive": true,
+      "seenBy": [
+        {
+          "$oid": "5eb09f3c4bbfccfcb10a6e15"
+        },
+        {
+          "$oid": "f6e4ef0e66a6daa2895cf022"
+        },
+        {
+          "$oid": "ab3d205b2372e46f7fec5b3f"
+        },
+        {
+          "$oid": "5a9de23305261cde2a7d2036"
+        }
+      ],
+      "createdAt": {
+        "$date": "2026-03-31T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "0ca1c0d3635eddd27550008e"
+      },
+      "title": "Cập nhật quy định chấm công mới",
+      "message": "<p>Từ 10/4/2026, toàn bộ NV check-in qua hệ thống nội bộ trước 8h30. Trễ không báo trước sẽ bị trừ lương.</p>",
+      "createdBy": {
+        "$oid": "f530fcc47d2f79b37c27eb3d"
+      },
+      "isActive": true,
+      "seenBy": [
+        {
+          "$oid": "c2bd9ecc377645ae34556487"
+        },
+        {
+          "$oid": "3da93bf3ab521f2d5de3b78d"
+        },
+        {
+          "$oid": "5eb09f3c4bbfccfcb10a6e15"
+        }
+      ],
+      "createdAt": {
+        "$date": "2026-04-04T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "ff3eec3413589eb72bd8e927"
+      },
+      "title": "Họp toàn công ty tháng 4/2026",
+      "message": "<p>Họp tổng kết tháng 4 vào thứ Sáu 25/4/2026 lúc 14:00 tại phòng họp lớn. Toàn thể NV bắt buộc tham dự.</p>",
+      "createdBy": {
+        "$oid": "d293b147c91a10b0c44d6741"
+      },
+      "isActive": true,
+      "seenBy": [
+        {
+          "$oid": "c2bd9ecc377645ae34556487"
+        }
+      ],
+      "createdAt": {
+        "$date": "2026-04-06T17:30:13.842Z"
+      }
+    }
+  ],
+  "auditLogs": [
+    {
+      "_id": {
+        "$oid": "e4557cd37d6cbfdc33a57c21"
+      },
+      "action": "LOGIN",
+      "performer": {
+        "$oid": "8e13f428765f6bf7fe443c70"
+      },
+      "targetUser": null,
+      "details": "Admin đăng nhập hệ thống",
+      "createdAt": {
+        "$date": "2026-04-05T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "beb1f318847e1a13e89f7cd9"
+      },
+      "action": "LOGIN",
+      "performer": {
+        "$oid": "d293b147c91a10b0c44d6741"
+      },
+      "targetUser": null,
+      "details": "Giám đốc Trần Minh Khoa đăng nhập",
+      "createdAt": {
+        "$date": "2026-04-04T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "1608b37f789549a6bf63edb4"
+      },
+      "action": "LOGIN",
+      "performer": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "targetUser": null,
+      "details": "Quản lý Lê Thị Hương đăng nhập",
+      "createdAt": {
+        "$date": "2026-04-06T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "8c9c2cd6dfddfb688779b6dc"
+      },
+      "action": "UPDATE_USER",
+      "performer": {
+        "$oid": "8e13f428765f6bf7fe443c70"
+      },
+      "targetUser": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "details": "Admin cập nhật trạng thái Bùi Quang Hải → status-off",
+      "createdAt": {
+        "$date": "2026-04-02T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "71c26a692d587f024dcda029"
+      },
+      "action": "APPROVE_SALARY",
+      "performer": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "targetUser": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "details": "Manager duyệt bảng lương T4/2026 của Vũ Thành Long",
+      "createdAt": {
+        "$date": "2026-04-02T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "87add97cc11e791786f4129c"
+      },
+      "action": "APPROVE_SALARY",
+      "performer": {
+        "$oid": "d293b147c91a10b0c44d6741"
+      },
+      "targetUser": {
+        "$oid": "5eb09f3c4bbfccfcb10a6e15"
+      },
+      "details": "Giám đốc duyệt chi lương tháng cho Vũ Thành Long",
+      "createdAt": {
+        "$date": "2026-04-04T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "fe38924d41adb9045da36fe2"
+      },
+      "action": "APPROVE_REQUEST",
+      "performer": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "targetUser": {
+        "$oid": "ab3d205b2372e46f7fec5b3f"
+      },
+      "details": "Manager duyệt đơn xin nghỉ phép của Bùi Quang Hải (3 ngày)",
+      "createdAt": {
+        "$date": "2026-04-03T17:30:13.842Z"
+      }
+    },
+    {
+      "_id": {
+        "$oid": "677008589a8b2363114ec7f0"
+      },
+      "action": "LOGOUT",
+      "performer": {
+        "$oid": "c2bd9ecc377645ae34556487"
+      },
+      "targetUser": null,
+      "details": "Quản lý Lê Thị Hương đăng xuất",
+      "createdAt": {
+        "$date": "2026-04-06T17:30:13.842Z"
+      }
+    }
+  ]
+}

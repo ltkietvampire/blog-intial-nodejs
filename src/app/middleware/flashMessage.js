@@ -4,7 +4,6 @@ function toArray(value) {
 }
 
 function flashMessage(req, res, next) {
-  // Use cookies to simulate flash messages since we removed express-session
   const flashData = req.cookies.flash ? JSON.parse(req.cookies.flash) : { success: [], error: [] };
   
   req.flash = (type, message) => {

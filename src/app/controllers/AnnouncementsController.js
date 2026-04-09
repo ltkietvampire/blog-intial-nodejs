@@ -7,6 +7,7 @@ class AnnouncementsController {
     this.index = this.index.bind(this);
     this.store = this.store.bind(this);
     this.markSeen = this.markSeen.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   index = asyncHandler(async (req, res) => {
@@ -21,7 +22,6 @@ class AnnouncementsController {
         ...row,
         createdByName: row.createdBy?.name || 'Unknown',
         createdAtText: row.createdAt ? new Date(row.createdAt).toLocaleString('vi-VN') : '--',
-        // We intentionally do not persist read status per user anymore.
         isSeen: false,
       })),
     });
@@ -59,10 +59,25 @@ class AnnouncementsController {
           id: z.string().trim().min(1, 'Missing announcement ID')
       }).parse(req.params);
 
-      // Keep endpoint for UI compatibility, but do not write seenBy to DB.
       await Announcement.exists({ _id: announcementId });
 
       return res.json({ ok: true });
+  });
+
+  delete = asyncHandler(async (req, res) => {
+      const userId = req.user?._id;
+      if (!userId) {
+        return res.redirect('/login');
+      }
+
+      const { id: announcementId } = z.object({
+          id: z.string().trim().min(1, 'Missing announcement ID')
+      }).parse(req.params);
+
+      await Announcement.findByIdAndDelete(announcementId);
+
+      req.flash('success', 'Announcement deleted successfully.');
+      return res.redirect('back');
   });
 }
 

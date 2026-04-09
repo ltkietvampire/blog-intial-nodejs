@@ -2,9 +2,11 @@ const dayjs = require('dayjs');
 const Users = require('../model/user');
 const Tasks = require('../model/task');
 const Distributions = require('../model/distribution');
+const Comments = require('../model/comment');
 const { multipleMongooseToObject } = require('../../util/mongoose');
 const { calcHours } = require('../../util/calhours');
 const { toMinuteOfDay, toDateOnly } = require('../../util/dateTime');
+const SystemConfigService = require('../services/SystemConfigService');
 const {
     TASK_STATUS,
     normalizeRecurrence,
@@ -28,6 +30,8 @@ class TasksController {
         this.syncTaskAssignmentState = this.syncTaskAssignmentState.bind(this);
         this.autoArchiveCompletedOneTimeTasks = this.autoArchiveCompletedOneTimeTasks.bind(this);
         this.suggestEmployees = this.suggestEmployees.bind(this);
+        this.getComments = this.getComments.bind(this);
+        this.addComment = this.addComment.bind(this);
     }
 
     async autoArchiveCompletedOneTimeTasks() {
@@ -194,6 +198,9 @@ class TasksController {
             const weekStart = dayjs().startOf('week').add(1, 'day');
             const weekEnd = weekStart.add(7, 'day');
 
+            const holidaysStr = await SystemConfigService.getConfig('holidays', '');
+            const holidaysArr = holidaysStr.split(',').map(s => s.trim()).filter(Boolean);
+
             for (const row of distributions) {
                 if (!row.employeeID || !row.taskID) {
                     continue;
@@ -223,7 +230,7 @@ class TasksController {
 
                 let hasConflict = false;
                 for (const existingTask of assignedTasks) {
-                    const conflictDate = findFirstScheduleConflictDate(task, existingTask, 365);
+                    const conflictDate = findFirstScheduleConflictDate(task, existingTask, 365, holidaysArr);
                     if (conflictDate) {
                         hasConflict = true;
                         break;
@@ -267,12 +274,16 @@ class TasksController {
             const startMinutes = toMinuteOfDay(task.dateStart);
             const endMinutes = toMinuteOfDay(task.dateEnd);
             const deadlineDate = toDateOnly(task.deadline);
+            
+            const wantsJson = req.xhr || (req.headers.accept || '').indexOf('json') > -1;
 
             if (!Number.isFinite(startMinutes) || !Number.isFinite(endMinutes) || endMinutes <= startMinutes) {
+                if (wantsJson) return res.status(400).json({ ok: false, error: 'Invalid start/end time.' });
                 req.flash('error', 'Invalid start/end time.');
                 return res.redirect('/tasks');
             }
             if (!deadlineDate || deadlineDate < startOfToday()) {
+                if (wantsJson) return res.status(400).json({ ok: false, error: 'Deadline must be today or later.' });
                 req.flash('error', 'Deadline must be today or later.');
                 return res.redirect('/tasks');
             }
@@ -290,9 +301,15 @@ class TasksController {
 
             const tasks = new Tasks(task);
             await tasks.save();
+            
+            if (wantsJson) return res.json({ ok: true, message: 'Task created successfully.', task: tasks });
+            
             req.flash('success', 'Task created successfully.');
             res.redirect('/tasks');
         } catch (error) {
+            const wantsJson = req.xhr || (req.headers.accept || '').indexOf('json') > -1;
+            if (wantsJson) return res.status(500).json({ ok: false, error: 'Unable to create task. Please try again later.' });
+            
             req.flash('error', 'Unable to create task. Please try again later.');
             res.redirect('/tasks');
         }
@@ -403,8 +420,11 @@ class TasksController {
                 .map((row) => row.taskID)
                 .filter(Boolean);
 
+            const holidaysStr = await SystemConfigService.getConfig('holidays', '');
+            const holidaysArr = holidaysStr.split(',').map(s => s.trim()).filter(Boolean);
+
             for (const scheduledTask of existingTasks) {
-                const conflictDate = findFirstScheduleConflictDate(task, scheduledTask, 365);
+                const conflictDate = findFirstScheduleConflictDate(task, scheduledTask, 365, holidaysArr);
                 if (!conflictDate) {
                     continue;
                 }
@@ -454,6 +474,50 @@ class TasksController {
         } catch (error) {
             req.flash('error', 'Unable to remove assignment.');
             res.redirect('/tasks');
+        }
+    }
+
+    async getComments(req, res) {
+        try {
+            const comments = await Comments.find({ taskID: req.params.id })
+                .populate('userID', 'name avatar role position')
+                .sort({ createdAt: 1 })
+                .lean();
+            res.json({ ok: true, items: comments });
+        } catch (error) {
+            res.status(500).json({ ok: false, message: 'Unable to fetch comments.' });
+        }
+    }
+
+    async addComment(req, res) {
+        try {
+            if (!req.user || !req.user._id) {
+                return res.status(401).json({ ok: false, message: 'Unauthorized' });
+            }
+            const content = String(req.body.content || '').trim();
+            if (!content) {
+                return res.status(400).json({ ok: false, message: 'Content is required.' });
+            }
+            
+            const task = await Tasks.findById(req.params.id);
+            if (!task) {
+                return res.status(404).json({ ok: false, message: 'Task not found.' });
+            }
+            
+            const comment = new Comments({
+                taskID: task._id,
+                userID: req.user._id,
+                content: content
+            });
+            await comment.save();
+            
+            const populatedComment = await Comments.findById(comment._id)
+                .populate('userID', 'name avatar role position')
+                .lean();
+            
+            res.json({ ok: true, item: populatedComment });
+        } catch (error) {
+            res.status(500).json({ ok: false, message: 'Unable to add comment.' });
         }
     }
 }

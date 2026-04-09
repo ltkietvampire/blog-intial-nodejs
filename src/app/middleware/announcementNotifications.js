@@ -1,22 +1,30 @@
 const Announcement = require('../model/announcement');
-const { isEmployeePosition } = require('./roleUtils');
 
 async function announcementNotifications(req, res, next) {
   res.locals.announcementNotifications = { totalCount: 0, items: [] };
 
   try {
     const currentUser = req.user;
-    if (!currentUser?._id || !isEmployeePosition(currentUser)) {
+    if (!currentUser?._id) {
       return next();
     }
 
+    // Role-based filtering: null (public) OR matches user's role
+    const filter = { 
+      isActive: true,
+      $or: [
+        { targetRole: null },
+        { targetRole: currentUser.role }
+      ]
+    };
+
     const [rows, unseenCount] = await Promise.all([
-      Announcement.find({ isActive: true })
+      Announcement.find(filter)
         .populate('createdBy')
         .sort({ createdAt: -1 })
         .limit(5)
         .lean(),
-      Announcement.countDocuments({ isActive: true }),
+      Announcement.countDocuments(filter),
     ]);
 
     const items = rows.map((row) => ({

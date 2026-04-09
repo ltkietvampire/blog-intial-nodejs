@@ -19,13 +19,16 @@
       <a href="/employee/statistics/export?period={{selectedPeriod}}" class="btn btn-outline-success btn-sm">
         Export CSV
       </a>
+      <a href="/employee/statistics/export-salary?period={{selectedPeriod}}" class="btn btn-outline-success btn-sm">
+        Xuất Bảng Lương
+      </a>
       <a href="/employee" class="btn btn-outline-secondary btn-sm">Employee List</a>
       <a href="/tasks" class="btn btn-primary btn-sm">Task Management</a>
     </div>
   </div>
 
   <div class="row g-3 mb-4">
-    <div class="col-md-3 col-6">
+    <div class="col-md-2 col-6">
       <div class="card stats-card p-3">
         <div class="metric-label">Employees</div>
         <div class="metric-value">{{report.length}}</div>
@@ -39,13 +42,19 @@
     </div>
     <div class="col-md-3 col-6">
       <div class="card stats-card p-3">
-        <div class="metric-label">Total Late Count</div>
+        <div class="metric-label">Total Paid Salary</div>
+        <div class="metric-value format-currency" data-value="{{totals.totalPaidSalary}}">{{totals.totalPaidSalary}}</div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card stats-card p-3">
+        <div class="metric-label">Total Late</div>
         <div class="metric-value">{{totals.lateCount}}</div>
       </div>
     </div>
-    <div class="col-md-3 col-6">
+    <div class="col-md-2 col-6">
       <div class="card stats-card p-3">
-        <div class="metric-label">Total Skipped Tasks</div>
+        <div class="metric-label">Skipped Tasks</div>
         <div class="metric-value">{{totals.skippedCount}}</div>
       </div>
     </div>
@@ -70,6 +79,17 @@
     </div>
   </div>
 
+  <div class="row g-3 mb-4">
+    <div class="col-12">
+      <div class="chart-card p-3">
+        <div class="chart-title">Paid Salary by Employee</div>
+        <div class="chart-wrap" style="height: 300px;">
+          <canvas id="salaryChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="card stats-card p-3">
     <div class="table-responsive">
       <table class="table table-hover stats-table align-middle mb-0">
@@ -79,6 +99,7 @@
             <th>Position</th>
             <th>Assigned Tasks</th>
             <th>Total Work Hours</th>
+            <th>Paid Salary</th>
             <th>Late Time</th>
             <th>Late Count</th>
             <th>Skipped Tasks</th>
@@ -97,6 +118,7 @@
                 <td>{{this.position}}</td>
                 <td><span class="badge-soft">{{this.assignedTasks}}</span></td>
                 <td>{{this.workHours}}h</td>
+                <td class="format-currency" data-value="{{this.totalPaidSalary}}">{{this.totalPaidSalary}}</td>
                 <td>{{this.lateText}}</td>
                 <td>{{this.lateCount}}</td>
                 <td>{{this.skippedCount}}</td>
@@ -105,7 +127,7 @@
             {{/each}}
           {{else}}
             <tr>
-              <td colspan="8" class="text-center py-4 text-muted">
+              <td colspan="9" class="text-center py-4 text-muted">
                 No employee statistics available.
               </td>
             </tr>
@@ -124,8 +146,14 @@
     const report = {{#if report}}{{{json report}}}{{else}}[]{{/if}};
     const totals = {{#if totals}}{{{json totals}}}{{else}}{"assignedTasks":0,"lateCount":0,"skippedCount":0}{{/if}};
 
+    document.querySelectorAll('.format-currency').forEach(el => {
+      const val = Number(el.getAttribute('data-value')) || 0;
+      el.textContent = val.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    });
+
     const labels = report.map((item) => item.name || 'N/A');
     const hours = report.map((item) => Number(item.workHours) || 0);
+    const salaries = report.map((item) => Number(item.totalPaidSalary) || 0);
 
     const workHoursCtx = document.getElementById('workHoursChart');
     if (workHoursCtx) {
@@ -180,6 +208,53 @@
           maintainAspectRatio: false,
           plugins: {
             legend: { position: 'bottom' },
+          },
+        },
+      });
+    }
+
+    const salaryCtx = document.getElementById('salaryChart');
+    if (salaryCtx) {
+      new Chart(salaryCtx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Paid Salary',
+            data: salaries,
+            borderRadius: 8,
+            backgroundColor: '#10b981',
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                            label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                        }
+                        return label;
+                    }
+                }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) { 
+                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value); 
+                },
+              },
+            },
           },
         },
       });

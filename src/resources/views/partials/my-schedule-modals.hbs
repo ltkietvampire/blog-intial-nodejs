@@ -9,7 +9,7 @@
 </div>
 
 <div class="modal fade" id="taskDetailModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="taskDetailTitle">Task detail</h5>
@@ -17,7 +17,12 @@
       </div>
       <div class="modal-body">
         <div id="taskDetailTime" class="text-muted mb-2"></div>
-        <div id="taskDetailDesc"></div>
+        <div id="taskDetailDesc" class="mb-4"></div>
+        
+        <h6 class="border-bottom pb-2 mt-4">Bình luận chung / Comments</h6>
+        <div id="taskDetailComments" style="max-height: 250px; overflow-y: auto;">
+          <div class="text-muted small">Đang tải bình luận...</div>
+        </div>
       </div>
     </div>
   </div>

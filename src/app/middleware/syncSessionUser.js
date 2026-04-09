@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/user');
-const { normalizeRole, isEmployeePosition, isManagerPosition } = require('./roleUtils');
+const { normalizeRole, isEmployeePosition, isManagerPosition, isDirectorPosition, isAdminPosition } = require('./roleUtils');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret';
 
@@ -24,6 +24,8 @@ async function syncSessionUser(req, res, next) {
       res.locals.currentUser = null;
       res.locals.isEmployee = false;
       res.locals.isManager = false;
+      res.locals.isDirector = false;
+      res.locals.isAdmin = false;
       return next();
     }
 
@@ -36,6 +38,8 @@ async function syncSessionUser(req, res, next) {
       res.locals.currentUser = null;
       res.locals.isEmployee = false;
       res.locals.isManager = false;
+      res.locals.isDirector = false;
+      res.locals.isAdmin = false;
       return next();
     }
 
@@ -45,15 +49,17 @@ async function syncSessionUser(req, res, next) {
     }
 
     const user = await User.findById(userId)
-      .select('name role position avatar totalWorkingHours')
+      .select('name role position avatar totalWorkingHours isBanned')
       .lean();
 
-    if (!user) {
+    if (!user || user.isBanned) {
       res.clearCookie('token');
       req.user = null;
       res.locals.currentUser = null;
       res.locals.isEmployee = false;
       res.locals.isManager = false;
+      res.locals.isDirector = false;
+      res.locals.isAdmin = false;
       return next();
     }
 
@@ -64,12 +70,16 @@ async function syncSessionUser(req, res, next) {
       position: user.position,
       avatar: user.avatar,
       totalWorkingHours: user.totalWorkingHours || 0,
+      isBanned: user.isBanned,
     };
 
+    res.locals.jwtToken = token;
     req.user = normalizedUser;
     res.locals.currentUser = normalizedUser;
     res.locals.isEmployee = isEmployeePosition(normalizedUser);
     res.locals.isManager = isManagerPosition(normalizedUser);
+    res.locals.isDirector = isDirectorPosition(normalizedUser);
+    res.locals.isAdmin = isAdminPosition(normalizedUser);
   } catch (error) {
   }
 

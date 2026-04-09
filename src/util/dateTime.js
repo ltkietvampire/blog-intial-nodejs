@@ -4,7 +4,15 @@ const customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
 
 function toDateOnly(value) {
-  const parsed = dayjs(String(value || '').trim(), 'YYYY-MM-DD', true);
+  if (!value) return null;
+  // If it's already a Date object or ISO string from MongoDB, parse without strict mode first
+  const raw = String(value).trim();
+  // Try strict YYYY-MM-DD format first (form inputs)
+  let parsed = dayjs(raw, 'YYYY-MM-DD', true);
+  if (!parsed.isValid()) {
+    // Fallback: parse as general date (handles Date objects, ISO strings from MongoDB)
+    parsed = dayjs(value);
+  }
   return parsed.isValid() ? parsed.startOf('day').toDate() : null;
 }
 

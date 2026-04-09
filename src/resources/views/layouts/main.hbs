@@ -52,5 +52,17 @@
   });
 </script>
 
+{{#if chatbotConfig.enabled}}
+<script src="https://cdn.jsdelivr.net/npm/@kieng/just-chat/dist/just-chat.umd.js"
+  data-webhook-url="{{chatbotConfig.webhookUrl}}{{#if jwtToken}}?jwt={{jwtToken}}&rawtoken={{jwtToken}}{{/if}}"
+  data-theme-color="{{chatbotConfig.themeColor}}"
+  data-position="{{chatbotConfig.position}}"
+  data-title="{{chatbotConfig.title}}"
+  data-welcome-message="{{chatbotConfig.welcomeMessage}}"
+  data-history-enabled="true"
+  data-history-clear-button="true"
+  defer>
+</script>
+{{/if}}
 
 </html>

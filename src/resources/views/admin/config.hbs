@@ -1,0 +1,76 @@
+<div class="container py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2>Cấu hình Hệ thống</h2>
+      <p class="text-muted">Dành riêng cho Quản trị viên</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <form method="POST" action="/admin/config">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Giờ làm việc tối đa trong ngày</label>
+              <input type="number" class="form-control" name="maxWorkingHours" value="{{maxWorkingHours}}" step="0.5" min="1" max="24" required>
+              <div class="form-text">Mức giới hạn chung mà các Manager có thể thiết lập cho nhân viên (mặc định 8h).</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Ngày nghỉ Lễ trong năm (Holidays)</label>
+              <textarea class="form-control" name="holidays" rows="3" placeholder="VD: 01/01, 30/04, 01/05, 02/09...">{{holidays}}</textarea>
+              <div class="form-text">Nhập danh sách các ngày nghỉ lễ (cách nhau bằng dấu phẩy). Dữ liệu này dùng để trừ ngày công hoặc tính KPI.</div>
+            </div>
+
+            <div class="mb-4 form-check form-switch mt-4">
+              <input class="form-check-input" type="checkbox" id="maintenanceMode" name="maintenanceMode" {{#if maintenanceMode}}checked{{/if}}>
+              <label class="form-check-label fw-bold text-danger" for="maintenanceMode">Kích hoạt Chế độ Bảo trì</label>
+              <div class="form-text">Khi bật, tất cả nhân viên và quản lý sẽ bị chặn truy cập. Hệ thống chỉ cho phép Admin hoạt động.</div>
+            </div>
+
+            <hr class="my-4">
+            <h5 class="mb-3">Cấu hình AI Chatbot</h5>
+            
+            <div class="mb-3 form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="chatbotEnabled" name="chatbotEnabled" {{#if chatbotEnabled}}checked{{/if}}>
+              <label class="form-check-label fw-bold" for="chatbotEnabled">Bật/tắt AI Chatbot</label>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Webhook URL (n8n)</label>
+              <input type="url" class="form-control" name="chatbotWebhookUrl" value="{{chatbotWebhookUrl}}" placeholder="https://...">
+              <div class="form-text">Đường dẫn webhook của n8n để nhận request từ Chatbot. JWT Token bảo mật sẽ được tự động đính kèm (vd: ?jwt=eyJ...) để n8n xác thực phân quyền.</div>
+            </div>
+
+            <div class="mb-3 row">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Màu chủ đề (Theme Color)</label>
+                <input type="color" class="form-control form-control-color" name="chatbotThemeColor" value="{{chatbotThemeColor}}" title="Chọn màu cho Chatbot">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Vị trí (Position)</label>
+                <select class="form-select" name="chatbotPosition">
+                  <option value="bottom-right" {{#if (eq chatbotPosition "bottom-right")}}selected{{/if}}>Góc dưới bên phải</option>
+                  <option value="bottom-left" {{#if (eq chatbotPosition "bottom-left")}}selected{{/if}}>Góc dưới bên trái</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Tiêu đề (Title)</label>
+              <input type="text" class="form-control" name="chatbotTitle" value="{{chatbotTitle}}" placeholder="Ví dụ: Trợ lý AI">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Tin nhắn chào mừng</label>
+              <input type="text" class="form-control" name="chatbotWelcomeMessage" value="{{chatbotWelcomeMessage}}" placeholder="Ví dụ: Xin chào! Bạn cần tôi giúp gì?">
+            </div>
+
+            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save me-2"></i> Lưu cấu hình</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
