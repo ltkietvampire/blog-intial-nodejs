@@ -19,49 +19,49 @@
         {{#if currentUser}}
           {{#if isManager}}
             <li class="nav-item">
-              <a class="nav-link" href="/">Schedule</a>
+              <a class="nav-link" href="/">{{t 'menu.schedule'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/tasks">Tasks</a>
+              <a class="nav-link" href="/tasks">{{t 'menu.tasks'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/employee">Employees</a>
+              <a class="nav-link" href="/employee">{{t 'menu.employees'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/salary">Payroll</a>
+              <a class="nav-link" href="/salary">{{t 'menu.payroll'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/employee/statistics">Employee Statistics</a>
+              <a class="nav-link" href="/employee/statistics">{{t 'menu.employeeStatistics'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/approvals">Approval Center</a>
+              <a class="nav-link" href="/approvals">{{t 'menu.approvalCenter'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/announcements">Announcements</a>
+              <a class="nav-link" href="/announcements">{{t 'menu.announcements'}}</a>
             </li>
             {{#if isAdmin}}
             <li class="nav-item pe-2 border-start ms-2">
-              <a class="nav-link fw-bold text-danger" href="/admin/config">System Config</a>
+              <a class="nav-link fw-bold text-danger" href="/admin/config">{{t 'menu.systemConfig'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link fw-bold text-danger" href="/admin/logs">Audit Logs</a>
+              <a class="nav-link fw-bold text-danger" href="/admin/logs">{{t 'menu.auditLogs'}}</a>
             </li>
             {{/if}}
           {{else}}
             <li class="nav-item">
-              <a class="nav-link" href="/dashboard">Dashboard</a>
+              <a class="nav-link" href="/dashboard">{{t 'menu.dashboard'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/my-task">My Tasks</a>
+              <a class="nav-link" href="/my-task">{{t 'menu.myTasks'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/my-task/schedule">My Schedule</a>
+              <a class="nav-link" href="/my-task/schedule">{{t 'menu.mySchedule'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/auth">My Profile</a>
+              <a class="nav-link" href="/auth">{{t 'menu.myProfile'}}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/approvals/my">My Requests</a>
+              <a class="nav-link" href="/approvals/my">{{t 'menu.myRequests'}}</a>
             </li>
           {{/if}}
         {{/if}}
@@ -69,6 +69,16 @@
 
       <!-- Right buttons -->
 <div class="d-flex align-items-center gap-3">
+
+  <div class="dropdown">
+    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border:none;">
+      <i class="bi bi-globe"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: unset;">
+      <li><a class="dropdown-item" href="?lng=vi">🇻🇳 VI</a></li>
+      <li><a class="dropdown-item" href="?lng=en">🇬🇧 EN</a></li>
+    </ul>
+  </div>
 
   {{#if currentUser}}
     <!-- Logged in -->
@@ -246,32 +256,32 @@
 
       <ul class="dropdown-menu dropdown-menu-end shadow">
         {{#if isEmployee}}
-          <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
+          <li><a class="dropdown-item" href="/dashboard">{{t 'menu.dashboard'}}</a></li>
         {{/if}}
-        <li><a class="dropdown-item" href="/auth">Profile</a></li>
-        <li><a class="dropdown-item" href="/my-task">My Tasks</a></li>
+        <li><a class="dropdown-item" href="/auth">{{t 'menu.profile'}}</a></li>
+        <li><a class="dropdown-item" href="/my-task">{{t 'menu.myTasks'}}</a></li>
         {{#if isEmployee}}
-          <li><a class="dropdown-item" href="/my-task/schedule">My Schedule</a></li>
-          <li><a class="dropdown-item" href="/approvals/my">My Requests</a></li>
+          <li><a class="dropdown-item" href="/my-task/schedule">{{t 'menu.mySchedule'}}</a></li>
+          <li><a class="dropdown-item" href="/approvals/my">{{t 'menu.myRequests'}}</a></li>
         {{/if}}
         {{#if isManager}}
-          <li><a class="dropdown-item" href="/employee">Employees</a></li>
-          <li><a class="dropdown-item" href="/salary">Payroll</a></li>
-          <li><a class="dropdown-item" href="/tasks">Tasks</a></li>
-          <li><a class="dropdown-item" href="/approvals">Approval Center</a></li>
+          <li><a class="dropdown-item" href="/employee">{{t 'menu.employees'}}</a></li>
+          <li><a class="dropdown-item" href="/salary">{{t 'menu.payroll'}}</a></li>
+          <li><a class="dropdown-item" href="/tasks">{{t 'menu.tasks'}}</a></li>
+          <li><a class="dropdown-item" href="/approvals">{{t 'menu.approvalCenter'}}</a></li>
         {{/if}}
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+        <li><a class="dropdown-item text-danger" href="/logout">{{t 'menu.logout'}}</a></li>
       </ul>
     </div>
 
   {{else}}
     <!-- Guest -->
     <a href="/login" class="text-decoration-none fw-semibold text-dark">
-      Log in
+      {{t 'menu.login'}}
     </a>
     <a href="#" class="btn btn-primary">
-      Start free trial
+      {{t 'menu.startTrial'}}
     </a>
   {{/if}}
 

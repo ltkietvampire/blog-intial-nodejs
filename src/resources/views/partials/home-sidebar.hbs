@@ -1,25 +1,25 @@
 <!-- SIDEBAR -->
 <div class="sidebar p-3">
-  <h6>Team</h6>
+  <h6>{{t 'home.sidebar.team'}}</h6>
   <div class="employee-list">
-    <div id="employee-all" class="employee-item p-2" onclick="allBoardSchedule()">Team Schedule Board</div>
+    <div id="employee-all" class="employee-item p-2" onclick="allBoardSchedule()">{{t 'home.sidebar.teamScheduleBoard'}}</div>
 
-    <div class="sidebar-section-title">Employees</div>
+    <div class="sidebar-section-title">{{t 'home.sidebar.employees'}}</div>
     {{#if employeeUsers.length}}
       {{#each employeeUsers}}
         <div id="user-{{this._id}}" class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
       {{/each}}
     {{else}}
-      <div class="text-muted small px-2">No employees</div>
+      <div class="text-muted small px-2">{{t 'home.sidebar.noEmployees'}}</div>
     {{/if}}
 
-    <div class="sidebar-section-title">Managers</div>
+    <div class="sidebar-section-title">{{t 'home.sidebar.managers'}}</div>
     {{#if managerUsers.length}}
       {{#each managerUsers}}
         <div id="user-{{this._id}}" class="employee-item p-2" onclick="loadEmployee('{{this._id}}')">{{this.name}}</div>
       {{/each}}
     {{else}}
-      <div class="text-muted small px-2">No managers</div>
+      <div class="text-muted small px-2">{{t 'home.sidebar.noManagers'}}</div>
     {{/if}}
   </div>
 </div>

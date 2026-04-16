@@ -1,17 +1,46 @@
 <div class="tasks-view">
   <div class="task-page">
-    <div class="d-flex align-items-center justify-content-between mb-3 toolbar gap-2 flex-wrap">
-      <h3 class="mb-0">Tasks</h3>
-      <div class="d-flex gap-2 align-items-center flex-wrap">
-        <button
-          type="button"
-          class="btn btn-outline-dark btn-sm"
-          data-bs-toggle="modal"
-          data-bs-target="#archivedTasksModal"
-        >
-          Archive/Completed ({{archivedTasks.length}})
+    {{!-- Toolbar: Tiêu đề + Bộ lọc + Nút hành động --}}
+    <div class="toolbar mb-3">
+      {{!-- Row 1: Tiêu đề + Nút --}}
+      <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-2">
+        <h3 class="mb-0">{{t 'tasksAdmin.title'}}</h3>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+          <button
+            type="button"
+            class="btn btn-outline-dark btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#archivedTasksModal"
+          >
+            {{t 'tasksAdmin.archiveCompleted'}} ({{archivedTasks.length}})
+          </button>
+          <button id="btn-add" class="btn btn-primary btn-sm">{{t 'tasksAdmin.newTask'}}</button>
+        </div>
+      </div>
+      {{!-- Row 2: Tìm kiếm + Filter Priority --}}
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="position-relative flex-grow-1" style="min-width: 200px; max-width: 380px;">
+          <i class="bi bi-search position-absolute top-50 translate-middle-y text-muted" style="left: 10px; pointer-events: none; font-size: 0.8rem;"></i>
+          <input
+            id="taskSearchInput"
+            type="text"
+            class="form-control form-control-sm ps-4"
+            placeholder="Tìm kiếm theo tên task..."
+            autocomplete="off"
+          >
+        </div>
+        <button id="taskSearchClear" type="button" class="btn btn-outline-secondary btn-sm d-none" title="Xóa tìm kiếm">
+          <i class="bi bi-x-lg"></i>
         </button>
-        <button id="btn-add" class="btn btn-primary btn-sm">+ New Task</button>
+        <select id="filterPriority" class="form-select form-select-sm" style="width: 160px">
+          <option value="all">{{t 'tasksAdmin.allPriorities'}}</option>
+          <option value="1">{{t 'tasksAdmin.priority'}} 1</option>
+          <option value="2">{{t 'tasksAdmin.priority'}} 2</option>
+          <option value="3">{{t 'tasksAdmin.priority'}} 3</option>
+          <option value="4">{{t 'tasksAdmin.priority'}} 4</option>
+          <option value="5">{{t 'tasksAdmin.priority'}} 5</option>
+        </select>
+        <span id="taskSearchCount" class="text-muted small text-nowrap ms-1"></span>
       </div>
     </div>
 
@@ -20,20 +49,10 @@
         <div class="section-box">
           <div class="d-flex align-items-center mb-3">
             <div>
-              <h5 class="mb-0">Unassigned</h5>
-              <div class="small-muted">Ascending priority, newest tasks first</div>
+              <h5 class="mb-0">{{t 'tasksAdmin.unassigned'}}</h5>
+              <div class="small-muted">{{t 'tasksAdmin.unassignedSub'}}</div>
             </div>
-            <div class="ms-auto d-flex align-items-center gap-2">
-              <span id="unassignedCount" class="badge-soft">0</span>
-              <select id="filterPriority" class="form-select form-select-sm" style="width: 160px">
-                <option value="all">All priorities</option>
-                <option value="1">Priority 1</option>
-                <option value="2">Priority 2</option>
-                <option value="3">Priority 3</option>
-                <option value="4">Priority 4</option>
-                <option value="5">Priority 5</option>
-              </select>
-            </div>
+            <span id="unassignedCount" class="badge-soft ms-auto">0</span>
           </div>
           <div id="unassignedList" class="list-group list-group-flush"></div>
         </div>
@@ -43,8 +62,8 @@
         <div class="section-box">
           <div class="d-flex align-items-center mb-3">
             <div>
-              <h5 class="mb-0">Assigned</h5>
-              <div class="small-muted">Grouped by assignee and deadline</div>
+              <h5 class="mb-0">{{t 'tasksAdmin.assigned'}}</h5>
+              <div class="small-muted">{{t 'tasksAdmin.assignedSub'}}</div>
             </div>
             <span id="assignedCount" class="badge-soft ms-auto">0</span>
           </div>
@@ -62,6 +81,7 @@
     window.usersData = {{{json users}}};
     window.tasksData = {{{json tasks}}};
     window.assignmentsData = {{{json data}}};
+    window.currentUserRole = '{{currentUser.role}}';
   </script>
   <script src="/js/tasks.js"></script>
 </div>

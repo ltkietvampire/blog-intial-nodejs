@@ -3,17 +3,17 @@
     <section class="hero-card">
       <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
         <div>
-          <div class="hero-title">People Operations</div>
-          <div class="hero-subtitle">Manage team members, workloads, and availability in one place.</div>
+          <div class="hero-title">{{t 'employees.title'}}</div>
+          <div class="hero-subtitle">{{t 'employees.subtitle'}}</div>
         </div>
         <div class="d-flex flex-wrap hero-actions">
           <a href="/employee/statistics" class="btn btn-soft-light">
             <i class="bi bi-graph-up-arrow me-1"></i>
-            Employee Statistics
+            {{t 'employees.btnStats'}}
           </a>
           <button type="button" class="btn btn-brand" data-bs-toggle="modal" data-bs-target="#addPeopleModal">
             <i class="bi bi-person-plus-fill me-1"></i>
-            Add Employee
+            {{t 'employees.btnAdd'}}
           </button>
         </div>
       </div>
@@ -21,24 +21,24 @@
 
     <section class="summary-grid">
       <article class="summary-card">
-        <div class="summary-label">Total Members</div>
+        <div class="summary-label">{{t 'employees.summaryTotal'}}</div>
         <div class="summary-value" id="summaryTotal">0</div>
-        <div class="summary-hint">All accounts in this workspace</div>
+        <div class="summary-hint">{{t 'employees.summaryTotalHint'}}</div>
       </article>
       <article class="summary-card">
-        <div class="summary-label">Active</div>
+        <div class="summary-label">{{t 'employees.summaryActive'}}</div>
         <div class="summary-value text-success" id="summaryActive">0</div>
-        <div class="summary-hint">Ready for assignments</div>
+        <div class="summary-hint">{{t 'employees.summaryActiveHint'}}</div>
       </article>
       <article class="summary-card">
-        <div class="summary-label">Busy</div>
+        <div class="summary-label">{{t 'employees.summaryBusy'}}</div>
         <div class="summary-value" style="color: #c2410c;" id="summaryBusy">0</div>
-        <div class="summary-hint">Currently handling heavy load</div>
+        <div class="summary-hint">{{t 'employees.summaryBusyHint'}}</div>
       </article>
       <article class="summary-card">
-        <div class="summary-label">Off</div>
+        <div class="summary-label">{{t 'employees.summaryOff'}}</div>
         <div class="summary-value text-danger" id="summaryOff">0</div>
-        <div class="summary-hint">Unavailable now</div>
+        <div class="summary-hint">{{t 'employees.summaryOffHint'}}</div>
       </article>
     </section>
 
@@ -46,42 +46,42 @@
       <div class="toolbar">
         <div class="row g-2 align-items-center">
           <div class="col-lg-4 col-md-6">
-            <input id="searchInput" type="text" class="form-control" placeholder="Search by name, email, phone">
+            <input id="searchInput" type="text" class="form-control" placeholder="{{t 'employees.searchPlaceholder'}}">
           </div>
           <div class="col-lg-3 col-md-6">
             <select id="statusFilter" class="form-select">
-              <option value="all">All statuses</option>
-              <option value="status-active">Active</option>
-              <option value="status-busy">Busy</option>
-              <option value="status-off">Off</option>
+              <option value="all">{{t 'employees.filterAllStatus'}}</option>
+              <option value="status-active">{{t 'employees.summaryActive'}}</option>
+              <option value="status-busy">{{t 'employees.summaryBusy'}}</option>
+              <option value="status-off">{{t 'employees.summaryOff'}}</option>
             </select>
           </div>
           <div class="col-lg-3 col-md-6">
             <select id="positionFilter" class="form-select">
-              <option value="all">All positions</option>
+              <option value="all">{{t 'employees.filterAllPosition'}}</option>
             </select>
           </div>
           <div class="col-lg-2 col-md-6 d-grid">
-            <button id="clearFilters" type="button" class="btn btn-outline-secondary">Clear filters</button>
+            <button id="clearFilters" type="button" class="btn btn-outline-secondary">{{t 'employees.clearFilters'}}</button>
           </div>
         </div>
         <div class="d-flex justify-content-between align-items-center mt-3 gap-2 flex-wrap">
           <div class="toolbar-meta" id="showingText">Showing 0 of 0 members</div>
-          <div class="small text-muted">Tip: click the 3-dot action menu on each row to edit or delete quickly.</div>
+          <div class="small text-muted">{{t 'employees.tipRowAction'}}</div>
         </div>
         <div id="bulkActionsBar" class="d-none flex-wrap align-items-center gap-2 mt-3">
           <span class="badge text-bg-light border" id="selectedCountText">0 selected</span>
           <select id="bulkStatusSelect" class="form-select" style="max-width: 200px;">
-            <option value="">Change status...</option>
-            <option value="status-active">Active</option>
-            <option value="status-busy">Busy</option>
-            <option value="status-off">Off</option>
+            <option value="">{{t 'employees.changeStatus'}}</option>
+            <option value="status-active">{{t 'employees.summaryActive'}}</option>
+            <option value="status-busy">{{t 'employees.summaryBusy'}}</option>
+            <option value="status-off">{{t 'employees.summaryOff'}}</option>
           </select>
           <button id="btnApplyBulkStatus" type="button" class="btn btn-outline-primary" disabled>
-            Apply status
+            {{t 'employees.btnApplyBulk'}}
           </button>
           <button id="btnBulkDelete" type="button" class="btn btn-outline-danger" disabled>
-            Delete selected
+            {{t 'employees.btnBulkDelete'}}
           </button>
         </div>
       </div>
@@ -92,13 +92,13 @@
             <thead>
               <tr>
                 <th style="width: 40px;"><input id="selectAllEmployees" type="checkbox" aria-label="select all"></th>
-                <th>Member</th>
-                <th>Phone</th>
-                <th>Role</th>
-                <th>Capacity</th>
-                <th>Hourly Rate</th>
-                <th>Status</th>
-                <th class="text-end">Actions</th>
+                <th>{{t 'employees.colMember'}}</th>
+                <th>{{t 'employees.colPhone'}}</th>
+                <th>{{t 'employees.colRole'}}</th>
+                <th>{{t 'employees.colCapacity'}}</th>
+                <th>{{t 'employees.colRate'}}</th>
+                <th>{{t 'employees.colStatus'}}</th>
+                <th class="text-end">{{t 'employees.colActions'}}</th>
               </tr>
             </thead>
             <tbody id="employeeTableBody">
@@ -141,7 +141,7 @@
                       {{this.trangthai}}
                     </span>
                     {{#if this.isBanned}}
-                      <span class="badge bg-danger ms-1">Banned</span>
+                      <span class="badge bg-danger ms-1">{{t 'employees.banned'}}</span>
                     {{/if}}
                   </td>
                   <td class="text-end">
@@ -171,7 +171,7 @@
                             data-createdat="{{this.createdAt}}"
                             data-updatedat="{{this.updatedAt}}"
                           >
-                            View profile
+                            {{t 'employees.actionView'}}
                           </button>
                         </li>
                         <li>
@@ -187,7 +187,7 @@
                             data-hourlyrate="{{this.hourlyRate}}"
                             data-trangthai="{{this.trangthai}}"
                           >
-                            Edit employee
+                            {{t 'employees.actionEdit'}}
                           </button>
                         </li>
                         <li><hr class="dropdown-divider"></li>
@@ -198,7 +198,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#deleteEmployeeModal"
                           >
-                            Delete employee
+                            {{t 'employees.actionDelete'}}
                           </button>
                         </li>
                         {{#if ../isAdmin}}
@@ -207,7 +207,7 @@
                           <form action="/admin/toggle-ban" method="POST" class="m-0 p-0">
                             <input type="hidden" name="userId" value="{{this._id}}">
                             <button type="submit" class="dropdown-item text-warning fw-bold">
-                              {{#if this.isBanned}}Unban User{{else}}Ban User{{/if}}
+                              {{#if this.isBanned}}{{t 'employees.actionUnban'}}{{else}}{{t 'employees.actionBan'}}{{/if}}
                             </button>
                           </form>
                         </li>
@@ -219,7 +219,7 @@
               {{else}}
                 <tr>
                   <td colspan="8" class="empty-cell">
-                    No employees found. Start by adding a new employee.
+                    {{t 'employees.noEmployees'}}
                   </td>
                 </tr>
               {{/each}}

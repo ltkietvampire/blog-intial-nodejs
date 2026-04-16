@@ -1,8 +1,8 @@
 <div class="container py-4">
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
     <div>
-      <h3 class="mb-1">Announcements</h3>
-      <div class="text-muted">Send a message to all employees</div>
+      <h3 class="mb-1">{{t 'announcements.title'}}</h3>
+      <div class="text-muted">{{t 'announcements.subtitle'}}</div>
     </div>
   </div>
 
@@ -11,17 +11,17 @@
     <div class="col-12 col-lg-5">
       <div class="card shadow-sm">
         <div class="card-body">
-          <h5 class="card-title mb-3">New announcement</h5>
+          <h5 class="card-title mb-3">{{t 'announcements.newTitle'}}</h5>
           <form method="POST" action="/announcements">
             <div class="mb-3">
-              <label class="form-label">Title</label>
+              <label class="form-label">{{t 'announcements.formTitle'}}</label>
               <input name="title" type="text" class="form-control" required />
             </div>
             <div class="mb-3">
-              <label class="form-label">Message</label>
+              <label class="form-label">{{t 'announcements.formMessage'}}</label>
               <textarea name="message" class="form-control" rows="5" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Send to all employees</button>
+            <button type="submit" class="btn btn-primary">{{t 'announcements.btnSend'}}</button>
           </form>
         </div>
       </div>
@@ -31,7 +31,7 @@
     <div class="col-12 {{#if isManager}}col-lg-7{{else}}col-lg-12{{/if}}">
       <div class="card shadow-sm">
         <div class="card-body">
-          <h5 class="card-title mb-3">Recent announcements</h5>
+          <h5 class="card-title mb-3">{{t 'announcements.recentTitle'}}</h5>
           {{#if announcements.length}}
             <div class="list-group">
               {{#each announcements}}
@@ -39,12 +39,12 @@
                   <div class="announcement-inner d-flex justify-content-between align-items-start gap-3">
                     <div>
                       <div class="fw-semibold">{{this.title}}</div>
-                      <div class="small text-muted">By {{this.createdByName}} · {{this.createdAtText}}</div>
+                      <div class="small text-muted">{{t 'announcements.by'}} {{this.createdByName}} · {{this.createdAtText}}</div>
                       <div class="mt-2">{{this.message}}</div>
                     </div>
                     {{#if ../isEmployee}}
                     <span class="badge {{#if this.isSeen}}bg-light text-dark{{else}}bg-warning text-dark{{/if}} text-uppercase">
-                      {{#if this.isSeen}}seen{{else}}new{{/if}}
+                      {{#if this.isSeen}}{{t 'announcements.seen'}}{{else}}{{t 'announcements.newMsg'}}{{/if}}
                     </span>
                     {{/if}}
                   </div>
@@ -52,7 +52,7 @@
                   <div class="announcement-delete-wrapper">
                     <form method="POST" action="/announcements/{{this._id}}?_method=DELETE" style="height: 100%;">
                       <button type="submit" class="announcement-delete-btn" title="Delete Announcement">
-                        <i class="bi bi-trash"></i> Xóa
+                        <i class="bi bi-trash"></i> {{t 'announcements.btnDelete'}}
                       </button>
                     </form>
                   </div>
@@ -61,7 +61,7 @@
               {{/each}}
             </div>
           {{else}}
-            <div class="text-muted">No announcements yet.</div>
+            <div class="text-muted">{{t 'announcements.noAnnouncements'}}</div>
           {{/if}}
         </div>
       </div>

@@ -2,14 +2,17 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Example App</title>
+    <title>Work Schedule Dashboard</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/img/iconWeb.png">
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/app.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
 </head>
 <body class="mx-auto">
-    <Div class="app">
+    <div class="app">
         {{> header}}
 
         {{#if flash.success.length}}
@@ -38,10 +41,12 @@
         </div>
         {{/if}}
 
-         {{{body}}}
+        <main class="app-main">
+            {{{body}}}
+        </main>
 
-         {{>footer}}
-    </Div>
+        {{>footer}}
+    </div>
 </body>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

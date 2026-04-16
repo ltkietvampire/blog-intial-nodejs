@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const createDeadline = document.getElementById('createDeadline');
   const suggestedEmployees = document.getElementById('suggestedEmployees');
   const suggestedHint = document.getElementById('suggestedHint');
+  const taskSearchInput = document.getElementById('taskSearchInput');
+  const taskSearchClear = document.getElementById('taskSearchClear');
+  const taskSearchCount = document.getElementById('taskSearchCount');
 
   if (!filterPriority || !unassignedList || !assignedList) return;
 
@@ -31,9 +34,25 @@ document.addEventListener('DOMContentLoaded', function () {
   const commentsModal = commentsModalEl ? new bootstrap.Modal(commentsModalEl) : null;
 
   const actionForm = document.getElementById('actionForm');
-  const users = window.usersData || [];
+  const allUsers = window.usersData || [];
   const rawTasks = window.tasksData || [];
   const rawData = window.assignmentsData || [];
+
+  // Phân quyền giao việc theo role hiện tại
+  const currentUserRole = String(window.currentUserRole || '').toLowerCase();
+  const assignableRoles = (function () {
+    if (currentUserRole === 'director' || currentUserRole === 'admin') {
+      return ['manager', 'employee']; // Director/Admin giao được cho manager + employee
+    } else if (currentUserRole === 'manager') {
+      return ['employee']; // Manager chỉ giao được cho employee
+    }
+    return [];
+  })();
+
+  // Lọc danh sách users có thể được giao việc
+  const users = assignableRoles.length > 0
+    ? allUsers.filter((u) => assignableRoles.includes(String(u.role || '').toLowerCase()))
+    : allUsers;
 
   const recurrenceLabel = {
     none: 'No recurrence',
@@ -124,17 +143,46 @@ document.addEventListener('DOMContentLoaded', function () {
     select.classList.remove('is-invalid');
 
     const availableUsers = users.filter((user) => {
+      // Lọc theo role (đã được lọc từ server, client lọc lại để chắc chắn)
+      const userRole = String(user.role || '').toLowerCase();
+      if (assignableRoles.length > 0 && !assignableRoles.includes(userRole)) {
+        return false;
+      }
       if (filterPosition !== 'all' && user.position !== filterPosition) {
         return false;
       }
       return !currentAssignedEmployeeIds.includes(String(user._id));
     });
 
-    for (const user of availableUsers) {
+    if (availableUsers.length === 0) {
       const option = document.createElement('option');
-      option.value = String(user._id);
-      option.textContent = `${user.name} - ${user.position}`;
+      option.value = '';
+      option.textContent = 'Không có nhân viên phù hợp';
+      option.disabled = true;
       select.appendChild(option);
+    } else {
+      for (const user of availableUsers) {
+        const option = document.createElement('option');
+        option.value = String(user._id);
+        const roleLabel = user.role === 'manager' ? ' [Manager]' : '';
+        option.textContent = `${user.name} - ${user.position}${roleLabel}`;
+        select.appendChild(option);
+      }
+    }
+
+    // Hiển thị badge phân quyền trong modal
+    let roleHintEl = document.getElementById('assignRoleHint');
+    if (!roleHintEl) {
+      roleHintEl = document.createElement('div');
+      roleHintEl.id = 'assignRoleHint';
+      roleHintEl.className = 'small mt-2';
+      const labelEl = document.querySelector('label[for="assignEmployeeSelect"], .form-label.fw-semibold');
+      if (select.parentNode) select.parentNode.appendChild(roleHintEl);
+    }
+    if (currentUserRole === 'manager') {
+      roleHintEl.innerHTML = '<span class="badge bg-warning text-dark"><i class="bi bi-shield-lock me-1"></i>Bạn chỉ có thể giao việc cho Employee</span>';
+    } else if (currentUserRole === 'director' || currentUserRole === 'admin') {
+      roleHintEl.innerHTML = '<span class="badge bg-success"><i class="bi bi-shield-check me-1"></i>Bạn có thể giao việc cho Manager và Employee</span>';
     }
   }
 
@@ -542,11 +590,16 @@ document.addEventListener('DOMContentLoaded', function () {
     assignedList.innerHTML = '';
 
     const priorityFilter = filterPriority.value;
+    const searchQuery = taskSearchInput ? taskSearchInput.value.trim().toLowerCase() : '';
 
     const needTasks = tasks
       .filter((task) => task.assigned_people_count < task.required_people)
       .filter((task) => {
         if (priorityFilter !== 'all' && String(task.priority) !== priorityFilter) {
+          return false;
+        }
+        // Lọc theo tên task
+        if (searchQuery && !String(task.name_task || '').toLowerCase().includes(searchQuery)) {
           return false;
         }
         return true;
@@ -563,6 +616,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (priorityFilter !== 'all' && String(row.priority) !== priorityFilter) {
           return false;
         }
+        // Lọc theo tên task
+        if (searchQuery && !String(row.taskName || '').toLowerCase().includes(searchQuery)) {
+          return false;
+        }
         return true;
       })
       .sort((a, b) => {
@@ -575,8 +632,23 @@ document.addEventListener('DOMContentLoaded', function () {
     unassignedCount.textContent = String(needTasks.length);
     assignedCount.textContent = String(assignedRows.length);
 
+    // Cập nhật search count và hiển thị nút clear
+    if (taskSearchInput && taskSearchClear && taskSearchCount) {
+      const hasQuery = searchQuery.length > 0;
+      taskSearchClear.classList.toggle('d-none', !hasQuery);
+      if (hasQuery) {
+        const total = needTasks.length + assignedRows.length;
+        taskSearchCount.textContent = `Tìm thấy ${total} task`;
+      } else {
+        taskSearchCount.textContent = '';
+      }
+    }
+
     if (needTasks.length === 0) {
-      unassignedList.innerHTML = '<div class="alert alert-light border mb-0">No tasks in this column.</div>';
+      const msg = searchQuery
+        ? `<div class="alert alert-light border mb-0">Không tìm thấy task nào khớp với "<strong>${escapeHtml(searchQuery)}</strong>".</div>`
+        : '<div class="alert alert-light border mb-0">No tasks in this column.</div>';
+      unassignedList.innerHTML = msg;
     } else {
       for (const task of needTasks) {
         unassignedList.insertAdjacentHTML('beforeend', renderNeedAssignTask(task));
@@ -584,7 +656,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (assignedRows.length === 0) {
-      assignedList.innerHTML = '<div class="alert alert-light border mb-0">No task assignments yet.</div>';
+      const msg = searchQuery
+        ? `<div class="alert alert-light border mb-0">Không tìm thấy assignment nào khớp với "<strong>${escapeHtml(searchQuery)}</strong>".</div>`
+        : '<div class="alert alert-light border mb-0">No task assignments yet.</div>';
+      assignedList.innerHTML = msg;
     } else {
       for (const row of assignedRows) {
         assignedList.insertAdjacentHTML('beforeend', renderAssignedRow(row));
@@ -693,6 +768,32 @@ document.addEventListener('DOMContentLoaded', function () {
   if (filterPriority) {
     filterPriority.onchange = render;
   }
+
+  // === Tìm kiếm theo tên task ===
+  if (taskSearchInput) {
+    taskSearchInput.addEventListener('input', function () {
+      render();
+    });
+    // Hỗ trợ phím Escape để xóa tìm kiếm
+    taskSearchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        this.value = '';
+        render();
+        this.blur();
+      }
+    });
+  }
+
+  if (taskSearchClear) {
+    taskSearchClear.addEventListener('click', function () {
+      if (taskSearchInput) {
+        taskSearchInput.value = '';
+        taskSearchInput.focus();
+      }
+      render();
+    });
+  }
+  // ================================
 
   render();
 });

@@ -2,9 +2,9 @@
 <div class="container py-4 stats-wrap">
   <div class="d-flex flex-wrap gap-3 justify-content-between align-items-start mb-3">
     <div>
-      <h3 class="stats-title">Employee Statistics</h3>
-      <div class="stats-subtitle">Updated at: {{generatedAt}}</div>
-      <div class="stats-subtitle">Filter: {{periodLabel}}</div>
+      <h3 class="stats-title">{{t 'employeeStats.title'}}</h3>
+      <div class="stats-subtitle">{{t 'employeeStats.updated'}} {{generatedAt}}</div>
+      <div class="stats-subtitle">{{t 'employeeStats.filter'}} {{periodLabel}}</div>
     </div>
 
     <div class="d-flex gap-2">
@@ -14,47 +14,47 @@
             <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
           {{/each}}
         </select>
-        <button type="submit" class="btn btn-outline-secondary btn-sm">Apply</button>
+        <button type="submit" class="btn btn-outline-secondary btn-sm">{{t 'employeeStats.btnApply'}}</button>
       </form>
       <a href="/employee/statistics/export?period={{selectedPeriod}}" class="btn btn-outline-success btn-sm">
-        Export CSV
+        {{t 'employeeStats.btnExportCSV'}}
       </a>
       <a href="/employee/statistics/export-salary?period={{selectedPeriod}}" class="btn btn-outline-success btn-sm">
-        Xuất Bảng Lương
+        {{t 'employeeStats.btnExportSalary'}}
       </a>
-      <a href="/employee" class="btn btn-outline-secondary btn-sm">Employee List</a>
-      <a href="/tasks" class="btn btn-primary btn-sm">Task Management</a>
+      <a href="/employee" class="btn btn-outline-secondary btn-sm">{{t 'employeeStats.btnEmployeeList'}}</a>
+      <a href="/tasks" class="btn btn-primary btn-sm">{{t 'employeeStats.btnTaskManagement'}}</a>
     </div>
   </div>
 
   <div class="row g-3 mb-4">
     <div class="col-md-2 col-6">
       <div class="card stats-card p-3">
-        <div class="metric-label">Employees</div>
+        <div class="metric-label">{{t 'employeeStats.cardEmployees'}}</div>
         <div class="metric-value">{{report.length}}</div>
       </div>
     </div>
     <div class="col-md-3 col-6">
       <div class="card stats-card p-3">
-        <div class="metric-label">Total Work Hours</div>
+        <div class="metric-label">{{t 'employeeStats.cardWorkHours'}}</div>
         <div class="metric-value">{{totals.workHours}}h</div>
       </div>
     </div>
     <div class="col-md-3 col-6">
       <div class="card stats-card p-3">
-        <div class="metric-label">Total Paid Salary</div>
+        <div class="metric-label">{{t 'employeeStats.cardPaidSalary'}}</div>
         <div class="metric-value format-currency" data-value="{{totals.totalPaidSalary}}">{{totals.totalPaidSalary}}</div>
       </div>
     </div>
     <div class="col-md-2 col-6">
       <div class="card stats-card p-3">
-        <div class="metric-label">Total Late</div>
+        <div class="metric-label">{{t 'employeeStats.cardLate'}}</div>
         <div class="metric-value">{{totals.lateCount}}</div>
       </div>
     </div>
     <div class="col-md-2 col-6">
       <div class="card stats-card p-3">
-        <div class="metric-label">Skipped Tasks</div>
+        <div class="metric-label">{{t 'employeeStats.cardSkipped'}}</div>
         <div class="metric-value">{{totals.skippedCount}}</div>
       </div>
     </div>
@@ -63,7 +63,7 @@
   <div class="row g-3 mb-4">
     <div class="col-lg-8">
       <div class="chart-card p-3">
-        <div class="chart-title">Work Hours by Employee</div>
+        <div class="chart-title">{{t 'employeeStats.chartWorkHours'}}</div>
         <div class="chart-wrap">
           <canvas id="workHoursChart"></canvas>
         </div>
@@ -71,7 +71,7 @@
     </div>
     <div class="col-lg-4">
       <div class="chart-card p-3">
-        <div class="chart-title">Assignment Status Ratio</div>
+        <div class="chart-title">{{t 'employeeStats.chartStatusRatio'}}</div>
         <div class="chart-wrap">
           <canvas id="assignmentStatusChart"></canvas>
         </div>
@@ -82,7 +82,7 @@
   <div class="row g-3 mb-4">
     <div class="col-12">
       <div class="chart-card p-3">
-        <div class="chart-title">Paid Salary by Employee</div>
+        <div class="chart-title">{{t 'employeeStats.chartSalary'}}</div>
         <div class="chart-wrap" style="height: 300px;">
           <canvas id="salaryChart"></canvas>
         </div>
@@ -95,15 +95,15 @@
       <table class="table table-hover stats-table align-middle mb-0">
         <thead>
           <tr>
-            <th>Employee</th>
-            <th>Position</th>
-            <th>Assigned Tasks</th>
-            <th>Total Work Hours</th>
-            <th>Paid Salary</th>
-            <th>Late Time</th>
-            <th>Late Count</th>
-            <th>Skipped Tasks</th>
-            <th>Max Work Hours/Day</th>
+            <th>{{t 'employeeStats.thEmployee'}}</th>
+            <th>{{t 'employeeStats.thPosition'}}</th>
+            <th>{{t 'employeeStats.thAssignedTasks'}}</th>
+            <th>{{t 'employeeStats.thTotalWorkHours'}}</th>
+            <th>{{t 'employeeStats.thPaidSalary'}}</th>
+            <th>{{t 'employeeStats.thLateTime'}}</th>
+            <th>{{t 'employeeStats.thLateCount'}}</th>
+            <th>{{t 'employeeStats.thSkippedTasks'}}</th>
+            <th>{{t 'employeeStats.thMaxWorkHours'}}</th>
           </tr>
         </thead>
 
@@ -128,7 +128,7 @@
           {{else}}
             <tr>
               <td colspan="9" class="text-center py-4 text-muted">
-                No employee statistics available.
+                {{t 'employeeStats.noData'}}
               </td>
             </tr>
           {{/if}}

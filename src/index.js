@@ -15,7 +15,7 @@ const leaveBusySync = require('./app/middleware/leaveBusySync');
 const syncSessionUser = require('./app/middleware/syncSessionUser');
 const chatbotConfigMiddleware = require('./app/middleware/chatbotConfigMiddleware');
 const { isEmployeePosition, isManagerPosition } = require('./app/middleware/roleUtils');
-
+const { i18next, middleware } = require('./config/i18n');
 
 const app = express()
 const port = 3000
@@ -42,6 +42,7 @@ app.use(express.urlencoded({
 app.use(express.json());
 app.use(methodOverride('_method'))
 app.use(cookieParser());
+app.use(middleware.handle(i18next));
 app.use(flashMessage);
 app.use(syncSessionUser);
 
@@ -63,6 +64,12 @@ app.engine('hbs', engine({
     eq: (a, b) => a === b,
     or: (a, b) => a || b,
     sum: (a, b) => (Number(a) || 0) + (Number(b) || 0),
+    t: function (key, options) {
+      if (options && options.data && options.data.root && options.data.root.t) {
+        return options.data.root.t(key);
+      }
+      return key;
+    },
   },
 }));
 app.set('view engine',  'hbs');

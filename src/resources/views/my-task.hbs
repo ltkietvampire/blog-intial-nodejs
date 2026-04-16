@@ -4,14 +4,14 @@
   <div class="mytask-header mb-4">
     <div class="d-flex flex-wrap justify-content-between gap-3 align-items-start">
       <div>
-        <h3 class="mytask-title">My Task</h3>
-        <div class="mytask-sub">Cap nhat luc: {{nowText}}</div>
+        <h3 class="mytask-title">{{t 'myTask.title'}}</h3>
+        <div class="mytask-sub">{{t 'myTask.updated'}} {{nowText}}</div>
       </div>
 
       <div class="text-end">
-        <div class="mytask-sub">Employee</div>
+        <div class="mytask-sub">{{t 'myTask.employee'}}</div>
         <div class="fw-semibold">{{user.name}} - {{user.position}}</div>
-        <div class="mytask-sub">Total worked time: {{user.totalWorkingHours}}h</div>
+        <div class="mytask-sub">{{t 'myTask.totalWorkedTime'}} {{user.totalWorkingHours}}h</div>
       </div>
     </div>
   </div>
@@ -19,10 +19,10 @@
   <div class="mb-4">
     <div class="d-flex justify-content-between align-items-end mb-3">
       <div>
-        <h5 class="section-title">Today's Tasks</h5>
-        <div class="section-sub">Tasks with deadline today</div>
+        <h5 class="section-title">{{t 'myTask.todayTasks'}}</h5>
+        <div class="section-sub">{{t 'myTask.todayTasksSub'}}</div>
       </div>
-      <div class="section-sub">Total: {{todayTasks.length}}</div>
+      <div class="section-sub">{{t 'myTask.total'}} {{todayTasks.length}}</div>
     </div>
 
     <div class="row g-3">
@@ -38,28 +38,28 @@
               <div class="task-time">{{this.dateStart}} - {{this.dateEnd}}</div>
               <div class="task-desc">{{this.description}}</div>
 
-              <div class="meta-text mt-2">Deadline: {{this.deadlineText}}</div>
-              <div class="meta-text">Estimated hours: {{this.estimatedHours}}h</div>
+              <div class="meta-text mt-2">{{t 'myTask.deadline'}} {{this.deadlineText}}</div>
+              <div class="meta-text">{{t 'myTask.estimatedHours'}} {{this.estimatedHours}}h</div>
               {{#if this.checkInAtText}}
-                <div class="meta-text">Check-in: {{this.checkInAtText}}</div>
+                <div class="meta-text">{{t 'myTask.checkIn'}} {{this.checkInAtText}}</div>
               {{/if}}
               {{#if this.completedAtText}}
-                <div class="meta-text">Completed: {{this.completedAtText}}</div>
+                <div class="meta-text">{{t 'myTask.completed'}} {{this.completedAtText}}</div>
               {{/if}}
 
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-comments-task" data-id="{{this.taskId}}" data-name="{{this.name}}">
-                  <i class="bi bi-chat-dots-fill"></i> Discuss / Report
+                  <i class="bi bi-chat-dots-fill"></i> {{t 'myTask.discussReport'}}
                 </button>
                 {{#if this.canCheckIn}}
                   <form method="POST" action="/my-task/{{this.distributionId}}/check-in">
-                    <button type="submit" class="btn btn-outline-primary btn-sm">Check in</button>
+                    <button type="submit" class="btn btn-outline-primary btn-sm">{{t 'myTask.btnCheckIn'}}</button>
                   </form>
                 {{/if}}
 
                 {{#if this.canComplete}}
                   <form method="POST" action="/my-task/{{this.distributionId}}/complete">
-                    <button type="submit" class="btn btn-success btn-sm">Complete</button>
+                    <button type="submit" class="btn btn-success btn-sm">{{t 'myTask.btnComplete'}}</button>
                   </form>
                 {{/if}}
               </div>
@@ -68,7 +68,7 @@
         {{/each}}
       {{else}}
         <div class="col-12">
-          <div class="alert alert-light border mb-0">No tasks for today.</div>
+          <div class="alert alert-light border mb-0">{{t 'myTask.noTasksToday'}}</div>
         </div>
       {{/if}}
     </div>
@@ -77,10 +77,10 @@
   <div class="mb-4">
     <div class="d-flex justify-content-between align-items-end mb-3">
       <div>
-        <h5 class="section-title">Upcoming Tasks</h5>
-        <div class="section-sub">Tasks with upcoming deadlines</div>
+        <h5 class="section-title">{{t 'myTask.upcomingTasks'}}</h5>
+        <div class="section-sub">{{t 'myTask.upcomingTasksSub'}}</div>
       </div>
-      <div class="section-sub">Total: {{upcomingTasks.length}}</div>
+      <div class="section-sub">{{t 'myTask.total'}} {{upcomingTasks.length}}</div>
     </div>
 
     <div class="row g-3">
@@ -96,18 +96,18 @@
               <div class="task-time">{{this.dateStart}} - {{this.dateEnd}}</div>
               <div class="task-desc">{{this.description}}</div>
 
-              <div class="meta-text mt-2">Deadline: {{this.deadlineText}}</div>
-              <div class="meta-text">Estimated hours: {{this.estimatedHours}}h</div>
+              <div class="meta-text mt-2">{{t 'myTask.deadline'}} {{this.deadlineText}}</div>
+              <div class="meta-text">{{t 'myTask.estimatedHours'}} {{this.estimatedHours}}h</div>
               {{#if this.checkInAtText}}
-                <div class="meta-text">Check-in: {{this.checkInAtText}}</div>
+                <div class="meta-text">{{t 'myTask.checkIn'}} {{this.checkInAtText}}</div>
               {{/if}}
               {{#if this.completedAtText}}
-                <div class="meta-text">Completed: {{this.completedAtText}}</div>
+                <div class="meta-text">{{t 'myTask.completed'}} {{this.completedAtText}}</div>
               {{/if}}
 
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-comments-task" data-id="{{this.taskId}}" data-name="{{this.name}}">
-                  <i class="bi bi-chat-dots-fill"></i> Discuss / Report
+                  <i class="bi bi-chat-dots-fill"></i> {{t 'myTask.discussReport'}}
                 </button>
               </div>
             </div>
@@ -115,7 +115,7 @@
         {{/each}}
       {{else}}
         <div class="col-12">
-          <div class="alert alert-light border mb-0">No upcoming tasks.</div>
+          <div class="alert alert-light border mb-0">{{t 'myTask.noUpcomingTasks'}}</div>
         </div>
       {{/if}}
     </div>
@@ -124,10 +124,10 @@
   <div class="mb-2">
     <div class="d-flex justify-content-between align-items-end mb-3">
       <div>
-        <h5 class="section-title text-danger">Overdue Incomplete Tasks</h5>
-        <div class="section-sub">Tasks past deadline and not marked as completed</div>
+        <h5 class="section-title text-danger">{{t 'myTask.overdueTasks'}}</h5>
+        <div class="section-sub">{{t 'myTask.overdueTasksSub'}}</div>
       </div>
-      <div class="section-sub">Total: {{overdueTasks.length}}</div>
+      <div class="section-sub">{{t 'myTask.total'}} {{overdueTasks.length}}</div>
     </div>
 
     <div class="row g-3">
@@ -143,19 +143,19 @@
               <div class="task-time">{{this.dateStart}} - {{this.dateEnd}}</div>
               <div class="task-desc">{{this.description}}</div>
 
-              <div class="meta-text mt-2">Deadline: {{this.deadlineText}}</div>
-              <div class="meta-text">Estimated hours: {{this.estimatedHours}}h</div>
+              <div class="meta-text mt-2">{{t 'myTask.deadline'}} {{this.deadlineText}}</div>
+              <div class="meta-text">{{t 'myTask.estimatedHours'}} {{this.estimatedHours}}h</div>
               {{#if this.checkInAtText}}
-                <div class="meta-text">Check-in: {{this.checkInAtText}}</div>
+                <div class="meta-text">{{t 'myTask.checkIn'}} {{this.checkInAtText}}</div>
               {{/if}}
 
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <button type="button" class="btn btn-outline-secondary btn-sm btn-comments-task" data-id="{{this.taskId}}" data-name="{{this.name}}">
-                  <i class="bi bi-chat-dots-fill"></i> Discuss / Report
+                  <i class="bi bi-chat-dots-fill"></i> {{t 'myTask.discussReport'}}
                 </button>
                 {{#if this.canComplete}}
                   <form method="POST" action="/my-task/{{this.distributionId}}/complete">
-                    <button type="submit" class="btn btn-success btn-sm">Complete</button>
+                    <button type="submit" class="btn btn-success btn-sm">{{t 'myTask.btnComplete'}}</button>
                   </form>
                 {{/if}}
               </div>
@@ -164,7 +164,7 @@
         {{/each}}
       {{else}}
         <div class="col-12">
-          <div class="alert alert-light border mb-0">No overdue tasks.</div>
+          <div class="alert alert-light border mb-0">{{t 'myTask.noOverdueTasks'}}</div>
         </div>
       {{/if}}
     </div>

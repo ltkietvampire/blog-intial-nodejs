@@ -2,53 +2,53 @@
 <div class="container py-4 employee-dashboard">
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
     <div>
-      <h3 class="mb-1">Employee Dashboard</h3>
-      <div class="text-muted">Hello {{user.name}} ({{user.position}})</div>
+      <h3 class="mb-1">{{t 'dashboardEmployee.title'}}</h3>
+      <div class="text-muted">{{t 'dashboardEmployee.hello'}} {{user.name}} ({{user.position}})</div>
     </div>
-    <div class="text-muted small">Updated: {{nowText}}</div>
+    <div class="text-muted small">{{t 'dashboardEmployee.updated'}} {{nowText}}</div>
   </div>
 
   <div class="row g-3 mb-4">
     <div class="col-md-4 col-lg-2">
       <div class="card summary-card p-3">
         <div class="summary-value">{{stats.assigned}}</div>
-        <div class="summary-label">Assigned</div>
+        <div class="summary-label">{{t 'dashboardEmployee.statAssigned'}}</div>
       </div>
     </div>
     <div class="col-md-4 col-lg-2">
       <div class="card summary-card p-3">
         <div class="summary-value text-primary">{{stats.today}}</div>
-        <div class="summary-label">Due today</div>
+        <div class="summary-label">{{t 'dashboardEmployee.statDueToday'}}</div>
       </div>
     </div>
     <div class="col-md-4 col-lg-2">
       <div class="card summary-card p-3">
         <div class="summary-value text-info">{{stats.upcoming}}</div>
-        <div class="summary-label">Upcoming</div>
+        <div class="summary-label">{{t 'dashboardEmployee.statUpcoming'}}</div>
       </div>
     </div>
     <div class="col-md-4 col-lg-2">
       <div class="card summary-card p-3">
         <div class="summary-value text-danger">{{stats.overdue}}</div>
-        <div class="summary-label">Overdue</div>
+        <div class="summary-label">{{t 'dashboardEmployee.statOverdue'}}</div>
       </div>
     </div>
     <div class="col-md-4 col-lg-2">
       <div class="card summary-card p-3">
         <div class="summary-value text-warning">{{stats.late}}</div>
-        <div class="summary-label">Late</div>
+        <div class="summary-label">{{t 'dashboardEmployee.statLate'}}</div>
       </div>
     </div>
     <div class="col-md-4 col-lg-2">
       <div class="card summary-card p-3">
         <div class="summary-value text-success">{{stats.weeklyHours}}h</div>
-        <div class="summary-label">Week hours</div>
+        <div class="summary-label">{{t 'dashboardEmployee.statWeekHours'}}</div>
       </div>
     </div>
     <div class="col-md-4 col-lg-3">
       <div class="card summary-card p-3">
         <div class="summary-value text-success format-currency" data-value="{{stats.totalEarned}}">{{stats.totalEarned}}</div>
-        <div class="summary-label">Total Earned</div>
+        <div class="summary-label">{{t 'dashboardEmployee.statTotalEarned'}}</div>
       </div>
     </div>
   </div>
@@ -58,17 +58,17 @@
       <div class="card summary-card h-100">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">Urgent Tasks</h5>
-            <a href="/my-task" class="btn btn-sm btn-outline-primary">Go to My Tasks</a>
+            <h5 class="mb-0">{{t 'dashboardEmployee.urgentTitle'}}</h5>
+            <a href="/my-task" class="btn btn-sm btn-outline-primary">{{t 'dashboardEmployee.btnGoToMyTasks'}}</a>
           </div>
           <div class="table-responsive">
             <table class="table task-table align-middle mb-0">
               <thead>
                 <tr>
-                  <th>Task</th>
-                  <th>Deadline</th>
-                  <th>Time</th>
-                  <th>Status</th>
+                  <th>{{t 'dashboardEmployee.thTask'}}</th>
+                  <th>{{t 'dashboardEmployee.thDeadline'}}</th>
+                  <th>{{t 'dashboardEmployee.thTime'}}</th>
+                  <th>{{t 'dashboardEmployee.thStatus'}}</th>
                 </tr>
               </thead>
               <tbody>
@@ -83,7 +83,7 @@
                   {{/each}}
                 {{else}}
                   <tr>
-                    <td colspan="4" class="text-center text-muted py-4">No urgent task right now.</td>
+                    <td colspan="4" class="text-center text-muted py-4">{{t 'dashboardEmployee.noUrgentTasks'}}</td>
                   </tr>
                 {{/if}}
               </tbody>
@@ -96,15 +96,15 @@
       <div class="card summary-card h-100">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">Recent Salaries</h5>
+            <h5 class="mb-0">{{t 'dashboardEmployee.recentSalariesTitle'}}</h5>
           </div>
           <div class="table-responsive">
             <table class="table task-table align-middle mb-0">
               <thead>
                 <tr>
-                  <th>Month</th>
-                  <th>Total Pay</th>
-                  <th>Status</th>
+                  <th>{{t 'dashboardEmployee.thMonth'}}</th>
+                  <th>{{t 'dashboardEmployee.thTotalPay'}}</th>
+                  <th>{{t 'dashboardEmployee.thStatus'}}</th>
                 </tr>
               </thead>
               <tbody>
@@ -118,7 +118,7 @@
                   {{/each}}
                 {{else}}
                   <tr>
-                    <td colspan="3" class="text-center text-muted py-4">No salary records yet.</td>
+                    <td colspan="3" class="text-center text-muted py-4">{{t 'dashboardEmployee.noSalaries'}}</td>
                   </tr>
                 {{/if}}
               </tbody>
@@ -130,10 +130,10 @@
   </div>
 
   <div class="d-flex gap-2">
-    <a href="/my-task" class="btn btn-primary">My Tasks</a>
-    <a href="/my-task/schedule" class="btn btn-outline-primary">My Schedule</a>
-    <a href="/approvals/my" class="btn btn-outline-warning">My Requests</a>
-    <a href="/auth" class="btn btn-outline-secondary">My Profile</a>
+    <a href="/my-task" class="btn btn-primary">{{t 'dashboardEmployee.btnMyTasks'}}</a>
+    <a href="/my-task/schedule" class="btn btn-outline-primary">{{t 'dashboardEmployee.btnMySchedule'}}</a>
+    <a href="/approvals/my" class="btn btn-outline-warning">{{t 'dashboardEmployee.btnMyRequests'}}</a>
+    <a href="/auth" class="btn btn-outline-secondary">{{t 'dashboardEmployee.btnMyProfile'}}</a>
   </div>
 </div>
 

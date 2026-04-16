@@ -87,7 +87,19 @@ class TasksController {
         try {
             await this.autoArchiveCompletedOneTimeTasks();
 
-            const [users, tasks, archivedTasks, positions, data] = await Promise.all([
+            const currentUserRole = req.user ? String(req.user.role || '').toLowerCase() : '';
+
+            // Xác định role nào được hiển thị trong danh sách giao việc
+            let assignableRoles = [];
+            if (currentUserRole === 'director' || currentUserRole === 'admin') {
+                // Director/Admin giao được cho manager và employee
+                assignableRoles = ['manager', 'employee'];
+            } else if (currentUserRole === 'manager') {
+                // Manager chỉ giao được cho employee
+                assignableRoles = ['employee'];
+            }
+
+            const [allUsers, tasks, archivedTasks, positions, data] = await Promise.all([
                 Users.find({}),
                 Tasks.find({ task_status: { $ne: TASK_STATUS.ARCHIVED } }),
                 Tasks.find({ task_status: TASK_STATUS.ARCHIVED }).sort({ archivedAt: -1, updatedAt: -1 }),
@@ -100,7 +112,13 @@ class TasksController {
                     }),
             ]);
 
-            const userRows = multipleMongooseToObject(users);
+            const allUserRows = multipleMongooseToObject(allUsers);
+
+            // Lọc users có thể được giao việc theo role của người dùng hiện tại
+            const userRows = assignableRoles.length > 0
+                ? allUserRows.filter((u) => assignableRoles.includes(String(u.role || '').toLowerCase()))
+                : allUserRows;
+
             const taskRows = multipleMongooseToObject(tasks);
             const archivedTaskRows = multipleMongooseToObject(archivedTasks);
             const distributionRows = multipleMongooseToObject(data).filter((row) => Boolean(row.taskID));
@@ -383,6 +401,30 @@ class TasksController {
                 req.flash('error', 'This task is no longer active.');
                 return res.redirect('/tasks');
             }
+
+            // === Kiểm tra quyền giao việc (phân quyền theo role) ===
+            const assignerRole = req.user ? String(req.user.role || '').toLowerCase() : '';
+            const targetEmployee = await Users.findById(req.params.idEmp).select('role name').lean();
+
+            if (!targetEmployee) {
+                req.flash('error', 'Employee not found.');
+                return res.redirect('/tasks');
+            }
+
+            const targetRole = String(targetEmployee.role || '').toLowerCase();
+
+            // Kiểm tra quyền:
+            // - Manager chỉ giao được cho employee
+            // - Director/Admin giao được cho manager và employee
+            if (assignerRole === 'manager' && targetRole !== 'employee') {
+                req.flash('error', 'Bạn không có quyền giao việc cho người dùng có vai trò này. Manager chỉ có thể giao việc cho Employee.');
+                return res.redirect('/tasks');
+            }
+            if (assignerRole === 'employee') {
+                req.flash('error', 'Bạn không có quyền giao việc.');
+                return res.redirect('/tasks');
+            }
+            // =====================================================
 
             const taskMeta = getTaskScheduleMeta(task);
             if (!taskMeta) {

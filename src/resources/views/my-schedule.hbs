@@ -2,25 +2,25 @@
   <div class="container py-4 my-schedule-wrap">
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
       <div>
-        <h3 class="mb-1">My Schedule</h3>
+        <h3 class="mb-1">{{t 'mySchedule.title'}}</h3>
         <div class="text-muted">{{user.name}} - {{user.position}}</div>
       </div>
       <div class="d-flex gap-2 align-items-center">
-        <small class="text-muted">Updated: {{nowText}}</small>
-        <a href="/my-task" class="btn btn-outline-primary btn-sm">My Tasks</a>
+        <small class="text-muted">{{t 'mySchedule.updated'}} {{nowText}}</small>
+        <a href="/my-task" class="btn btn-outline-primary btn-sm">{{t 'mySchedule.myTasksBtn'}}</a>
       </div>
     </div>
 
     <div class="schedule-box">
       <div class="week-bar">
-        <button type="button" onclick="prevWeek()">Prev</button>
+        <button type="button" onclick="prevWeek()">{{t 'mySchedule.prev'}}</button>
         <strong id="weekLabel"></strong>
-        <button type="button" onclick="nextWeek()">Next</button>
+        <button type="button" onclick="nextWeek()">{{t 'mySchedule.next'}}</button>
       </div>
 
       <div class="calendar">
         <div class="calendar-header calendar-grid">
-          <div>Time</div>
+          <div>{{t 'home.calendar.time'}}</div>
           <div></div>
           <div></div>
           <div></div>

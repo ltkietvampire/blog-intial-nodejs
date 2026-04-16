@@ -1,19 +1,19 @@
 <section class="container py-4">
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
     <div>
-      <h3 class="mb-1">Monthly Payroll</h3>
-      <div class="text-muted">Payroll Period: {{periodLabel}}</div>
+      <h3 class="mb-1">{{t 'salary.title'}}</h3>
+      <div class="text-muted">{{t 'salary.period'}} {{periodLabel}}</div>
     </div>
     <form method="GET" action="/salary" class="d-flex flex-wrap align-items-end gap-2">
       <div>
-        <label class="form-label mb-1">Month</label>
+        <label class="form-label mb-1">{{t 'salary.month'}}</label>
         <input type="number" class="form-control" name="month" value="{{monthInput}}" min="1" max="12" style="width: 80px;">
       </div>
       <div>
-        <label class="form-label mb-1">Year</label>
+        <label class="form-label mb-1">{{t 'salary.year'}}</label>
         <input type="number" class="form-control" name="year" value="{{yearInput}}" min="2000" style="width: 100px;">
       </div>
-      <button type="submit" class="btn btn-outline-primary">View Payroll</button>
+      <button type="submit" class="btn btn-outline-primary">{{t 'salary.btnView'}}</button>
     </form>
   </div>
 
@@ -22,15 +22,15 @@
       <table class="table align-middle mb-0">
         <thead class="table-light">
           <tr>
-            <th>Employee</th>
-            <th class="d-none d-md-table-cell">Email</th>
-            <th class="text-end d-none d-md-table-cell">Hours</th>
-            <th class="text-end d-none d-md-table-cell">Rate</th>
-            <th class="text-end text-success">Bonus</th>
-            <th class="text-end text-danger">Deduction</th>
-            <th class="text-end text-primary">Total Pay</th>
-            <th>Status</th>
-            <th>Action</th>
+            <th>{{t 'salary.colEmployee'}}</th>
+            <th class="d-none d-md-table-cell">{{t 'salary.colEmail'}}</th>
+            <th class="text-end d-none d-md-table-cell">{{t 'salary.colHours'}}</th>
+            <th class="text-end d-none d-md-table-cell">{{t 'salary.colRate'}}</th>
+            <th class="text-end text-success">{{t 'salary.colBonus'}}</th>
+            <th class="text-end text-danger">{{t 'salary.colDeduction'}}</th>
+            <th class="text-end text-primary">{{t 'salary.colTotal'}}</th>
+            <th>{{t 'salary.colStatus'}}</th>
+            <th>{{t 'salary.colAction'}}</th>
           </tr>
         </thead>
         <tbody>
@@ -49,7 +49,7 @@
                     {{this.status}}
                   </span>
                 {{else}}
-                  <span class="badge bg-light text-muted text-uppercase border">not generated</span>
+                  <span class="badge bg-light text-muted text-uppercase border">{{t 'salary.notGenerated'}}</span>
                 {{/if}}
               </td>
               <td>
@@ -63,7 +63,7 @@
                       data-name="{{this.employee.name}}" 
                       data-bonus="{{this.bonus}}" 
                       data-deduction="{{this.deduction}}">
-                      <i class="bi bi-pencil-square"></i> Adjust
+                      <i class="bi bi-pencil-square"></i> {{t 'salary.btnAdjust'}}
                     </button>
                   {{/if}}
                 {{/if}}
@@ -71,7 +71,7 @@
             </tr>
           {{else}}
             <tr>
-              <td colspan="6" class="text-center text-muted py-4">No employee data found.</td>
+              <td colspan="6" class="text-center text-muted py-4">{{t 'salary.noData'}}</td>
             </tr>
           {{/each}}
         </tbody>
@@ -81,7 +81,7 @@
 
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4">
     <div class="fw-semibold fs-5">
-      Total Hours: {{totals.totalHours}} | Total Pay: <span class="text-success">{{totals.totalPay}}</span>
+      {{t 'salary.totalHours'}} {{totals.totalHours}} | {{t 'salary.totalPay'}} <span class="text-success">{{totals.totalPay}}</span>
     </div>
     
     <div class="d-flex gap-2 flex-wrap">
@@ -89,7 +89,7 @@
         <input type="hidden" name="month" value="{{monthInput}}">
         <input type="hidden" name="year" value="{{yearInput}}">
         <button type="submit" class="btn btn-primary" {{#if hasRecords}}disabled{{/if}}>
-          Generate Payroll
+          {{t 'salary.btnGenerate'}}
         </button>
       </form>
 
@@ -98,7 +98,7 @@
         <input type="hidden" name="month" value="{{monthInput}}">
         <input type="hidden" name="year" value="{{yearInput}}">
         <button type="submit" class="btn btn-warning" {{#unless canManagerApprove}}disabled{{/unless}}>
-          Manager Approve (Submit)
+          {{t 'salary.btnManagerApprove'}}
         </button>
       </form>
       {{/if}}
@@ -108,11 +108,11 @@
         <input type="hidden" name="month" value="{{monthInput}}">
         <input type="hidden" name="year" value="{{yearInput}}">
         <button type="submit" class="btn btn-success" {{#unless canDirectorApprove}}disabled{{/unless}}>
-          <i class="bi bi-check-circle me-1"></i>Director Approve (Pay)
+          <i class="bi bi-check-circle me-1"></i>{{t 'salary.btnDirectorApprove'}}
         </button>
       </form>
       <button type="button" class="btn btn-danger" id="openRejectModal" {{#unless canDirectorApprove}}disabled{{/unless}}>
-        <i class="bi bi-x-circle me-1"></i>Director Reject
+        <i class="bi bi-x-circle me-1"></i>{{t 'salary.btnDirectorReject'}}
       </button>
       {{/if}}
     </div>
@@ -127,23 +127,23 @@
         <input type="hidden" name="month" value="{{monthInput}}">
         <input type="hidden" name="year" value="{{yearInput}}">
         <div class="modal-header bg-danger text-white">
-          <h5 class="modal-title"><i class="bi bi-x-octagon me-2"></i>Reject Payroll - {{periodLabel}}</h5>
+          <h5 class="modal-title"><i class="bi bi-x-octagon me-2"></i>{{t 'salary.rejectTitle'}} - {{periodLabel}}</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="alert alert-warning d-flex gap-2">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <span>All <strong>Pending</strong> payroll records for this month will be reset to <strong>Draft</strong> status.</span>
+            <span>{{{t 'salary.rejectWarning'}}}</span>
           </div>
           <div class="mb-3">
-            <label class="form-label fw-bold">Rejection Reason <span class="text-danger">*</span></label>
-            <textarea class="form-control" name="rejectReason" rows="3" placeholder="Enter specific reason so Managers know what to adjust..." required minlength="10"></textarea>
-            <div class="form-text text-muted">This reason will be visible to all Managers.</div>
+            <label class="form-label fw-bold">{{t 'salary.rejectReason'}} <span class="text-danger">*</span></label>
+            <textarea class="form-control" name="rejectReason" rows="3" placeholder="Enter specific reason..." required minlength="10"></textarea>
+            <div class="form-text text-muted">{{t 'salary.rejectReasonHint'}}</div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle me-1"></i>Confirm Rejection</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{t 'salary.btnCancel'}}</button>
+          <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle me-1"></i>{{t 'salary.btnConfirmReject'}}</button>
         </div>
       </form>
     </div>
@@ -156,24 +156,24 @@
     <div class="modal-content">
       <form id="adjustForm" method="POST" action="">
         <div class="modal-header">
-          <h5 class="modal-title">Adjust Salary: <span id="adjustEmpName" class="text-primary"></span></h5>
+          <h5 class="modal-title">{{t 'salary.adjustTitle'}} <span id="adjustEmpName" class="text-primary"></span></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label text-success fw-bold">Bonus Amount (VND)</label>
+            <label class="form-label text-success fw-bold">{{t 'salary.adjustBonus'}}</label>
             <input type="number" class="form-control" name="bonus" id="adjustBonus" min="0" value="0" required>
-            <div class="form-text">Add bonus or allowance to the payroll.</div>
+            <div class="form-text">{{t 'salary.adjustBonusHint'}}</div>
           </div>
           <div class="mb-3">
-            <label class="form-label text-danger fw-bold">Deduction / Penalty (VND)</label>
+            <label class="form-label text-danger fw-bold">{{t 'salary.adjustDeduction'}}</label>
             <input type="number" class="form-control" name="deduction" id="adjustDeduction" min="0" value="0" required>
-            <div class="form-text">Deduct penalty (e.g., 50000 for being late).</div>
+            <div class="form-text">{{t 'salary.adjustDeductionHint'}}</div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{t 'salary.btnCancel'}}</button>
+          <button type="submit" class="btn btn-primary">{{t 'salary.btnSave'}}</button>
         </div>
       </form>
     </div>
